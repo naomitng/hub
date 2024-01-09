@@ -1,3 +1,9 @@
+<?php
+
+include 'dashboard/sidebar.php';
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,22 +30,6 @@
 </head>
 <body>
 
-    <!-- Script for importing the sidebar -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var sidebarContainer = document.getElementById("sidebar-container");
-
-            fetch("../admin/dashboard/sidebar.php")
-                .then(response => response.text())
-                .then(data => {
-                    sidebarContainer.innerHTML = data;
-                })
-                .catch(error => console.error("Error fetching sidebar:", error));
-        });
-    </script>
-    
-    <!-- Sidebar container -->
-    <div id="sidebar-container"></div>
 
 </body>
 </html>
