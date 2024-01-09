@@ -1,0 +1,18 @@
+body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+} p {
+    font-size: 15px;
+} a {
+    color: white;
+} a:hover {
+    color: gray;
+} .btn {
+    background-color: #FFEA00;
+} .btn:hover {
+    opacity: 90%;
+    transition: .2s ease-in-out;
+}

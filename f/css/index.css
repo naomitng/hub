@@ -1,0 +1,11 @@
+body {
+    height: 100vh;
+}
+
+header {
+    height: 250px;
+    background-image: url('../img/bg-quad.jpg');
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1s ease-in-out;
+}

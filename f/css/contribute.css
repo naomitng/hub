@@ -1,0 +1,8 @@
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background-color: #F5F5F5;
+    display: flex;
+    margin: 0;
+    overflow-y: auto; 
+}

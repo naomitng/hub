@@ -1,0 +1,15 @@
+body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+} p {
+    font-size: 15px;
+} .form-control {
+    text-align: center;
+} a {
+    color: white;
+} a:hover {
+    color: gray;
+}

@@ -1,0 +1,49 @@
+body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito Sans', sans-serif;
+    overflow: hidden;
+    background-color: white;
+    color: white;
+}
+
+.container-fluid {
+    max-width: 100%;
+}
+
+.img-container {
+    display: flex;
+    align-items: stretch;
+    margin-left: 12%;
+}
+
+.img-fluid {
+    width: 100%;
+    object-fit: cover;
+}
+
+.form-container {
+    flex: 1;
+    padding: 5%;
+    background-color: #00308F
+}
+
+p {
+    font-size: 13px;
+    opacity: .8;
+} 
+
+a {
+    color: white;
+}
+
+h1 {
+    font-size: 35px;
+}
+
+.shadow-left {
+    box-shadow: -8px 10px 15px -3px rgba(0, 0, 0, 0.1), -4px 4px 6px -2px rgba(0, 0, 0, 0.05);
+}

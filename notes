@@ -1,0 +1,34 @@
+#FFAC1C - cea orange
+#FFEA00 - rtu yellow
+#00308F - blue
+
+
+<!-- Alert for code -->
+<div class="alert alert-warning w-60" role="alert">
+    A new code has been resend. Check your email
+</div>
+<!-- Alert for pw doesn't match -->
+<div class="alert alert-danger w-60" role="alert">
+    Password doesn't match
+</div>
+
+
+nakakaputangina. pag natapos ko to pwede na ko humimlay
+
+
+
+
+<li class="list-group-item">
+    <ul style="list-style-type: none;">
+        <li class="list-group-item-title">
+            Research Hub: Capstone Projects Repository
+            <button type="button" class="btn btn-warning btn-sm" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+            </svg></button>
+        </li>
+        <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
+        <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
+        <li class="text-muted">Department: Information Technology</li>
+        <li class="text-muted">Adviser: Lea Nisperos</li>
+    </ul>
+</li>
