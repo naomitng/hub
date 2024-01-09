@@ -12,7 +12,7 @@
         <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
 
             <!-- Logo -->
-            <a href="../admin/dashboard/aDashboard.php" style=" text-decoration: none;"><img src="../../img/logo.png" alt="" style="width: 40px;"></a>
+            <a href="../admin/dashboard/aDashboard.php" style=" text-decoration: none;"><img src="../img/logo.png" alt="" style="width: 40px;"></a>
             <span style="font-size: 25px; color: #28282B;">Research Hub</span>
             
         </div>
@@ -42,7 +42,7 @@
                 <!-- Under dashboard -->
                 <div class="collapse" id="dashboard-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="../contribute.php" class="link-dark rounded">Contribute</a></li>
+                        <li><a href="contribute.php" class="link-dark rounded">Contribute</a></li>
                         <li><a href="#" class="link-dark rounded">Statistics</a></li>
                     </ul>
                 </div>
