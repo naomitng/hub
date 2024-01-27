@@ -5,4 +5,9 @@ body {
     display: flex;
     margin: 0;
     overflow-y: auto; 
+    font-family: 'Nunito Sans', sans-serif;
+} .submit:hover {
+    background-color: #FFEA00;
+} .abstract {
+    resize: none;
 }

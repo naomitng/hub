@@ -1,13 +1,11 @@
 <?php
-    $page_title = "Dashboard";
+    $page_title = "Manage Advisers";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
 
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-
-
+    echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";
 
 ?>
 
@@ -17,7 +15,7 @@
     <!-- Search bar -->
     <form class="search">
         <i class="fa fa-search"></i>
-        <input type="text" class="form-control" placeholder="Search for a study">
+        <input type="text" class="form-control" placeholder="Search">
         <button class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -28,14 +26,74 @@
     <!-- List of studies -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside">
+            <div class="d-flex justify-content-between align-items-center">
 
-                <!-- Title -->
+            <!-- Previous/back link -->
+                <a href="../admin/aDashboard.php" class="text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg> Back to home
+                </a>
+                
+                <!-- Add adviser button -->
+                <button type="button" class="btn btn-warning addbtn" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                    </svg>
+                </button>
+                
+                <!-- Button to activate modal for add adviser --> 
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                
+                <!-- Form for add adviser -->
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="" method="post">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add adviser</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                        <input type="text" class="form-control" id="recipient-name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Email address:</label>
+                                        <input type="text" class="form-control" id="recipient-name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Department:</label>
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Choose a department</option>
+                                            <option value="1">Information Technology</option>
+                                            <option value="2">Computer Engineering</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-warning addbtn">Submit</button>
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Advisers --> 
+            <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-4">
+
+                <!-- Name -->
                 <li class="list-group-item-title d-flex">
-                    <a href="">Research Hub: Capstone Projects Repository</a>
+
+                    <a href="" class=" text-decoration-none text-dark">Kenneth Martinez</a>
 
                     <!-- Button group for edit and delete -->
                     <div class="ml-auto">
+
                         <!-- Edit btn -->
                         <button type="button" class="btn btn-link text-secondary" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -54,21 +112,19 @@
                     </div>
                 </li>
 
-
-                <!-- Information about the study -->
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-                <li class="text-muted">Published 2024</li>
+                <!-- Adviser information -->
+                <li class="text-muted">Email: leanisperos@rtu.edu.ph</li>
+                <li class="text-muted">Department of <?php echo "Information Technology"; ?> </li>
             </ul>
         </li>
+
         <li class="list-group-item p-4">
             <ul style="list-style-type: none;" class="p-3 rounded ulInside">
                 <li class="list-group-item-title">
-                <a href="">Research Hub: Capstone Projects Repository</a>
+                    <a href="" class="text-decoration-none text-dark" style="pointer-events: none;">Kenneth Martinez</a>
                     <!-- Button group for edit and delete -->
                     <div class="ml-auto">
+
                         <!-- Edit btn -->
                         <button type="button" class="btn btn-link text-secondary" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -86,19 +142,20 @@
                         </button>
                     </div>
                 </li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-                <li class="text-muted">Published 2024</li>
+
+                <!-- Adviser information -->
+                <li class="text-muted">Email: leanisperos@rtu.edu.ph</li>
+                <li class="text-muted">Department of <?php echo "Information Technology"; ?> </li>
             </ul>
         </li>
+        
         <li class="list-group-item p-4">
             <ul style="list-style-type: none;" class="p-3 rounded ulInside">
                 <li class="list-group-item-title">
-                <a href="">Research Hub: Capstone Projects Repository</a>
+                    <a href="" class="text-decoration-none text-dark" style="pointer-events: none;">Kenneth Martinez</a>
                     <!-- Button group for edit and delete -->
                     <div class="ml-auto">
+
                         <!-- Edit btn -->
                         <button type="button" class="btn btn-link text-secondary" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -116,19 +173,20 @@
                         </button>
                     </div>
                 </li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-                <li class="text-muted">Published 2024</li>
+
+                <!-- Adviser information -->
+                <li class="text-muted">Email: leanisperos@rtu.edu.ph</li>
+                <li class="text-muted">Department of <?php echo "Information Technology"; ?> </li>
             </ul>
         </li>
+
         <li class="list-group-item p-4">
             <ul style="list-style-type: none;" class="p-3 rounded ulInside">
                 <li class="list-group-item-title">
-                <a href="">Research Hub: Capstone Projects Repository</a>
+                    <a href="" class="text-decoration-none text-dark" style="pointer-events: none;">Kenneth Martinez</a>
                     <!-- Button group for edit and delete -->
                     <div class="ml-auto">
+
                         <!-- Edit btn -->
                         <button type="button" class="btn btn-link text-secondary" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -146,11 +204,10 @@
                         </button>
                     </div>
                 </li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-                <li class="text-muted">Published 2024</li>
+
+                <!-- Adviser information -->
+                <li class="text-muted">Email: leanisperos@rtu.edu.ph</li>
+                <li class="text-muted">Department of <?php echo "Information Technology"; ?> </li>
             </ul>
         </li>
     </ul>
@@ -169,5 +226,4 @@
             </li>
         </ul>
     </nav>
-
 </div>

@@ -1,29 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+    $page_title = "Sign Up";
+    include '../includes/header.php';
+    include '../includes/connection.php';
+    echo "<link rel='stylesheet' type='text/css' href='../css/signUpStyle.css'>";
+    echo "<script src='../script/showPass.js'></script>";
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign up - Research Hub</title>
+    $errMsg = "";
 
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-        crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz@6..12&display=swap" rel="stylesheet">
-    <!-- Favicon -->
-    <link rel="icon" href="../img/logo.png">
-    <!-- CSS -->
-    <link rel="stylesheet" href="../css/signUpStyle.css" type="text/css">
-    <!-- Javscript -->
-    <script src="../script/showPass.js"></script>
-</head>
+    if(isset($_POST['submit-btn'])) {
+        $fname = $_POST['fname'];
+        $lname = $_POST['lname'];
+        $email = $_POST['email'];
+        $dept = $_POST['dept'];
+        $pass = $_POST['pass'];
+        $passRpt = $_POST['passRpt'];
+
+        //Check if email is already used
+        $emailToCheck = $email;
+
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = :email");
+        $stmt->bindParam(':email', $emailToCheck);
+        $stmt->execute();
+
+        if ($pass !== $passRpt) {
+            $errMsg = "Passwords do not match. Please try again.";
+        } elseif ($stmt->rowCount() > 0) {
+            $errMsg = "Email already exists. Please choose a different email address";
+        } else {
+            try {
+                $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
+                $data = [
+                    'fname' => $fname,
+                    'lname' => $lname,
+                    'email' => $email,
+                    'dept' => $dept,
+                    'hashedPass' => $hashedPass
+                ];
+        
+                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`) VALUES (:fname, :lname, :email, :dept, :hashedPass)");
+        
+                // Execute the statement with the associative array
+                $stmt->execute($data);
+            } catch (PDOException $e) {
+                // Handle any exceptions here
+                echo "Error: " . $e->getMessage();
+            }
+        }
+    }
+
+    $pdo = null;
+?>
 
 <body class="d-flex align-items-center">
     <div class="row">
@@ -36,20 +62,27 @@
             <form action="" method="post" class="shadow-lg p-5 rounded-end form-container">
                 <h1 class="mb-4 text-center">Register for an admin account</h1>
                 <!-- Alert signing up -->
-                <div class="alert alert-danger" role="alert">
-                    This is a warning alert—check it out!
-                </div>
+                <?php if($errMsg !== "") { ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo $errMsg; ?>
+                    </div> 
+                    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; } 5000);</script>
+                <?php } else { ?>
+                    <!-- Hidden alert div -->
+                    <div style="display: none;" class="alert alert-danger" role="alert"></div>
+                <?php } ?>
+                
                 <div class="row">
                     <!-- First name -->
                     <div class="col">
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="fName" placeholder="First name">
+                            <input type="text" class="form-control" id="fName" name="fName" placeholder="First name" required>
                         </div>
                     </div>
                     <!-- Last name -->
                     <div class="col">
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="lName" placeholder="Last name">
+                            <input type="text" class="form-control" id="lName" name="lName" placeholder="Last name" required>
                         </div>
                     </div>
                 </div>
@@ -63,8 +96,8 @@
                                     d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z" />
                             </svg>
                         </span>
-                        <input type="text" class="form-control" placeholder="Email" aria-label="Email"
-                            aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" placeholder="Email" name="email" aria-label="Email"
+                            aria-describedby="basic-addon1" required>
                     </div>
                     <p>You can use letters, numbers & periods</p>
                 </div>
@@ -72,7 +105,7 @@
                 <div class="mb-3">
                     <div class="input-group">
                         <select class="form-select" id="inputGroupSelect04"
-                            aria-label="Example select with button addon">
+                            aria-label="Example select with button addon" name="dept">
                             <option selected>Choose a department</option>
                             <option value="1">IT Department</option>
                             <option value="2">CpE Department</option>
@@ -92,7 +125,7 @@
                                 </svg>
                             </span>
                             <input type="password" id="password" class="form-control" placeholder="Password"
-                                aria-label="Password" aria-describedby="basic-addon2">
+                                aria-label="Password" aria-describedby="basic-addon2" name="pass" required>
                         </div>
                     </div>
                     <!-- Confirm password -->
@@ -107,7 +140,7 @@
                             </span>
                             <input type="password" id="cPassword" class="form-control"
                                 placeholder="Confirm password" aria-label="Password"
-                                aria-describedby="basic-addon2">
+                                aria-describedby="basic-addon2" name="passRpt" required>
                         </div>
                     </div>
                 </div>
@@ -126,13 +159,10 @@
                     </div>
                     <!-- Sign up button -->
                     <div class="col text-end">
-                        <button type="button" id="signUp-btn" class="btn btn-warning">Sign Up</button>
+                        <button type="submit" id="signUp-btn" name="submit-btn" class="btn btn-warning">Sign Up</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-
 </body>
-
-</html>

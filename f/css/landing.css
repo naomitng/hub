@@ -1,0 +1,24 @@
+body {
+    height: 100vh;
+    background-color: #f5f5f5;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+/* Header settings */
+header {
+    height: 250px;
+    background-image: url("../img/bg-quad.jpg");
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1s ease-in-out;
+    width: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Footer settings */
+footer {
+    user-select: none;
+} span {
+    font-size: 15px;
+}
