@@ -46,4 +46,6 @@ h1 {
 
 .shadow-left {
     box-shadow: -8px 10px 15px -3px rgba(0, 0, 0, 0.1), -4px 4px 6px -2px rgba(0, 0, 0, 0.05);
+} .btn-warning:hover {
+    background-color: #FFEA00;
 }

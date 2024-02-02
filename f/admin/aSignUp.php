@@ -1,43 +1,104 @@
 <?php
+
+    session_start();
+
     $page_title = "Sign Up";
     include '../includes/header.php';
-    include '../includes/connection.php';
+    require '../../vendor/autoload.php';
+
+
+    //include '../includes/connection.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signUpStyle.css'>";
     echo "<script src='../script/showPass.js'></script>";
 
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\SMTP;
+    use PHPMailer\PHPMailer\Exception;
+
     $errMsg = "";
 
+    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+
     if(isset($_POST['submit-btn'])) {
-        $fname = $_POST['fname'];
-        $lname = $_POST['lname'];
+        $fname = $_POST['fName'];
+        $lname = $_POST['lName'];        
         $email = $_POST['email'];
         $dept = $_POST['dept'];
         $pass = $_POST['pass'];
         $passRpt = $_POST['passRpt'];
 
+        $mail = new PHPMailer(true);
+
+        $hubEmail = 'uresearch.hub@gmail.com';
+        $hubPass = 'ucha lrxy ebcf kfps';
+
         //Check if email is already used
         $emailToCheck = $email;
 
         $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = :email");
-        $stmt->bindParam(':email', $emailToCheck);
-        $stmt->execute();
+        $stmt->execute([':email' => $emailToCheck]);
+        $user = $stmt->fetch();
+
+        /* elseif ($stmt->rowCount() > 0) {
+            $errMsg = "Email already exists. Please choose a different email address";
+        } */
+
+        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
 
         if ($pass !== $passRpt) {
             $errMsg = "Passwords do not match. Please try again.";
-        } elseif ($stmt->rowCount() > 0) {
-            $errMsg = "Email already exists. Please choose a different email address";
+        } elseif ($user) {
+            $errMsg = "Email already exist. Please use a different email address.";
+        } elseif (!preg_match($passwordRegex, $pass)) {
+            $errMsg = "Password must be 8 or more characters with a mix of uppercase and lowercase letters, symbols, and numbers.";
         } else {
             try {
+
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->Username = 'uresearch.hub@gmail.com';
+                $mail->Password = 'hhqw syqz eawo rrdb';
+                $mail->Port = 587;
+                $mail->SMTPAuth = true;
+                // $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->setFrom($hubEmail, 'noreply');
+                $mail->addAddress($email, $fname . ' ' . $lname);
+                $mail->isHTML(true);
+
+
+                $verification_code = md5(uniqid(rand(), true));
+                //$verification_code = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
+                $mail->Subject = 'Account activation for Research Hub';
+                $mail->Body = "
+                    <p>Hello $fname!</p>
+                    
+                    <p>Welcome to Research Hub. We are writing to inform you that your Research Hub admin account has been successfully created. You may now activate your account by following the link below:</p>
+
+                    <p><strong>Activation Link:</strong> <a href='https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "'>https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "</a></p>
+
+                    <p>Once you are redirected to the login page, you can sign in using your account login credentials.</p>
+
+                    <p>If you have any questions or encounter any issues, kindly contact our support team at <a href='mailto:hubsupport@gmail.com'>hubsupport@gmail.com</a></p>
+
+                    <br>
+
+                    <p style='font-style: italic; color: #888;'>Best regards,</p>
+                    <p style='font-style: italic; color: #888;'>Research Hub Team</p>
+                ";
+
+                $mail->send();
+
                 $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
                 $data = [
                     'fname' => $fname,
                     'lname' => $lname,
                     'email' => $email,
                     'dept' => $dept,
-                    'hashedPass' => $hashedPass
+                    'hashedPass' => $hashedPass,
+                    'verificationCode' => $verification_code
                 ];
         
-                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`) VALUES (:fname, :lname, :email, :dept, :hashedPass)");
+                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`, `vertime`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode, NULL)");
         
                 // Execute the statement with the associative array
                 $stmt->execute($data);
@@ -66,7 +127,7 @@
                     <div class="alert alert-danger" role="alert">
                         <?php echo $errMsg; ?>
                     </div> 
-                    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; } 5000);</script>
+                    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; }, 5000);</script>
                 <?php } else { ?>
                     <!-- Hidden alert div -->
                     <div style="display: none;" class="alert alert-danger" role="alert"></div>

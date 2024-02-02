@@ -2,6 +2,16 @@
 #FFEA00 - rtu yellow
 #00308F - blue
 
+<?php if($errMsg !== "") { ?>
+    <div class="alert alert-danger" role="alert">
+        <?php echo $errMsg; ?>
+    </div> 
+    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; }, 5000);</script>
+<?php } else { ?>
+    <!-- Hidden alert div -->
+    <div style="display: none;" class="alert alert-danger" role="alert"></div>
+<?php } ?>
+
 
 <!-- Alert for code -->
 <div class="alert alert-warning w-60" role="alert">
@@ -45,3 +55,172 @@ nakakaputangina. pag natapos ko to pwede na ko humimlay
                 </svg>
             </button>
         </form>
+
+
+
+
+
+        function send_password_reset($get_email, $voterid) {
+    $teamvaremail = 'teamvarcapstone@gmail.com';
+    $teamvarpass = 'nzisupoquyojvvth';
+
+    $mail = new PHPMailer(true);
+  
+    $mail -> SMTPDebug = SMTP::DEBUG_SERVER;
+    $mail -> isSMTP();
+    $mail -> Host = 'smtp.gmail.com';
+    $mail -> SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+    $mail -> SMTPAuth = true;
+
+    $mail -> Username = $teamvaremail;
+    $mail -> Password = $teamvarpass;
+
+    $mail -> SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail -> Port = 465;
+
+    $mail -> setFrom($teamvaremail, 'noreply');
+    $mail -> addAddress($get_email);
+
+    $mail -> isHTML(true);
+    $mail -> Subject = 'Password Reset Request for Makati Science High School Online Voting';
+
+    $ebody = "
+    <!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .full-width-button {
+      display: block;
+      width: 100%;
+      background-color: #367FA9;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      padding: 3px 10;
+      height: 20px;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease; /* Added transition for smooth effect */
+    }
+    .full-width-button:hover {
+      background-color: darkblue; /* Change color on hover */
+    }
+    .content {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;;
+    }
+    .container {
+      color: black;
+      padding: 20px;
+      background-image: url('https://static.wixstatic.com/media/eff6c4_7d535b2ff8e94469ae35ec48594cee9b~mv2.png');
+      background-size: 30%;
+      background-repeat: no-repeat;
+      background-position: center;
+    }   
+    h2 {
+      color: #000000;
+    }
+    p {
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class='container'>
+    <div class='content'>
+      <h2>Password Reset Request</h2>
+      <p>Hi <b>user</b>,</p>
+      <p>We received a request to reset your password for the Makati Science High School Online Voting System. If you did not initiate this request, please disregard this email.</p>
+      <p>Stay tuned for updates and important information about the upcoming voting events.</p>
+      <p>For any questions or assistance, please contact our support team at <a href='mailto:support@example.com'>support@example.com</a>.</p>
+      <p>Thank you for being part of our community and contributing to the future of Makati Science High School!</p>
+      <br>
+      <a href='http://localhost/capstone/votesystem/resetpw.php?voterid=$voterid&email=$get_email' class='full-width-button' style='color: white; text-decoration: none;'>
+        Click here to reset your password
+      </a>
+      <p style='font-style: italic; color: #888;'>Best regards,</p>
+      <p style='font-style: italic; color: #888;'>The Makati Science High School Online Voting System</p>
+    </div>
+  </div>
+
+</body>
+</html>";
+
+    $mail -> Body = $ebody;
+    $mail -> send();
+}
+
+
+
+
+
+
+
+
+
+
+
+$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+
+    if(isset($_POST['submit-btn'])) {
+        $fname = $_POST['fName'];
+        $lname = $_POST['lName'];        
+        $email = $_POST['email'];
+        $dept = $_POST['dept'];
+        $pass = $_POST['pass'];
+        $passRpt = $_POST['passRpt'];
+
+        //Check if email is already used
+        $emailToCheck = $email;
+
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = :email");
+        $stmt->execute([':email' => $emailToCheck]);
+        $user = $stmt->fetch();
+
+        /* elseif ($stmt->rowCount() > 0) {
+            $errMsg = "Email already exists. Please choose a different email address";
+        } */
+
+        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+
+        if ($pass !== $passRpt) {
+            $errMsg = "Passwords do not match. Please try again.";
+        } elseif ($user) {
+            $errMsg = "Email already exist. Please use a different email address.";
+        } elseif (!preg_match($passwordRegex, $pass)) {
+            $errMsg = "Password must be 8 or more characters with a mix of uppercase and lowercase letters, symbols, and numbers.";
+        } else {
+            try {
+                $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
+                $data = [
+                    'fname' => $fname,
+                    'lname' => $lname,
+                    'email' => $email,
+                    'dept' => $dept,
+                    'hashedPass' => $hashedPass
+                ];
+        
+                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`) VALUES (:fname, :lname, :email, :dept, :hashedPass)");
+        
+                // Execute the statement with the associative array
+                $stmt->execute($data);
+            } catch (PDOException $e) {
+                // Handle any exceptions here
+                echo "Error: " . $e->getMessage();
+            }
+        }
+    }

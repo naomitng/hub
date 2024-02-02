@@ -1,4 +1,5 @@
 <?php
+
     $page_title = "Dashboard";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
@@ -32,7 +33,7 @@
 
                 <!-- Title -->
                 <li class="list-group-item-title d-flex">
-                    <a href="">Research Hub: Capstone Projects Repository</a>
+                <a href="">Research Hub: Capstone Projects Repository</a>
 
                     <!-- Button group for edit and delete -->
                     <div class="ml-auto">

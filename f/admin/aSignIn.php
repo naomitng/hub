@@ -1,10 +1,48 @@
 <?php
+    session_start();
+
     $page_title = "Sign In";
     include '../includes/header.php';
-
     echo "<link rel='stylesheet' type='text/css' href='../css/signInStyle.css'>";
+    echo "<script src='../script/slideshow.js'></script>";
+    
+    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 
-    echo "<script src='../script/slideshow.js'></script>"
+    $errMsg = "";
+
+    if (isset($_POST['signinBtn'])) {
+
+        $email = $_POST['email'];
+        $pass = $_POST['pass'];
+
+
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE `email` = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $isVerified = $result['verified'];
+
+            if ($isVerified == 1) {
+                if (password_verify($pass, $result['pass'])) {
+                    $_SESSION['fname'] = $result['fname'];
+                    $_SESSION['lname'] = $result['lname'];
+                    header('location: ../admin/aDashboard.php');
+                    exit(); 
+                } else {
+                    $errMsg = "Invalid email or password";
+                }
+            } else {
+                $errMsg = "Please verify your admin account. A verification link is sent to your email address";
+            }
+        } else {
+            $errMsg = "No user found with this email";
+        } 
+    } 
+
+    $pdo = null;
+
 ?>
 
 
@@ -19,9 +57,18 @@
                     <div class="row justify-content-start">
                         <div class="col-md-12">
                             <!-- Incorrect email/pass alert -->
-                            <div class="alert alert-danger" role="alert">
-                                This is a warning alert—check it out!
-                            </div>
+                            <?php if($errMsg !== "") { ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?php echo $errMsg; ?>
+                                    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; }, 5000);</script>
+                                </div>
+                            <?php } else { ?> 
+                                    <!-- Hidden alert div -->
+                                    <div style="display: none;" class="alert alert-danger" role="alert"></div>    
+                            <?php } ?>
+
+                            
+
                             <!-- Email Input -->
                             <div class="mb-3">
                                 <div class="input-group mt-3">
@@ -30,7 +77,7 @@
                                             <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
                                         </svg>
                                     </span>
-                                    <input type="text" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="basic-addon1">
+                                    <input type="text"name="email" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="basic-addon1" required>
                                 </div>
                             </div>
                             <!-- Password Input -->
@@ -41,13 +88,13 @@
                                             <path d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1"/>
                                         </svg>
                                     </span>
-                                    <input type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2">
+                                    <input type="password" name="pass" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" required>
                                 </div>
                             </div>
                             <!-- Submit Button -->
                             <div class="mb-3">
                                 <div class="input-group">
-                                    <button type="button" class="col-md-12 btn btn-warning">Sign In</button>
+                                    <button type="submit" name="signinBtn" class="col-md-12 btn btn-warning">Sign In</button>
                                 </div>
                                 <div class="register-link">
                                     <p class="text-center mt-2">No account? Register <a href="../admin/aSignUp.php">here</a></p>
@@ -64,4 +111,3 @@
         </div>
     </div>
 </body>
-    

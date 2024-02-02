@@ -1,3 +1,7 @@
+<?php 
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,7 +75,7 @@
             <!-- Account setting -->
             <li class="border-top">
                 <button class="btn btn-toggle align-items-center rounded collapsed mt-3" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-                    Test Dummy 01
+                    <?php echo "Hello, admin " . $_SESSION['fname']; ?>
                 </button>
 
                 <!-- Under account settings -->
