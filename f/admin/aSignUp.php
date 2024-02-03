@@ -5,18 +5,18 @@
     $page_title = "Sign Up";
     include '../includes/header.php';
     require '../../vendor/autoload.php';
-
-
-    //include '../includes/connection.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signUpStyle.css'>";
     echo "<script src='../script/showPass.js'></script>";
 
+    // PHPMailer
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
 
     $errMsg = "";
+    $sucMsg = "";
 
+    // Establish database connection
     $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 
     if(isset($_POST['submit-btn'])) {
@@ -39,10 +39,6 @@
         $stmt->execute([':email' => $emailToCheck]);
         $user = $stmt->fetch();
 
-        /* elseif ($stmt->rowCount() > 0) {
-            $errMsg = "Email already exists. Please choose a different email address";
-        } */
-
         $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
 
         if ($pass !== $passRpt) {
@@ -60,14 +56,12 @@
                 $mail->Password = 'hhqw syqz eawo rrdb';
                 $mail->Port = 587;
                 $mail->SMTPAuth = true;
-                // $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->setFrom($hubEmail, 'noreply');
                 $mail->addAddress($email, $fname . ' ' . $lname);
                 $mail->isHTML(true);
 
 
                 $verification_code = md5(uniqid(rand(), true));
-                //$verification_code = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
                 $mail->Subject = 'Account activation for Research Hub';
                 $mail->Body = "
                     <p>Hello $fname!</p>
@@ -98,12 +92,11 @@
                     'verificationCode' => $verification_code
                 ];
         
-                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`, `vertime`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode, NULL)");
-        
-                // Execute the statement with the associative array
+                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
                 $stmt->execute($data);
+
+                $sucMsg = "Your account is successfully created. Check your email address for the activation link.";
             } catch (PDOException $e) {
-                // Handle any exceptions here
                 echo "Error: " . $e->getMessage();
             }
         }
@@ -127,12 +120,28 @@
                     <div class="alert alert-danger" role="alert">
                         <?php echo $errMsg; ?>
                     </div> 
-                    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; }, 5000);</script>
+                    <script>
+                        setTimeout(function() { 
+                            document.querySelector('.alert-danger').style.display = 'none';
+                        }, 5000);
+                    </script>
+                <?php } elseif ($sucMsg !== "") { ?>
+                        <div class="alert alert-success" role="alert">
+                            <?php echo $sucMsg; ?>
+                        </div>
+                        <script>
+                            setTimeout(function() { 
+                                document.querySelector('.alert-success').style.display = 'none';  // or 'flex'
+                            }, 5000);
+                        </script>
                 <?php } else { ?>
-                    <!-- Hidden alert div -->
-                    <div style="display: none;" class="alert alert-danger" role="alert"></div>
+                            <!-- Hidden alert div -->
+                            <div style="display: none;" class="alert alert-danger" role="alert"></div>
+                            <div style="display: none;" class="alert alert-success" role="alert"></div>
                 <?php } ?>
                 
+                
+
                 <div class="row">
                     <!-- First name -->
                     <div class="col">

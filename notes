@@ -224,3 +224,28 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
             }
         }
     }
+
+
+
+
+
+    if (!$user) {
+            $errMsg = "Invalid password reset link. Please request for a new one";
+        } else {
+            $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+
+            if($pass !== $passRpt) {
+                $errMsg = "Passwords do not match";
+            } elseif (!preg_match($passwordRegex, $pass)) {
+                $errMsg = "Password must be 8 or more characters with a mix of uppercase and lowercase letters, symbols, and numbers.";
+            } else {
+                $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
+        
+                $stmt = $pdo->prepare("UPDATE admin SET pass = :hashedPass WHERE vercode = :vercode");
+                $stmt->bindParam(':hashedPass', $hashedPass);
+                $stmt->bindParam(':vercode', $vercode);
+                $stmt->execute();
+        
+                $sucMsg = "Password successfully updated. Click <a href='https://localhost/hub/f/admin/aSignIn.php'>here</a> to log into your account.";
+            }
+        }

@@ -7,12 +7,9 @@ body {
 } p {
     font-size: 15px;
 } a {
-    color: white;
+    color: black;
 } a:hover {
     color: gray;
-} .btn {
+} .btn-warning:hover {
     background-color: #FFEA00;
-} .btn:hover {
-    opacity: 90%;
-    transition: .2s ease-in-out;
 }

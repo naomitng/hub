@@ -1,5 +1,5 @@
 <?php
-    $page_title = "Account activation";
+    $page_title = "Account successfully activated";
     include '../includes/header.php';
     
     // Establish database connection
@@ -8,17 +8,18 @@
     if(isset($_GET['code'])) {
         $verification_code = $_GET['code'];
 
+        // Select query
         $stmt = $pdo->prepare("SELECT * FROM admin WHERE vercode = :vercode");
         $stmt->execute([':vercode' => $verification_code]);
         $user = $stmt->fetch();
 
         if($user) {
-            // Update the verified column to 1
+            // Update the verified column to 1 
+            // If 0 means not verified if 1 means verified
             $updateStmt = $pdo->prepare("UPDATE admin SET verified = 1 WHERE vercode = :vercode");
             $updateStmt->execute([':vercode' => $verification_code]);
-
-            // Optional: You might want to redirect the user to a login page or a confirmation page
-            //header("Location: ../admin/aSignIn.php");
+            echo "<center>You have successfully activated your admin account. You will be redirected to the log in page shortly.</center>";
+            // Javascript for timeout
             echo "<script>
                 // Function to redirect to the desired PHP file after 5 seconds
                 function redirectToPHPFile() {
@@ -42,7 +43,6 @@
 
     $pdo = null;
 ?>
-
 
 
 

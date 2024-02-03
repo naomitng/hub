@@ -1,9 +1,40 @@
 <?php
-    $page_title = "Forgot password";
+    $page_title = "Reset Password";
     include '../includes/header.php';
-
+    require '../../vendor/autoload.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/newForPass.css'>";
-    echo "<script src='../script/showPass.js'></script>"
+    echo "<script src='../script/showPass.js'></script>";
+
+    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+
+    $errMsg = "";
+    $sucMsg = "";
+
+    if(isset($_GET['code'])) {
+        $reset_code = $_GET['code'];
+
+        // Select query
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE rescode = :rescode");
+        $stmt->execute([':rescode' => $reset_code]);
+        $user = $stmt->fetch();
+
+        if (!$user) {
+            $errMsg = "This link is invalid. Request a new one.";
+        } else {
+            if (isset($_POST['submit'])) {
+                $pass = $_POST['pass'];
+                $passRpt = $_POST['passRpt'];
+                $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
+
+                $updateStmt = $pdo->prepare("UPDATE admin SET pass = :hashedPass WHERE rescode = :rescode"); // Corrected parameter name
+                $updateStmt->bindParam(':hashedPass', $hashedPass);
+                $updateStmt->bindParam(':rescode', $reset_code);
+                $updateStmt->execute();
+
+                $sucMsg = "Password successfully updated. You may now log into your admin account using this <a href='https://localhost/hub/f/admin/aSignIn.php'>link</a>.";
+            }
+        }
+    }
 ?>
 
 <div class="container-md">
@@ -12,26 +43,34 @@
             <form action="" method="post" class="text-center p-5 rounded shadow-lg" style="background-color: #00308F;">
                 <h1 class="mb-5">Reset password</h1>
 
-                <!-- Alert for code -->
-                <div class="alert alert-warning w-60 mb-4" role="alert">
-                    A new code has been resend. Check your email
-                </div>
-                <!-- Alert for pw doesn't match -->
-                <div class="alert alert-danger w-60 mb-4" role="alert">
-                    Password doesn't match
-                </div>
+                <?php if ($errMsg !== "") { ?>
+                    <div class="alert alert-warning w-60 mb-4" role="alert">
+                        <?php echo $errMsg; ?>
+                    </div>
+                    <script>
+                        setTimeout(function () {
+                            document.querySelector('.alert-warning').style.display = 'none';
+                        }, 5000);
+                    </script>
+                <?php } elseif ($sucMsg !== "") { ?>
+                    <div class="alert alert-success w-60 mb-4" role="alert">
+                        <?php echo $sucMsg; ?>
+                    </div>
+                <?php } else { ?>
+                    <div style="display: none;" class="alert alert-danger" role="alert"></div>
+                    <div style="display: none;" class="alert alert-success" role="alert"></div>
+                <?php } ?>
 
                 <div class="input-group mb-3 mx-auto">
-                    <input type="password" class="form-control" placeholder="Current password" id="oPassword">
+                    <input type="password" name="pass" class="form-control" placeholder="New password" id="cPassword">
                 </div>
                 <div class="input-group mb-3 mx-auto">
-                    <input type="password" class="form-control" placeholder="New password" id="password">
-                </div>
-                <div class="input-group mb-3 mx-auto">
-                    <input type="password" class="form-control" placeholder="Confirm password" id="cPassword">
+                    <input type="password" name="passRpt" class="form-control" placeholder="Confirm password" id="password">
                 </div>
 
-                <!-- Checkbox for password visibility -->
+                <!-- Correct the hidden field name -->
+                <input type="hidden" name="rescode" value="<?php echo isset($_GET['rescode']) ? $_GET['rescode'] : ''; ?>">
+
                 <div class="row mb-5">
                     <div class="col-auto">
                         <input class="form-check-input" type="checkbox" value="" id="showPass" onclick="show()">
@@ -42,9 +81,9 @@
                 </div>
 
                 <div class="mb-3 mx-auto">
-                    <button type="button" class="btn btn-warning w-100">Reset password</button>
+                    <button type="submit" name="submit" class="btn btn-warning w-100">Submit</button>
                 </div>
-            </form>    
+            </form>
         </div>
     </div>
 </div>
