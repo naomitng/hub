@@ -39,17 +39,22 @@
         $stmt->execute([':email' => $emailToCheck]);
         $user = $stmt->fetch();
 
-        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+        $passwordRegex = '/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/'; 
 
         if ($pass !== $passRpt) {
             $errMsg = "Passwords do not match. Please try again.";
         } elseif ($user) {
             $errMsg = "Email already exist. Please use a different email address.";
-        } elseif (!preg_match($passwordRegex, $pass)) {
-            $errMsg = "Password must be 8 or more characters with a mix of uppercase and lowercase letters, symbols, and numbers.";
+        } elseif (strlen($_POST["pass"]) <= 8) {
+            $errMsg = "Your Password Must Contain At Least 8 Characters!";
+        } elseif (!preg_match("#[0-9]+#", $pass)) {
+            $errMsg = "Your Password Must Contain At Least 1 Number!";
+        } elseif (!preg_match("#[A-Z]+#", $pass)) {
+            $errMsg = "Your Password Must Contain At Least Capital Letter!";
+        } elseif (!preg_match("#[a-z]+#", $pass)) {
+            $errMsg = "Your Password Must Contain At Least 1 Lowercase Letter!";
         } else {
             try {
-
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->Username = 'uresearch.hub@gmail.com';
