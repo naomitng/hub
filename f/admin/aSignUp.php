@@ -39,7 +39,7 @@
         $stmt->execute([':email' => $emailToCheck]);
         $user = $stmt->fetch();
 
-        $passwordRegex = '/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/'; 
+        //$passwordRegex = '/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/'; 
 
         if ($pass !== $passRpt) {
             $errMsg = "Passwords do not match. Please try again.";
