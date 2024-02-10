@@ -10,4 +10,6 @@ body {
     background-color: #FFEA00;
 } .abstract {
     resize: none;
-}
+} p {
+    font-size: 13px;
+} 

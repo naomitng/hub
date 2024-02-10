@@ -1,7 +1,3 @@
-<?php 
-    session_start();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,7 +77,7 @@
                 <!-- Under account settings -->
                 <div class="collapse" id="account-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                        <li><a href="../admin/logout.php" class="link-dark rounded">Sign out</a></li>
                     </ul>
                 </div>
             </li>

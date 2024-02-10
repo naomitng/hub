@@ -249,3 +249,104 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
                 $sucMsg = "Password successfully updated. Click <a href='https://localhost/hub/f/admin/aSignIn.php'>here</a> to log into your account.";
             }
         }
+
+
+
+
+
+
+        <?php
+$page_title = "Manage Advisers";
+include '../includes/header.php';
+include '../includes/sidebarAdmin.php';
+
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";
+
+$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+
+$sucMsg = "";
+$errMsg = "";
+
+if(isset($_POST['submit'])) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $dept = $_POST['dept'];
+
+    try {
+        $stmt = $pdo->prepare("INSERT INTO `advisers` (`name`, `email`, `dept`) VALUES (:name, :email, :dept)");
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':dept', $dept);
+        $stmt->execute();
+        $sucMsg = "Adviser added successfully";
+    } catch (PDOException $e) {
+        $errMsg = "Error: " . $e->getMessage();
+    }
+}
+
+// Fetch advisers from the database
+try {
+    $stmt = $pdo->query("SELECT * FROM `advisers`");
+    $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errMsg = "Error fetching advisers: " . $e->getMessage();
+}
+?>
+
+<!-- Content Area -->
+<div id="content">
+    <!-- Display success or error message -->
+    <?php if($sucMsg != ""): ?>
+        <div class="alert alert-success" role="alert"><?php echo $sucMsg; ?></div>
+    <?php endif; ?>
+    <?php if($errMsg != ""): ?>
+        <div class="alert alert-danger" role="alert"><?php echo $errMsg; ?></div>
+    <?php endif; ?>
+
+    <!-- Search bar -->
+    <form class="search">
+        <i class="fa fa-search"></i>
+        <input type="text" class="form-control" placeholder="Search">
+        <button class="btn btn-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+        </button>
+    </form>
+
+    <!-- List of advisers -->
+    <?php foreach ($advisers as $adviser): ?>
+        <ul class="list-group mt-5 mb-5"> 
+            <li class="list-group-item p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <!-- Adviser Name -->
+                    <a href="" class="text-decoration-none text-dark" style="pointer-events: none;"><?php echo $adviser['name']; ?></a>
+                    <!-- Edit and Delete Buttons -->
+                    <div class="ml-auto">
+                        <!-- Edit btn -->
+                        <button type="submit" name="edit" class="btn btn-link text-secondary" title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                            </svg>
+                        </button>
+                        <!-- Delete btn -->
+                        <button type="button" class="btn btn-link text-secondary" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            </svg>                            
+                        </button>
+                    </div>
+                </div>
+                <!-- Adviser information -->
+                <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-4">
+                    <li class="text-muted">Email: <?php echo $adviser['email']; ?></li>
+                    <li class="text-muted">Department: <?php echo $adviser['dept']; ?></li>
+                </ul>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</div>

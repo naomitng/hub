@@ -1,14 +1,17 @@
 <?php
 
+    session_start();
+    if (!isset($_SESSION['fname'])) {
+        // Redirect the user to the sign-in page
+        header('Location: ../admin/aSignIn.php');
+        exit();
+    }
+
     $page_title = "Dashboard";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
-
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-
-
 
 ?>
 

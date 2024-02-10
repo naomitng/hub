@@ -39,8 +39,6 @@
         $stmt->execute([':email' => $emailToCheck]);
         $user = $stmt->fetch();
 
-        //$passwordRegex = '/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/'; 
-
         if ($pass !== $passRpt) {
             $errMsg = "Passwords do not match. Please try again.";
         } elseif ($user) {
@@ -182,8 +180,8 @@
                         <select class="form-select" id="inputGroupSelect04"
                             aria-label="Example select with button addon" name="dept">
                             <option selected>Choose a department</option>
-                            <option value="1">IT Department</option>
-                            <option value="2">CpE Department</option>
+                            <option value="IT Department">IT Department</option>
+                            <option value="CpE Department">CpE Department</option>
                         </select>
                     </div>
                 </div>

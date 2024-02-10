@@ -15,7 +15,6 @@
         $email = $_POST['email'];
         $pass = $_POST['pass'];
 
-
         $stmt = $pdo->prepare("SELECT * FROM admin WHERE `email` = :email");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
