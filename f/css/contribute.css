@@ -6,10 +6,13 @@ body {
     margin: 0;
     overflow-y: auto; 
     font-family: 'Nunito Sans', sans-serif;
+} .submit {
+    border: none;
 } .submit:hover {
     background-color: #FFEA00;
+    border: none;
 } .abstract {
     resize: none;
 } p {
     font-size: 13px;
-} 
+}
