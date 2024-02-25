@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input, textarea, select {
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <input type="text" id="title" name="title" placeholder="Title"><br> <br>
+        <input type="text" id="author" name="author" placeholder="Author"><br> <br>
+        <input type="text" id="year" name="year" placeholder="Year"><br> <br>
+        <!-- <input type="text" id="adviser" name="adviser" placeholder="Adviser"><br> <br> -->
+
+        <select name="adviser" id="adviser">
+            <option value="" selected disabled>--Select--</option>
+            <option value="Martinez">Kenneth Martinez</option>
+            <option value="Nisperos">Dr. Lea S. Nisperos</option>
+        </select> <br><br>
+        <div id="abstractContainer"></div><br> <br>
+
+        <input type="file" id="fileInput" accept=".pdf">
+    </form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+<script>
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+// Set the location of the worker script
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+
+document.getElementById('fileInput').addEventListener('change', function (event) {
+    var file = event.target.files[0];
+    var fileReader = new FileReader();
+
+    fileReader.onload = function () {
+        var typedarray = new Uint8Array(this.result);
+
+        pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
+            var textPromises = [];
+
+            // Loop through pages 1 to 5 and create promises for text extraction
+            for (let pageNumber = 1; pageNumber <= 5; pageNumber++) {
+                textPromises.push(
+                    pdf.getPage(pageNumber).then(page => {
+                        return page.getTextContent().then(textContent => {
+                            return textContent.items.map(item => item.str).join('\n');
+                        });
+                    })
+                );
+            }
+
+            // Wait for all promises to resolve
+            Promise.all(textPromises).then(pagesText => {
+                // Concatenate text from all pages
+                var text = pagesText.join('\n');
+
+                console.log("Extracted text:", text);
+
+                var titleRegex = /ARCHITECTURE\n([\s\S]+?)\nA/;
+                var authorRegex = /(By:|By|by:|by)\s*([\s\S]+?)\s*(January|February|March|April|May|June|July|August|September|October|November|December) \d{4}/;
+                var yearRegex = /(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})/;
+                var abstractRegex = /ABSTRACT\n([\s\S]+?)\nPage/;
+                var adviserRegex = /(\w+)\s+Adviser/; // Capture word before "Adviser"
+
+                var titleMatch = text.match(titleRegex);
+                var authorMatch = text.match(authorRegex);
+                var yearMatch = text.match(yearRegex);
+                var abstractMatch = text.match(abstractRegex);
+                var adviserMatch = text.match(adviserRegex);
+
+                console.log("Title match:", titleMatch);
+                console.log("Author match:", authorMatch);
+                console.log("Year match:", yearMatch);
+                console.log("Abstract match:", abstractMatch);
+                console.log("Adviser match:", adviserMatch);
+
+                if (titleMatch) {
+                    document.getElementById('title').value = titleMatch[1].trim();
+                }
+                if (authorMatch) {
+                    document.getElementById('author').value = authorMatch[2].trim();
+                }
+                if (yearMatch) {
+                    document.getElementById('year').value = yearMatch[2];
+                }
+                if (abstractMatch) {
+                    // Replace newline characters with HTML line break tags
+                    var abstractText = abstractMatch[1].trim().replace(/\n/g, '<br>');
+                    // Display abstract in paragraph form
+                    var abstractParagraphs = `<p>${abstractText}</p>`;
+                    document.getElementById('abstractContainer').innerHTML = abstractParagraphs;
+                }
+                if (adviserMatch) {
+                    document.getElementById('adviser').value = adviserMatch[1].trim();
+                }
+            });
+        });
+
+    };
+
+    fileReader.readAsArrayBuffer(file);
+});
+
+</script>
+
+
+</body>
+</html>
