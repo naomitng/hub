@@ -151,7 +151,7 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
             //END
 
             //EXTRACT ABSTRACT
-            abstract = arr.slice(arr.indexOf('ABSTRACT')+1, arr.indexOf('TABLE OF CONTENTS'))
+            abstract = arr.slice(arr.indexOf('ABSTRACT')+1, arr.indexOf('Keywords:'))
             let fabstract = abstract.join(' ')
             //END 
 
