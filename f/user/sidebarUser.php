@@ -52,7 +52,7 @@
             <div class="collapse" id="adviser-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li><a href="../user/advisers-it.php" class="link-dark rounded">IT Advisers</a></li>
-                    <li><a href="#" class="link-dark rounded">CpE Advisers</a></li>
+                    <li><a href="../user/advisers-cpe.php" class="link-dark rounded">CpE Advisers</a></li>
                 </ul>
             </div>
         </li>

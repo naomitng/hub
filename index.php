@@ -43,7 +43,7 @@
     <div class="my-auto">
         <img src="f/img/logo-landscape.png" alt="Research Hub logo"><br>
     </div>
-</div>
+  </div>
 
 </body>
 </html>

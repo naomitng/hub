@@ -38,7 +38,7 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
                 </div>
 
                 <!-- Hidden section to be shown after parsing -->
-                <div id="parsedData" hidden>
+                <div id="parsedData">
                     <div class="form-floating mb-4 mt-4">
                         <input type="text" name="title" class="form-control" id="title" placeholder="Title">
                         <label for="authors">Title</label>
@@ -89,25 +89,52 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
             fileReader.onload = function() {
                 var typedarray = new Uint8Array(this.result);
                 pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-                    pdf.getPage(1).then(function(page) {
-                        page.getTextContent().then(function(textContent) {
-                            var text = textContent.items.map(function(item) {
-                                return item.str;
-                            }).join(' ');
+                    var total_pages = pdf.numPages;
+                    for (var i = 1; i <= total_pages; i++) {
+                        pdf.getPage(i).then(function(page) {
+                            page.getTextContent().then(function(textContent) {
+                                var text = textContent.items.map(function(item) {
+                                    return item.str;
+                                }).join(' ');
 
-                            // Extract title from the first page
-                            var title = text.substring(0, 100); // Extracting first 100 characters as the title
-                            var year = extractYear(text);
+                                var titleRegex = /Title:\s*([\s\S]+?)\s*Proponents?/;
+                                var proponentsRegex = /Proponents?:\s*([\s\S]+?)\s*Capstone/;
+                                var adviserRegex = /Capstone\s*Adviser:\s*([\s\S]+?)\s*Capstone\s*Professor/;
+                                var professorRegex = /Capstone\s*Professor:\s*([\s\S]+?)\s*(January|February|March|April|May|June|July|August|September|October|November|December)/;
+                                var yearRegex = /(January|February|March|April|May|June|July|August|September|October|November|December)\s*\d{4}/;
+                                
+                                var titleMatch = text.match(titleRegex);
+                                var proponentsMatch = text.match(proponentsRegex);
+                                var adviserMatch = text.match(adviserRegex);
+                                var professorMatch = text.match(professorRegex);
+                                var yearMatch = text.match(yearRegex);
 
-                            document.getElementById('title').value = title;
-                            document.getElementById('year').value = year;
+                                console.log("Title match:", titleMatch);
+                                console.log("Proponents match:", proponentsMatch);
+                                console.log("Adviser match:", adviserMatch);
+                                console.log("Professor match:", professorMatch);
+                                console.log("Year match:", yearMatch);
 
-                            // Show the hidden section
-                            document.getElementById('parsedData').removeAttribute('hidden');
-                        }).catch(function(error) {
-                            console.error("Error extracting text content:", error);
+                                if (titleMatch) {
+                                    document.getElementById('title').value = titleMatch[1].trim();
+                                }
+                                if (proponentsMatch) {
+                                    document.getElementById('proponents').value = proponentsMatch[1].trim();
+                                }
+                                if (adviserMatch) {
+                                    document.getElementById('adviser').value = adviserMatch[1].trim();
+                                }
+                                if (professorMatch) {
+                                    document.getElementById('professor').value = professorMatch[1].trim();
+                                }
+                                if (yearMatch) {
+                                    document.getElementById('year').value = yearMatch[2];
+                                }
+                            }).catch(function(error) {
+                                console.error("Error extracting text content:", error);
+                            });
                         });
-                    });
+                    }
                 }).catch(function(error) {
                     console.error("Error loading PDF:", error);
                 });
@@ -115,24 +142,9 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
             fileReader.readAsArrayBuffer(file);
         }
     });
-
-    function extractYear(text) {
-        var yearRegex = /\b\d{4}\b/;
-        var matches = text.match(yearRegex);
-        if (matches) {
-            var year = parseInt(matches[0]);
-            if (year >= 1900 && year <= 2100) {
-                return year.toString();
-            }
-        }
-        return '';
-    }
-
-    document.querySelector('.submit').addEventListener('click', function() {
-        document.getElementById('uploadForm').submit();
-    });
-
 </script>
+
+
 
 
 

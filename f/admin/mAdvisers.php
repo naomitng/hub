@@ -69,7 +69,23 @@
 
     // display advisers
     try {
-        $stmt = $pdo->query("SELECT * FROM `advisers`");
+        $stmt = $pdo->prepare("SELECT * FROM `advisers`");
+        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $errMsg = "Error fetching advisers: " . $e->getMessage();
+    }
+
+    try {
+        // Check if a search term is provided
+        if(isset($_GET['search'])) {
+            $search = $_GET['search'];
+            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search");
+            $stmt->bindValue(':search', "%$search%");
+        } else {
+            // If no search term provided, fetch all advisers
+            $stmt = $pdo->prepare("SELECT * FROM `advisers`");
+        }
+        $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         $errMsg = "Error fetching advisers: " . $e->getMessage();
@@ -79,17 +95,17 @@
 <!-- Content Area -->
 <div id="content">
     <!-- Search bar -->
-    <form class="search">
+    <form class="search" method="get"> <!-- Change method to get -->
         <i class="fa fa-search"></i>
-        <input type="text" class="form-control" placeholder="Search">
-        <button class="btn btn-warning">
+        <input type="text" class="form-control" placeholder="Search" name="search"> <!-- Change name to search -->
+        <button class="btn btn-warning" type="submit"> <!-- Add type attribute and change to submit -->
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
             </svg>
         </button>
     </form>
 
-    <!-- List of studies -->
+    <!-- List of advisers -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
             <div class="d-flex justify-content-between align-items-center">
@@ -231,7 +247,7 @@
                     <li class="text-muted">Department of <?php echo $adviser['dept']; ?> </li>
                 </ul>
             <?php endforeach; ?>
-=        </li>
+       </li>
     </ul>
     <?php
     // Check if there are 5 or more entries

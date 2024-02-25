@@ -1,352 +1,62 @@
-#FFAC1C - cea orange
-#FFEA00 - rtu yellow
-#00308F - blue
+function Pdf2TextClass(){
+     var self = this;
+     this.complete = 0;
 
-<?php if($errMsg !== "") { ?>
-    <div class="alert alert-danger" role="alert">
-        <?php echo $errMsg; ?>
-    </div> 
-    <script>setTimeout(function() { document.querySelector('.alert-danger').style.display = 'none'; }, 5000);</script>
-<?php } else { ?>
-    <!-- Hidden alert div -->
-    <div style="display: none;" class="alert alert-danger" role="alert"></div>
-<?php } ?>
-
-
-<!-- Alert for code -->
-<div class="alert alert-warning w-60" role="alert">
-    A new code has been resend. Check your email
-</div>
-<!-- Alert for pw doesn't match -->
-<div class="alert alert-danger w-60" role="alert">
-    Password doesn't match
-</div>
-
-
-nakakaputangina. pag natapos ko to pwede na ko humimlay
-
-
-
-
-<li class="list-group-item">
-    <ul style="list-style-type: none;">
-        <li class="list-group-item-title">
-            Research Hub: Capstone Projects Repository
-            <button type="button" class="btn btn-warning btn-sm" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-            </svg></button>
-        </li>
-        <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-        <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-        <li class="text-muted">Department: Information Technology</li>
-        <li class="text-muted">Adviser: Lea Nisperos</li>
-    </ul>
-</li>
-
-        <!-- Form for search -->
-        <form action="" method="post" class="search">
-
-            <i class="fa fa-search"></i>
-            <input type="text" class="form-control" placeholder="Search">
-            <!-- Search Button -->
-            <button class="btn btn-warning">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                </svg>
-            </button>
-        </form>
-
-
-
-
-
-        function send_password_reset($get_email, $voterid) {
-    $teamvaremail = 'teamvarcapstone@gmail.com';
-    $teamvarpass = 'nzisupoquyojvvth';
-
-    $mail = new PHPMailer(true);
-  
-    $mail -> SMTPDebug = SMTP::DEBUG_SERVER;
-    $mail -> isSMTP();
-    $mail -> Host = 'smtp.gmail.com';
-    $mail -> SMTPOptions = array(
-        'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
-        )
-    );
-    $mail -> SMTPAuth = true;
-
-    $mail -> Username = $teamvaremail;
-    $mail -> Password = $teamvarpass;
-
-    $mail -> SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail -> Port = 465;
-
-    $mail -> setFrom($teamvaremail, 'noreply');
-    $mail -> addAddress($get_email);
-
-    $mail -> isHTML(true);
-    $mail -> Subject = 'Password Reset Request for Makati Science High School Online Voting';
-
-    $ebody = "
-    <!DOCTYPE html>
-<html lang='en'>
-<head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .full-width-button {
-      display: block;
-      width: 100%;
-      background-color: #367FA9;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      padding: 3px 10;
-      height: 20px;
-      box-sizing: border-box;
-      transition: background-color 0.3s ease; /* Added transition for smooth effect */
-    }
-    .full-width-button:hover {
-      background-color: darkblue; /* Change color on hover */
-    }
-    .content {
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 20px;;
-    }
-    .container {
-      color: black;
-      padding: 20px;
-      background-image: url('https://static.wixstatic.com/media/eff6c4_7d535b2ff8e94469ae35ec48594cee9b~mv2.png');
-      background-size: 30%;
-      background-repeat: no-repeat;
-      background-position: center;
-    }   
-    h2 {
-      color: #000000;
-    }
-    p {
-      color: #000000;
-    }
-  </style>
-</head>
-<body>
-
-  <div class='container'>
-    <div class='content'>
-      <h2>Password Reset Request</h2>
-      <p>Hi <b>user</b>,</p>
-      <p>We received a request to reset your password for the Makati Science High School Online Voting System. If you did not initiate this request, please disregard this email.</p>
-      <p>Stay tuned for updates and important information about the upcoming voting events.</p>
-      <p>For any questions or assistance, please contact our support team at <a href='mailto:support@example.com'>support@example.com</a>.</p>
-      <p>Thank you for being part of our community and contributing to the future of Makati Science High School!</p>
-      <br>
-      <a href='http://localhost/capstone/votesystem/resetpw.php?voterid=$voterid&email=$get_email' class='full-width-button' style='color: white; text-decoration: none;'>
-        Click here to reset your password
-      </a>
-      <p style='font-style: italic; color: #888;'>Best regards,</p>
-      <p style='font-style: italic; color: #888;'>The Makati Science High School Online Voting System</p>
-    </div>
-  </div>
-
-</body>
-</html>";
-
-    $mail -> Body = $ebody;
-    $mail -> send();
-}
-
-
-
-
-
-
-
-
-
-
-
-$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
-
-    if(isset($_POST['submit-btn'])) {
-        $fname = $_POST['fName'];
-        $lname = $_POST['lName'];        
-        $email = $_POST['email'];
-        $dept = $_POST['dept'];
-        $pass = $_POST['pass'];
-        $passRpt = $_POST['passRpt'];
-
-        //Check if email is already used
-        $emailToCheck = $email;
-
-        $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = :email");
-        $stmt->execute([':email' => $emailToCheck]);
-        $user = $stmt->fetch();
-
-        /* elseif ($stmt->rowCount() > 0) {
-            $errMsg = "Email already exists. Please choose a different email address";
-        } */
-
-        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
-
-        if ($pass !== $passRpt) {
-            $errMsg = "Passwords do not match. Please try again.";
-        } elseif ($user) {
-            $errMsg = "Email already exist. Please use a different email address.";
-        } elseif (!preg_match($passwordRegex, $pass)) {
-            $errMsg = "Password must be 8 or more characters with a mix of uppercase and lowercase letters, symbols, and numbers.";
-        } else {
-            try {
-                $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
-                $data = [
-                    'fname' => $fname,
-                    'lname' => $lname,
-                    'email' => $email,
-                    'dept' => $dept,
-                    'hashedPass' => $hashedPass
-                ];
-        
-                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`) VALUES (:fname, :lname, :email, :dept, :hashedPass)");
-        
-                // Execute the statement with the associative array
-                $stmt->execute($data);
-            } catch (PDOException $e) {
-                // Handle any exceptions here
-                echo "Error: " . $e->getMessage();
+    /**
+     *
+     * @param data ArrayBuffer of the pdf file content
+     * @param callbackPageDone To inform the progress each time
+     *        when a page is finished. The callback function's input parameters are:
+     *        1) number of pages done;
+     *        2) total number of pages in file.
+     * @param callbackAllDone The input parameter of callback function is 
+     *        the result of extracted text from pdf file.
+     *
+     */
+     this.pdfToText = function(data, callbackPageDone, callbackAllDone){
+     console.assert( data  instanceof ArrayBuffer  || typeof data == 'string' );
+     PDFJS.getDocument( data ).then( function(pdf) {
+     var div = document.getElementById('viewer');
+    
+     var total = pdf.numPages;
+     callbackPageDone( 0, total );        
+     var layers = {};        
+     for (i = 1; i <= total; i++){
+        pdf.getPage(i).then( function(page){
+        var n = page.pageNumber;
+        page.getTextContent().then( function(textContent){
+          if( null != textContent.bidiTexts ){
+            var page_text = "";
+            var last_block = null;
+            for( var k = 0; k < textContent.bidiTexts.length; k++ ){
+                var block = textContent.bidiTexts[k];
+                if( last_block != null && last_block.str[last_block.str.length-1] != ' '){
+                    if( block.x < last_block.x )
+                        page_text += "\r\n"; 
+                    else if ( last_block.y != block.y && ( last_block.str.match(/^(\s?[a-zA-Z])$|^(.+\s[a-zA-Z])$/) == null ))
+                        page_text += ' ';
+                }
+                page_text += block.str;
+                last_block = block;
             }
-        }
-    }
 
-
-
-
-
-    if (!$user) {
-            $errMsg = "Invalid password reset link. Please request for a new one";
-        } else {
-            $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
-
-            if($pass !== $passRpt) {
-                $errMsg = "Passwords do not match";
-            } elseif (!preg_match($passwordRegex, $pass)) {
-                $errMsg = "Password must be 8 or more characters with a mix of uppercase and lowercase letters, symbols, and numbers.";
-            } else {
-                $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
-        
-                $stmt = $pdo->prepare("UPDATE admin SET pass = :hashedPass WHERE vercode = :vercode");
-                $stmt->bindParam(':hashedPass', $hashedPass);
-                $stmt->bindParam(':vercode', $vercode);
-                $stmt->execute();
-        
-                $sucMsg = "Password successfully updated. Click <a href='https://localhost/hub/f/admin/aSignIn.php'>here</a> to log into your account.";
-            }
-        }
-
-
-
-
-
-
-        <?php
-$page_title = "Manage Advisers";
-include '../includes/header.php';
-include '../includes/sidebarAdmin.php';
-
-echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";
-
-$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
-
-$sucMsg = "";
-$errMsg = "";
-
-if(isset($_POST['submit'])) {
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $dept = $_POST['dept'];
-
-    try {
-        $stmt = $pdo->prepare("INSERT INTO `advisers` (`name`, `email`, `dept`) VALUES (:name, :email, :dept)");
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':dept', $dept);
-        $stmt->execute();
-        $sucMsg = "Adviser added successfully";
-    } catch (PDOException $e) {
-        $errMsg = "Error: " . $e->getMessage();
-    }
-}
-
-// Fetch advisers from the database
-try {
-    $stmt = $pdo->query("SELECT * FROM `advisers`");
-    $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $errMsg = "Error fetching advisers: " . $e->getMessage();
-}
-?>
-
-<!-- Content Area -->
-<div id="content">
-    <!-- Display success or error message -->
-    <?php if($sucMsg != ""): ?>
-        <div class="alert alert-success" role="alert"><?php echo $sucMsg; ?></div>
-    <?php endif; ?>
-    <?php if($errMsg != ""): ?>
-        <div class="alert alert-danger" role="alert"><?php echo $errMsg; ?></div>
-    <?php endif; ?>
-
-    <!-- Search bar -->
-    <form class="search">
-        <i class="fa fa-search"></i>
-        <input type="text" class="form-control" placeholder="Search">
-        <button class="btn btn-warning">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-            </svg>
-        </button>
-    </form>
-
-    <!-- List of advisers -->
-    <?php foreach ($advisers as $adviser): ?>
-        <ul class="list-group mt-5 mb-5"> 
-            <li class="list-group-item p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <!-- Adviser Name -->
-                    <a href="" class="text-decoration-none text-dark" style="pointer-events: none;"><?php echo $adviser['name']; ?></a>
-                    <!-- Edit and Delete Buttons -->
-                    <div class="ml-auto">
-                        <!-- Edit btn -->
-                        <button type="submit" name="edit" class="btn btn-link text-secondary" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                            </svg>
-                        </button>
-                        <!-- Delete btn -->
-                        <button type="button" class="btn btn-link text-secondary" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                            </svg>                            
-                        </button>
-                    </div>
-                </div>
-                <!-- Adviser information -->
-                <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-4">
-                    <li class="text-muted">Email: <?php echo $adviser['email']; ?></li>
-                    <li class="text-muted">Department: <?php echo $adviser['dept']; ?></li>
-                </ul>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-</div>
+            textContent != null && console.log("page " + n + " finished."); //" content: \n" + page_text);
+            layers[n] =  page_text + "\n\n";
+          }
+          ++ self.complete;
+          callbackPageDone( self.complete, total );
+          if (self.complete == total){
+            window.setTimeout(function(){
+              var full_text = "";
+              var num_pages = Object.keys(layers).length;
+              for( var j = 1; j <= num_pages; j++)
+                  full_text += layers[j] ;
+              callbackAllDone(full_text);
+            }, 1000);              
+          }
+        }); // end  of page.getTextContent().then
+      }); // end of page.then
+    } // of for
+  });
+ }; // end of pdfToText()
+}; // end of class

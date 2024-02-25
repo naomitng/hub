@@ -1,6 +1,6 @@
 <?php
     session_start();
-    $page_title = "Manage Advisers";
+    $page_title = "CpE Advisers";
     include '../includes/header.php';
     include '../user/sidebarUser.php';
 
@@ -10,8 +10,8 @@
     $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 
     try {
-        // Fetch advisers only from the Information Technology department
-        $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology'");
+        // Fetch advisers only from the Computer Engineering department
+        $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Computer Engineering'");
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
@@ -22,12 +22,12 @@
         // Check if a search term is provided
         if(isset($_GET['search'])) {
             $search = $_GET['search'];
-            // Fetch advisers from the Information Technology department with the provided search term
-            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search AND dept = 'Information Technology'");
+            // Fetch advisers from the Computer Engineering department with the provided search term
+            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search AND dept = 'Computer Engineering'");
             $stmt->bindValue(':search', "%$search%");
         } else {
-            // If no search term provided, display all advisers from the Information Technology department
-            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology'");
+            // If no search term provided, display all advisers from the Computer Engineering department
+            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Computer Engineering'");
         }
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -39,7 +39,7 @@
 <!-- Content Area -->
 <div id="content">
     <!-- Search bar -->
-    <form class="search" method="get"> <!-- Change method to get -->
+    <form class="search" method="get">
         <i class="fa fa-search"></i>
         <input type="text" class="form-control" placeholder="Search" name="search"> 
         <button class="btn btn-warning" type="submit"> 
