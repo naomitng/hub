@@ -82,38 +82,89 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
+    function isEmptyOrSpaces(str)
+    {
+        return str == null || str == " " || str == "";
+    }
+
     document.getElementById('formFile').addEventListener('change', function(event) {
+        var abstract;
+        var title;
+        var arr = []
+        var firstPage = []
+
         var file = event.target.files[0];
-        if (file) {
-            var fileReader = new FileReader();
-            fileReader.onload = function() {
-                var typedarray = new Uint8Array(this.result);
-                pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-                    pdf.getPage(1).then(function(page) {
-                        page.getTextContent().then(function(textContent) {
-                            var text = textContent.items.map(function(item) {
-                                return item.str;
-                            }).join(' ');
 
-                            // Extract title from the first page
-                            var title = text.substring(0, 100); // Extracting first 100 characters as the title
-                            var year = extractYear(text);
+        let fr = new FileReader
+        fr.readAsDataURL(file);
+        fr.onload = () => {
 
-                            document.getElementById('title').value = title;
-                            document.getElementById('year').value = year;
+            let res = fr.result;
+            extractText(res)
+            extractFirstpage(res)
 
-                            // Show the hidden section
-                            document.getElementById('parsedData').removeAttribute('hidden');
-                        }).catch(function(error) {
-                            console.error("Error extracting text content:", error);
-                        });
-                    });
-                }).catch(function(error) {
-                    console.error("Error loading PDF:", error);
-                });
-            };
-            fileReader.readAsArrayBuffer(file);
         }
+        function isEmptyOrSpaces(str){
+            return str == null || str == " " || str == ""|| str == '';
+        }
+
+
+        async function extractFirstpage(url)
+        {
+            let pdf;
+            let alltxt;
+            
+            pdf = await pdfjsLib.getDocument(url).promise;
+            let pages = pdf.numPages;
+            let page = await pdf.getPage(1)
+            let txt = await page.getTextContent();
+            let text = txt.items.map((s)=> {
+                    s.str 
+                    if(!isEmptyOrSpaces(s.str.trim())){
+                        firstPage.push(s.str.trim()) 
+                    }
+                }); 
+        }
+
+        async function extractText(url) {
+            let pdf;
+            let alltxt;
+            
+            pdf = await pdfjsLib.getDocument(url).promise;
+            let pages = pdf.numPages;
+
+            for(let i =1; i<=pages; i++)
+            {
+                let page = await pdf.getPage(i)
+                let txt = await page.getTextContent();
+                let text = txt.items.map((s)=> {
+                    s.str 
+                    if(!isEmptyOrSpaces(s.str.trim())){
+                        arr.push(s.str.trim()) 
+                    }
+                });       
+            }
+            //Extract Year
+            alltxt = arr.join(' ')
+            var year = extractYear(alltxt);
+            //END
+
+            //EXTRACT ABSTRACT
+            abstract = arr.slice(arr.indexOf('ABSTRACT')+1, arr.indexOf('TABLE OF CONTENTS'))
+            let fabstract = abstract.join(' ')
+            //END 
+
+            ///EXTRACT FIRST PAGE
+            title = firstPage.slice(0, firstPage.indexOf("A"))
+            let ftitle = title.join(' ')
+            //END
+            document.getElementById('title').value = ftitle;
+            document.getElementById('year').value = year;
+            document.getElementById('abstract').value = fabstract;
+
+            // Show the hidden section
+            document.getElementById('parsedData').removeAttribute('hidden');
+        }    
     });
 
     function extractYear(text) {
