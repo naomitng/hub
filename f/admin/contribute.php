@@ -81,6 +81,7 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</script>
 <script>
     function isEmptyOrSpaces(str)
     {
@@ -113,7 +114,7 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
         {
             let pdf;
             let alltxt;
-
+            
             pdf = await pdfjsLib.getDocument(url).promise;
             let pages = pdf.numPages;
             let page = await pdf.getPage(1)
@@ -129,7 +130,7 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
         async function extractText(url) {
             let pdf;
             let alltxt;
-
+            
             pdf = await pdfjsLib.getDocument(url).promise;
             let pages = pdf.numPages;
 
@@ -161,12 +162,27 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
             document.getElementById('title').value = ftitle;
             document.getElementById('year').value = year;
             document.getElementById('abstract').value = fabstract;
+
+            // Show the hidden section
+            document.getElementById('parsedData').removeAttribute('hidden');
         }    
     });
 
     function extractYear(text) {
+        var yearRegex = /\b\d{4}\b/;
+        var matches = text.match(yearRegex);
+        if (matches) {
+            var year = parseInt(matches[0]);
+            if (year >= 1900 && year <= 2100) {
+                return year.toString();
+            }
+        }
+        return '';
+    }
 
+    document.querySelector('.submit').addEventListener('click', function() {
+        document.getElementById('uploadForm').submit();
+    });
 
-
-
+</script>
 
