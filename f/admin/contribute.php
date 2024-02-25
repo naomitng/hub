@@ -82,59 +82,42 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
+    function isEmptyOrSpaces(str)
+    {
+        return str == null || str == " " || str == "";
+    }
+
     document.getElementById('formFile').addEventListener('change', function(event) {
+        var abstract;
+        var title;
+        var arr = []
+        var firstPage = []
+
         var file = event.target.files[0];
         if (file) {
             var fileReader = new FileReader();
             fileReader.onload = function() {
                 var typedarray = new Uint8Array(this.result);
                 pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-                    var total_pages = pdf.numPages;
-                    for (var i = 1; i <= total_pages; i++) {
-                        pdf.getPage(i).then(function(page) {
-                            page.getTextContent().then(function(textContent) {
-                                var text = textContent.items.map(function(item) {
-                                    return item.str;
-                                }).join(' ');
+                    pdf.getPage(1).then(function(page) {
+                        page.getTextContent().then(function(textContent) {
+                            var text = textContent.items.map(function(item) {
+                                return item.str;
+                            }).join(' ');
 
-                                var titleRegex = /Title:\s*([\s\S]+?)\s*Proponents?/;
-                                var proponentsRegex = /Proponents?:\s*([\s\S]+?)\s*Capstone/;
-                                var adviserRegex = /Capstone\s*Adviser:\s*([\s\S]+?)\s*Capstone\s*Professor/;
-                                var professorRegex = /Capstone\s*Professor:\s*([\s\S]+?)\s*(January|February|March|April|May|June|July|August|September|October|November|December)/;
-                                var yearRegex = /(January|February|March|April|May|June|July|August|September|October|November|December)\s*\d{4}/;
-                                
-                                var titleMatch = text.match(titleRegex);
-                                var proponentsMatch = text.match(proponentsRegex);
-                                var adviserMatch = text.match(adviserRegex);
-                                var professorMatch = text.match(professorRegex);
-                                var yearMatch = text.match(yearRegex);
+                            // Extract title from the first page
+                            var title = text.substring(0, 100); // Extracting first 100 characters as the title
+                            var year = extractYear(text);
 
-                                console.log("Title match:", titleMatch);
-                                console.log("Proponents match:", proponentsMatch);
-                                console.log("Adviser match:", adviserMatch);
-                                console.log("Professor match:", professorMatch);
-                                console.log("Year match:", yearMatch);
+                            document.getElementById('title').value = title;
+                            document.getElementById('year').value = year;
 
-                                if (titleMatch) {
-                                    document.getElementById('title').value = titleMatch[1].trim();
-                                }
-                                if (proponentsMatch) {
-                                    document.getElementById('proponents').value = proponentsMatch[1].trim();
-                                }
-                                if (adviserMatch) {
-                                    document.getElementById('adviser').value = adviserMatch[1].trim();
-                                }
-                                if (professorMatch) {
-                                    document.getElementById('professor').value = professorMatch[1].trim();
-                                }
-                                if (yearMatch) {
-                                    document.getElementById('year').value = yearMatch[2];
-                                }
-                            }).catch(function(error) {
-                                console.error("Error extracting text content:", error);
-                            });
+                            // Show the hidden section
+                            document.getElementById('parsedData').removeAttribute('hidden');
+                        }).catch(function(error) {
+                            console.error("Error extracting text content:", error);
                         });
-                    }
+                    });
                 }).catch(function(error) {
                     console.error("Error loading PDF:", error);
                 });
