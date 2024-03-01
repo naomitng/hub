@@ -41,7 +41,7 @@
 
   <div class="d-flex justify-content-center align-items-center text-center vh-100">
     <div class="my-auto">
-        <img src="f/img/logo-landscape.png" alt="Research Hub logo"><br>
+        <img src="f/img/loading.gif" alt="Research Hub logo" class="h-100"><br>
     </div>
   </div>
 

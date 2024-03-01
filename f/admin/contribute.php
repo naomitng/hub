@@ -16,6 +16,46 @@ echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' href='../css/contribute.css'>";
 
 $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+
+
+if (isset($_POST['submit'])) {
+    $dir = 'uploads/';
+    $filename = basename($_FILES['file']['name']);
+    $newname = $dir . $filename;
+    $filetype = pathinfo($newname, PATHINFO_EXTENSION);
+
+    if ($filetype == "pdf") {
+        if(move_uploaded_file($_FILES['file']['tmp_name'], $newname)) { // corrected typo here
+            $title = $_POST['title'];
+            $authors = $_POST['authors'];
+            $abstract = $_POST['abstract'];
+            $dept = $_POST['dept'];
+            $adviser = $_POST['adviser'];
+            $year = $_POST['year'];
+            $keywords = $_POST['keywords'];
+
+            try {
+                $stmt = $pdo->prepare("INSERT INTO `studies`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords)");
+                $stmt->execute(array(
+                    ':title' => $title,
+                    ':authors' => $authors,
+                    ':abstract' => $abstract,
+                    ':year' => $year,
+                    ':adviser' => $adviser,
+                    ':dept' => $dept,
+                    ':filename' => $newname,
+                    ':keywords' => $keywords
+                ));
+                echo "<script>alert('File uploaded successfully');</script>";
+            } catch (\Throwable $th) {
+                echo "<script>alert('" . $th->getMessage() . "');</script>";
+            }
+        } else {
+            echo "<script>alert('Failed to upload file');</script>";
+        }
+    }
+}
+
 ?>
 
 <!-- Content Area -->
@@ -23,17 +63,15 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
     <!-- List of studies -->
     <ul class="list-group">
         <li class="list-group-item p-4">
-            <a href="../admin/aDashboard.php" class="text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+            <a href="../admin/aDashboard.php" class="text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                 </svg> Back to home
             </a>
             <form id="uploadForm" action="" method="post" enctype="multipart/form-data">
                 <div class="row justify-content-center align-items-center">
                     <div class="col mt-4">
                         <input class="form-control" name="file" type="file" id="formFile" accept=".pdf">
-                    </div>
-                    <div hidden class="col-md-3">
-                        <button type="button" name="submit" class="btn btn-warning mt-4 w-100 submit">Submit</button>
                     </div>
                 </div>
 
@@ -72,6 +110,13 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
                                 </select>
                                 <label for="selectDept">Department</label>
                             </div>
+                            <div class="form-floating mt-4">
+                                <input type="text" name="keywords" class="form-control" id="keywords" placeholder="Keywords">
+                                <label for="keywords">keywords</label>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" name="submit" class="btn btn-warning submit w-100">Add to database</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -81,91 +126,108 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-</script>
 <script>
-    function isEmptyOrSpaces(str)
-    {
+    function isEmptyOrSpaces(str) {
         return str == null || str == " " || str == "";
     }
 
     document.getElementById('formFile').addEventListener('change', function(event) {
         var abstract;
         var title;
-        var arr = []
-        var firstPage = []
+        var arr = [];
+        var firstPage = [];
 
         var file = event.target.files[0];
 
-        let fr = new FileReader
+        let fr = new FileReader();
         fr.readAsDataURL(file);
         fr.onload = () => {
-
             let res = fr.result;
-            extractText(res)
-            extractFirstpage(res)
-
-        }
-        function isEmptyOrSpaces(str){
-            return str == null || str == " " || str == ""|| str == '';
+            extractText(res);
+            extractFirstpage(res);
         }
 
-
-        async function extractFirstpage(url)
-        {
+        async function extractFirstpage(url) {
             let pdf;
             let alltxt;
-            
+
             pdf = await pdfjsLib.getDocument(url).promise;
             let pages = pdf.numPages;
-            let page = await pdf.getPage(1)
+            let page = await pdf.getPage(1);
             let txt = await page.getTextContent();
             let text = txt.items.map((s)=> {
-                    s.str 
-                    if(!isEmptyOrSpaces(s.str.trim())){
-                        firstPage.push(s.str.trim()) 
-                    }
-                }); 
+                s.str;
+                if (!isEmptyOrSpaces(s.str.trim())) {
+                    firstPage.push(s.str.trim());
+                }
+            }); 
         }
 
         async function extractText(url) {
             let pdf;
             let alltxt;
-            
+
             pdf = await pdfjsLib.getDocument(url).promise;
             let pages = pdf.numPages;
 
-            for(let i =1; i<=pages; i++)
-            {
-                let page = await pdf.getPage(i)
+            for (let i = 1; i <= pages; i++) {
+                let page = await pdf.getPage(i);
                 let txt = await page.getTextContent();
                 let text = txt.items.map((s)=> {
-                    s.str 
-                    if(!isEmptyOrSpaces(s.str.trim())){
-                        arr.push(s.str.trim()) 
+                    s.str;
+                    if (!isEmptyOrSpaces(s.str.trim())) {
+                        arr.push(s.str.trim());
                     }
                 });       
             }
-            //Extract Year
-            alltxt = arr.join(' ')
+            
+            // Clean the extracted text
+            arr = cleanExtractedText(arr);
+            // END
+
+            // Extract Year
+            alltxt = arr.join(' ');
             var year = extractYear(alltxt);
-            //END
+            // END
 
-            //EXTRACT ABSTRACT
-            abstract = arr.slice(arr.indexOf('ABSTRACT')+1, arr.indexOf('Keywords:'))
-            let fabstract = abstract.join(' ')
-            //END 
+            // EXTRACT ABSTRACT
+            abstract = arr.slice(arr.indexOf('ABSTRACT')+1, arr.indexOf('Keywords:'));
+            let fabstract = abstract.join(' ');
+            // END 
 
-            ///EXTRACT FIRST PAGE
-            title = firstPage.slice(0, firstPage.indexOf("A"))
-            let ftitle = title.join(' ')
-            //END
+            // EXTRACT KEYWORDS
+            const keywordsRegex = /Keywords\s*:/i;
+            const tableOfContentsRegex = /\bTABLE\b/i; // ITO LANG BINAGO KO
+
+            const keywordsIndex = arr.findIndex(line => keywordsRegex.test(line));
+            const tableOfContentsIndex = arr.findIndex(line => tableOfContentsRegex.test(line));
+
+            if (keywordsIndex !== -1 && tableOfContentsIndex !== -1) {
+                keys = arr.slice(keywordsIndex + 1, tableOfContentsIndex - 1); // NILAGYAN KO LANG NG -1 PARA MATANGGAL YUNG PAGE
+                let keywords = keys.join(' ');
+                document.getElementById('keywords').value = keywords;
+            } else {
+                keys = [];
+                let keywords = '';
+                document.getElementById('keywords').value = keywords;
+            }
+            // END
+
+
+
+            // EXTRACT FIRST PAGE
+            title = firstPage.slice(0, firstPage.indexOf("A"));
+            let ftitle = title.join(' ');
+            // END
+            
             document.getElementById('title').value = ftitle;
             document.getElementById('year').value = year;
             document.getElementById('abstract').value = fabstract;
+            document.getElementById('keywords').value = keywords;
 
             // Show the hidden section
             document.getElementById('parsedData').removeAttribute('hidden');
-        }    
+        }
     });
 
     function extractYear(text) {
@@ -184,5 +246,25 @@ $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
         document.getElementById('uploadForm').submit();
     });
 
+    // Function to clean extracted text
+    function cleanExtractedText(textArray) {
+        let cleanedText = [];
+        let skip = false;
+        
+        for (let word of textArray) {
+            if (word.includes('Title')) {
+                skip = true;
+                continue;
+            } else if (word.includes('Technology') || word.includes('Engineering')) {
+                skip = false;
+                continue;
+            }
+            
+            if (!skip) {
+                cleanedText.push(word);
+            }
+        }
+        
+        return cleanedText;
+    }
 </script>
-
