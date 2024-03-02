@@ -6,7 +6,6 @@ function handleFileSelect(event) {
         document.getElementById(elementId).value = '';
     });
     
-
     for (let i = 0; i < files.length; i++) {
         const formData = new FormData();
         formData.append('apikey', 'K87623400388957');
