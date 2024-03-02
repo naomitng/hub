@@ -2,14 +2,10 @@ function handleFileSelect(event) {
     const files = event.target.files;
     if (!files || !files.length) return;
 
-    document.getElementById('title').value = '';
-    document.getElementById('title').value = '';
-    document.getElementById('authors').value = '';
-    document.getElementById('abstract').value = '';
-    document.getElementById('year').value = '';
-    document.getElementById('adviser').value = '';
-    document.getElementById('selectDept').value = '';
-    document.getElementById('keywords').value = '';
+    ['title', 'authors', 'abstract', 'year', 'adviser', 'selectDept', 'keywords'].forEach(elementId => {
+        document.getElementById(elementId).value = '';
+    });
+    
 
     for (let i = 0; i < files.length; i++) {
         const formData = new FormData();
