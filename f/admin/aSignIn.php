@@ -1,6 +1,12 @@
 <?php
     session_start();
 
+    if (isset($_SESSION['fname'])) {
+        // Redirect if already logged in
+        header('Location: aDashboard.php');
+        exit(); 
+    }
+
     $page_title = "Sign In";
     include '../includes/header.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signInStyle.css'>";
