@@ -68,7 +68,7 @@ document.getElementById('formFile').addEventListener('change', function(event) {
 
         // EXTRACT KEYWORDS
         const keywordsRegex = /Keywords\s*:/i;
-        const tableOfContentsRegex = /\bTABLE\b/i; // ITO LANG BINAGO KO
+        const tableOfContentsRegex = /\bTABLE\b/i; 
 
         const keywordsIndex = arr.findIndex(line => keywordsRegex.test(line));
         const tableOfContentsIndex = arr.findIndex(line => tableOfContentsRegex.test(line));
