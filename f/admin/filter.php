@@ -16,7 +16,29 @@
 
     // Initialize $study variable
     $study = null;
+
     $studies = [];
+
+    // Search query
+    $searchQuery = '';
+    $searchParams = [];
+
+    // Check if search term is provided
+    if(isset($_GET['search'])) {
+        $search = trim($_GET['search']);
+        // Sanitize the search term to prevent SQL injection
+        $search = htmlspecialchars($search);
+
+        // Prepare the search query
+        $searchQuery = "AND (
+            REPLACE(title, ' ', '') LIKE ? 
+            OR REPLACE(abstract, ' ', '') LIKE ? 
+            OR REPLACE(keywords, ' ', '') LIKE ? 
+            OR MATCH (title, abstract, keywords) AGAINST (? IN BOOLEAN MODE)
+        )";
+        $searchParams = array("%$search%", "%$search%", "%$search%", "$search");
+    }
+
 
     // Fetch the study from the database based on the provided ID
     if(isset($_GET['id'])) {
@@ -50,7 +72,7 @@
     <!-- Search bar -->
     <form class="search" action="" method="GET">
         <i class="fa fa-search"></i>
-        <input type="text" class="form-control" name="search" placeholder="Search for a study">
+        <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>

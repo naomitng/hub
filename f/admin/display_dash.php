@@ -16,7 +16,7 @@ $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
 
 // Fetch the study in table studies
 $study = null;
-if(isset($_GET['id'])) {
+if (isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
@@ -37,9 +37,17 @@ if (strpos($referrer, 'infotech.php') !== false) {
 } elseif (strpos($referrer, 'comEng.php') !== false) {
     $back_link = '../admin/comEng.php';
     $back_text = 'Back to Computer Engineering List';
+} elseif (strpos($referrer, 'filter.php?year=') !== false) {
+    // Extract the year from the referring page URL
+    preg_match('/year=(\d+)/', $referrer, $matches);
+    $year = $matches[1];
+    $back_link = "../admin/filter.php?year=$year";
+    $back_text = "Back to $year List";
 } else {
-    $back_link = '../admin/aDashboard.php';
-    $back_text = 'Back to Dashboard';
+    // Construct the back link based on the current year
+    $current_year = isset($study['year']) ? $study['year'] : date('Y');
+    $back_link = "../admin/filter.php?year=$current_year";
+    $back_text = "Back to $current_year List";
 }
 ?>
 
