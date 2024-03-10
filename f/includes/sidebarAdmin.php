@@ -59,12 +59,11 @@
                 <!-- Year -->
                 <div class="collapse show" id="filter-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="#" class="link-dark rounded">Anytime</a></li>
-                        <li><a href="#" class="link-dark rounded">Since 2020</a></li>
-                        <li><a href="#" class="link-dark rounded">Since 2021</a></li>
-                        <li><a href="#" class="link-dark rounded">Since 2022</a></li>
-                        <li><a href="#" class="link-dark rounded">Since 2023</a></li>
-                        <li><a href="#" class="link-dark rounded">Since 2024</a></li>
+                        <li><a href="../admin/filter.php?year=2020" class="link-dark rounded">Since 2020</a></li>
+                        <li><a href="../admin/filter.php?year=2021" class="link-dark rounded">Since 2021</a></li>
+                        <li><a href="../admin/filter.php?year=2022" class="link-dark rounded">Since 2022</a></li>
+                        <li><a href="../admin/filter.php?year=2023" class="link-dark rounded">Since 2023</a></li>
+                        <li><a href="../admin/filter.php?year=2024" class="link-dark rounded">Since 2024</a></li>
                     </ul>
                 </div>
             </li>

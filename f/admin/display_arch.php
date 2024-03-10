@@ -7,7 +7,7 @@
         exit();
     }
 
-    $page_title = "Dashboard";
+    $page_title = "Archive";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
