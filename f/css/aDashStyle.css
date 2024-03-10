@@ -108,7 +108,7 @@ body {
   flex-grow: 1;
   padding: 10px;
 } .list-group-item-title {
-  font-size: 25px;
+  font-size: 23px;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -27,8 +27,8 @@
                 <!-- Departments -->
                 <div class="collapse show" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="#" class="link-dark rounded">Information Technology</a></li>
-                        <li><a href="#" class="link-dark rounded">Computer Engineering</a></li>
+                        <li><a href="../admin/infotech.php" class="link-dark rounded">Information Technology</a></li>
+                        <li><a href="../admin/comEng.php" class="link-dark rounded">Computer Engineering</a></li>
                     </ul>
                 </div>
             </li>

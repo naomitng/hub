@@ -6,22 +6,13 @@
         exit();
     }
 
-    $page_title = "Dashboard";
+    $page_title = "Computer Engineering";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
     $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-    // display advisers
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies`");
-        $stmt->execute(); // Execute the prepared statement
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-
     // delete 
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
@@ -36,7 +27,6 @@
         }
     }
 
-    // ARCHIVE 
     if(isset($_POST['archive'])) {
         $study_id = $_POST['study_id'];
         try {
@@ -58,6 +48,7 @@
             $stmt_insert_archive->bindParam(':keywords', $study['keywords']);
             $stmt_insert_archive->execute();
             
+            
             // Delete the study from the 'studies' table
             $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
             $stmt_delete->bindParam(':study_id', $study_id);
@@ -72,7 +63,7 @@
     }
 
     
-    // EDIT
+
     if(isset($_POST['saveChanges'])) {
         $study_id = $_POST['study_id'];
         $title = $_POST['title'];
@@ -106,56 +97,34 @@
 
     try {
         if(isset($_GET['search'])) {
-            $keywords = explode(" ", $_GET['search']);
-            $searchTerms = [];
-            $bindings = [];
-            
-            // Construct the search query for each keyword
-            foreach ($keywords as $index => $keyword) {
-                $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
-                $bindings[":search{$index}"] = '%' . $keyword . '%';
-            }
-            
-            $searchQuery = implode(" OR ", $searchTerms);
-            
-            // Construct the final SQL query
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} LIMIT :offset, :limit");
+            $search = '%' . preg_replace('/[^a-zA-Z0-9\s]/', '', $_GET['search']) . '%';
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE (dept = 'Computer Engineering') AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search) LIMIT :offset, :limit");
+            $stmt->bindParam(':search', $search, PDO::PARAM_STR);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-            
-            // Bind parameters for each search term
-            foreach ($bindings as $key => $value) {
-                $stmt->bindParam($key, $value, PDO::PARAM_STR);
-            }
-            
-            // Fetch total number of studies for search results
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery}");
-            
-            // Bind parameters for totalStmt
-            foreach ($bindings as $key => $value) {
-                $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
-            }
-        } else {
-            // If no search query is provided, fetch all studies
-            $stmt = $pdo->prepare("SELECT * FROM `studies` LIMIT :offset, :limit");
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-            
-            // Fetch total number of all studies
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies`");
-        }
     
-        // Execute the prepared statement
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-        $totalSearchResults = $stmt->rowCount();
+            // Fetch total number of studies for search results
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering' AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search)");
+            $totalStmt->bindValue(':search', $search, PDO::PARAM_STR);
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' LIMIT :offset, :limit");
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+    
+            // Fetch total number of all studies for the Computer Engineering department
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering'");
+        }
         
+        $stmt->execute(); // Execute the prepared statement
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+    
         // Execute totalStmt to get total number of studies
         $totalStmt->execute();
         $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
+    
     
     
 ?>
@@ -179,12 +148,17 @@
         <li class="list-group-item p-4">
             <?php if (isset($_GET['search'])): ?>
                 <div class="mb-4">
-                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
+                    <i class="text-muted"><?php echo $totalStudies; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
                 </div>
             <?php endif; ?>
-
+                <a href="<?php echo isset($_GET['search']) ? '../admin/infotech.php' : '../admin/aDashboard.php'; ?>" class="text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg> 
+                    <?php echo isset($_GET['search']) ? "Back to Archive" : "Back to Dashboard"; ?>
+                </a>
                 <?php foreach ($studies as $study): ?>
-                <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
+                <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4 mt-3">
 
                 <!-- Title -->
                 <li class="list-group-item-title d-flex">
@@ -209,7 +183,6 @@
                         echo $title;
                     } 
                 ?>
-
                 </a>
 
                     <!-- Button group for edit and delete -->
@@ -353,6 +326,7 @@
                 <li class="text-muted">Published <?php echo $study['year']; ?></li>
                 <hr>
                 <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
+                </ul>
                 </ul>
                 <?php endforeach; ?>
         </li>

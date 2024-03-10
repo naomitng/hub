@@ -27,36 +27,6 @@
         }
     }
 
-    try {
-        if(isset($_GET['search'])) {
-            $search = '%' . preg_replace('/[^a-zA-Z0-9\s]/', '', $_GET['search']) . '%';
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE (dept = 'Computer Engineering') AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search) LIMIT :offset, :limit");
-            $stmt->bindParam(':search', $search, PDO::PARAM_STR);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-    
-            // Fetch total number of studies for search results
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering' AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search)");
-            $totalStmt->bindValue(':search', $search, PDO::PARAM_STR);
-        } else {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' LIMIT :offset, :limit");
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-    
-            // Fetch total number of all studies for the Computer Engineering department
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering'");
-        }
-        
-        $stmt->execute(); // Execute the prepared statement
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-    
-        // Execute totalStmt to get total number of studies
-        $totalStmt->execute();
-        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-
 ?>
 
 <!-- Content Area -->

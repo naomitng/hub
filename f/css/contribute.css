@@ -16,3 +16,13 @@ body {
 } p {
     font-size: 13px;
 }
+.check {
+    border: none; 
+    background: none; 
+    text-decoration: underline;
+    padding: 5px;
+} .check:hover {
+    opacity: .7;
+} .privacytxt {
+    font-size: 17px;
+}
