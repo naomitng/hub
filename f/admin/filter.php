@@ -1,4 +1,7 @@
 <?php
+    // Initialize $totalSearchResults
+    $totalSearchResults = 0;
+
     session_start();
     if (!isset($_SESSION['fname'])) {
         // Redirect the user to the sign-in page
@@ -14,56 +17,122 @@
 
     $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
 
-    // Initialize $study variable
-    $study = null;
+    // Get the year from the url
+    $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 
-    $studies = [];
+    // Check if search param is set otherwise null
+    $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
-    // Search query
-    $searchQuery = '';
-    $searchParams = [];
-
-    // Check if search term is provided
-    if(isset($_GET['search'])) {
-        $search = trim($_GET['search']);
-        // Sanitize the search term to prevent SQL injection
-        $search = htmlspecialchars($search);
-
-        // Prepare the search query
-        $searchQuery = "AND (
-            REPLACE(title, ' ', '') LIKE ? 
-            OR REPLACE(abstract, ' ', '') LIKE ? 
-            OR REPLACE(keywords, ' ', '') LIKE ? 
-            OR MATCH (title, abstract, keywords) AGAINST (? IN BOOLEAN MODE)
-        )";
-        $searchParams = array("%$search%", "%$search%", "%$search%", "$search");
-    }
-
-
-    // Fetch the study from the database based on the provided ID
-    if(isset($_GET['id'])) {
-        $study_id = $_GET['id'];
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
-            $stmt->execute([$study_id]);
-            $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage(); // Output any database errors
-        }
-    }
-
-    // Fetch all studies based on the provided year
+    // Pagination variables
+    $studiesPerPage = 10;
+    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($currentPage - 1) * $studiesPerPage;
+    
+    // Get studies based on the year from the URL
     if(isset($_GET['year'])) {
-        $year = $_GET['year'];
+        $stmt = $pdo->prepare('SELECT * FROM `studies` WHERE year = :year');
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
+        $stmt->execute();
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        // Fetch all studies if year is not provided
+        $stmt = $pdo->prepare("SELECT * FROM `studies`");
+        $stmt->execute();
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // delete 
+    if(isset($_POST['delete'])) {
+        $study_id = $_POST['study_id'];
         try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE year = ?");
-            $stmt->execute([$year]);
-            $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+            $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
+            $stmt->bindParam(':id', $study_id);
+            $stmt->execute();
+            echo '<script>window.location.href = "../admin/filter.php?='.$year.'";</script>';
+            exit();
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage(); // Output any database errors
+            echo $e->getMessage();
         }
     }
 
+    // ARCHIVE 
+    if(isset($_POST['archive'])) {
+        $study_id = $_POST['study_id'];
+        try {
+            // Get study details from 'studies' table
+            $stmt_select = $pdo->prepare("SELECT * FROM `studies` WHERE id = :study_id");
+            $stmt_select->bindParam(':study_id', $study_id);
+            $stmt_select->execute();
+            $study = $stmt_select->fetch(PDO::FETCH_ASSOC);
+            
+            // Insert the study into the 'archive' table
+            $stmt_insert_archive = $pdo->prepare("INSERT INTO `archive`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords)");
+            $stmt_insert_archive->bindParam(':title', $study['title']);
+            $stmt_insert_archive->bindParam(':authors', $study['authors']);
+            $stmt_insert_archive->bindParam(':abstract', $study['abstract']);
+            $stmt_insert_archive->bindParam(':year', $study['year']);
+            $stmt_insert_archive->bindParam(':adviser', $study['adviser']);
+            $stmt_insert_archive->bindParam(':dept', $study['dept']);
+            $stmt_insert_archive->bindParam(':filename', $study['filename']);
+            $stmt_insert_archive->bindParam(':keywords', $study['keywords']);
+            $stmt_insert_archive->execute();
+            
+            // Delete the study from the 'studies' table
+            $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
+            $stmt_delete->bindParam(':study_id', $study_id);
+            $stmt_delete->execute();
+            
+            // Redirect back to the dashboard
+            echo '<script>window.location.href = "../admin/filter.php?'.$year.'";</script>';
+            exit();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    // Search
+    if($searchTerm !== null) {
+        $filteredStudies = array();
+        foreach($studies as $study) {
+            if($year === null || $study['year'] == $year) {
+                if (stripos($study['title'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
+                    $filteredStudies[] = $study;
+                }
+            }
+        }
+        $studies = $filteredStudies;
+        
+        // Count total search results
+        $totalSearchResults = count($filteredStudies);
+    }
+
+    // EDIT
+    if(isset($_POST['saveChanges'])) {
+        $study_id = $_POST['study_id'];
+        $title = $_POST['title'];
+        $authors = $_POST['authors'];
+        $abstract = $_POST['abstract'];
+        $year = $_POST['year'];
+        $adviser = $_POST['adviser'];
+        $dept = $_POST['dept']; 
+
+        try {
+            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept WHERE id = :study_id");
+            $stmt->bindParam(':study_id', $study_id);
+            $stmt->bindParam(':title', $title); 
+            $stmt->bindParam(':authors', $authors); 
+            $stmt->bindParam(':abstract', $abstract); 
+            $stmt->bindParam(':year', $year); 
+            $stmt->bindParam(':adviser', $adviser); 
+            $stmt->bindParam(':dept', $dept); 
+            $stmt->execute();
+            echo '<script>window.location.href = "../admin/filter.php?year='.$year.'";</script>';
+            exit();
+        } catch (PDOException $e) {
+            echo $e->getMessage(); 
+        }
+    }
+    
 ?>
 
 <!-- Content Area -->
@@ -83,6 +152,12 @@
     <!-- List of studies -->
     <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
+            <!-- number of search results -->
+            <?php if (isset($_GET['search'])): ?>
+                <div class="mb-4">
+                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
+                </div>
+            <?php endif; ?>
             <!-- Back link to dashboard -->
             <a href="../admin/aDashboard.php" class="text-decoration-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -268,5 +343,29 @@
             <?php endforeach; ?>
         </li>
     </ul>        
-
+<!-- Pagination -->
+<?php if ($totalSearchResults > $studiesPerPage): ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                    $totalPages = ceil($totalStudies / $studiesPerPage);
+                    for ($i = 1; $i <= $totalPages; $i++):
+                ?>
+                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>

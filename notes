@@ -14,46 +14,32 @@
 
     $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
 
-    // Initialize $study variable
-    $study = null;
-    $studies = [];
+    $year = isset($_GET['year']) ? intval($_GET['year']) : null;
+    $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
-    // Fetch the study from the database based on the provided ID
-    if(isset($_GET['id'])) {
-        $study_id = $_GET['id'];
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
-            $stmt->execute([$study_id]);
-            $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage(); // Output any database errors
-        }
-    }
-
-    // Fetch all studies based on the provided year
     if(isset($_GET['year'])) {
-        $year = $_GET['year'];
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE year = ?");
-            $stmt->execute([$year]);
-            $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage(); // Output any database errors
+        $stmt = $pdo->prepare('SELECT * FROM `studies` WHERE year = :year');
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
+        $stmt->execute();
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        // Fetch all studies if year is not provided
+        $stmt = $pdo->prepare("SELECT * FROM `studies`");
+        $stmt->execute();
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    if($searchTerm !== null) {
+        $filteredStudies = array();
+        foreach($studies as $study) {
+            if($year === null || $study['year'] == $year) {
+                if (stripos($study['title'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
+                    $filteredStudies[] = $study;
+                }
+            }
         }
+        $studies = $filteredStudies;
     }
-
-    // Initialize the default link text
-    $backLinkText = "Back to Dashboard";
-    
-    // Check if the year parameter is present in the URL
-    if(isset($_GET['year'])) {
-        // Get the year from the URL
-        $year = htmlspecialchars($_GET['year']);
-        
-        // Dynamically set the back link text based on the year
-        $backLinkText = "Back to $year List";
-    }
-
 ?>
 
 <!-- Content Area -->
@@ -62,7 +48,7 @@
     <!-- Search bar -->
     <form class="search" action="" method="GET">
         <i class="fa fa-search"></i>
-        <input type="text" class="form-control" name="search" placeholder="Search for a study">
+        <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -73,17 +59,17 @@
     <!-- List of studies -->
     <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
-            <!-- Back link to dashboard -->
+            <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
                 <div class="mb-4">
-                    <i class="text-muted"><?php echo $totalStudies; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
+                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
                 </div>
             <?php endif; ?>
-            <a href="<?php echo isset($_GET['search']) ? '../admin/filter.php?=$year' : '../admin/aDashboard.php'; ?>" class="text-decoration-none">
+            <!-- Back link to dashboard -->
+            <a href="../admin/aDashboard.php" class="text-decoration-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
-                </svg> 
-                <?php echo isset($_GET['search']) ? "Back to $year List" : "Back to Dashboard"; ?>
+                </svg> Back to dashboard
             </a>
             <?php foreach ($studies as $study): ?>
                 <!-- loop to display studies -->

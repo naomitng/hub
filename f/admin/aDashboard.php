@@ -105,46 +105,51 @@
     $offset = ($currentPage - 1) * $studiesPerPage;
 
     try {
-        if(isset($_GET['search'])) {
-            $keywords = explode(" ", $_GET['search']);
-            $searchTerms = [];
-            $bindings = [];
-            
-            // Construct the search query for each keyword
-            foreach ($keywords as $index => $keyword) {
-                $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
-                $bindings[":search{$index}"] = '%' . $keyword . '%';
-            }
-            
-            $searchQuery = implode(" OR ", $searchTerms);
-            
-            // Construct the final SQL query
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} LIMIT :offset, :limit");
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-            
-            // Bind parameters for each search term
-            foreach ($bindings as $key => $value) {
-                $stmt->bindParam($key, $value, PDO::PARAM_STR);
-            }
-            
-            // Fetch total number of studies for search results
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery}");
-            
-            // Bind parameters for totalStmt
-            foreach ($bindings as $key => $value) {
-                $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
-            }
-        } else {
-            // If no search query is provided, fetch all studies
-            $stmt = $pdo->prepare("SELECT * FROM `studies` LIMIT :offset, :limit");
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-            
-            // Fetch total number of all studies
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies`");
+    if(isset($_GET['search'])) {
+        $keywords = explode(" ", $_GET['search']);
+        $searchTerms = [];
+        $bindings = [];
+
+        // Construct the search query for each keyword
+        foreach ($keywords as $index => $keyword) {
+            $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
+            $bindings[":search{$index}"] = '%' . $keyword . '%';
         }
-    
+
+        $searchQuery = implode(" AND ", $searchTerms);
+
+        // Construct the final SQL query
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} LIMIT :offset, :limit");
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+
+        // Bind parameters for each search term
+        foreach ($bindings as $key => $value) {
+            $stmt->bindParam($key, $value, PDO::PARAM_STR);
+        }
+
+        // Fetch total number of studies for search results
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery}");
+
+        // Bind parameters for totalStmt
+        foreach ($bindings as $key => $value) {
+            $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
+        }
+    } else {
+        // If no search query is provided, fetch all studies
+        $stmt = $pdo->prepare("SELECT * FROM `studies` LIMIT :offset, :limit");
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+
+        // Fetch total number of all studies
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies`");
+    }
+} catch (PDOException $e) {
+    // Handle database errors here
+    echo "Error: " . $e->getMessage();
+}
+
+    try {
         // Execute the prepared statement
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
@@ -156,8 +161,6 @@
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
-    
-    
 ?>
 
 <!-- Content Area -->

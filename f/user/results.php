@@ -1,22 +1,56 @@
 <?php
-    $page_title = "";
-    include '../includes/header.php';
-    include '../user/sidebarUser.php';
+$page_title = "";
+include '../includes/header.php';
+include '../user/sidebarUser.php';
 
-    echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+
+$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
+
+// Pagination variables
+$studiesPerPage = 10;
+$currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$offset = ($currentPage - 1) * $studiesPerPage;
+
+// Initialize $studies and $totalStudies
+$studies = [];
+$totalStudies = 0;
+
+// display advisers
+try {
+    // Check if a search query is submitted
+    if(isset($_GET['search']) && !empty($_GET['search'])) {
+        $searchQuery = '%' . $_GET['search'] . '%'; // Add wildcards to match partial strings
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `title` LIKE :search OR `abstract` LIKE :search OR `keywords` LIKE :keywords");
+        $stmt->bindValue(':search', $searchQuery, PDO::PARAM_STR);
+        $stmt->bindValue(':keywords', $searchQuery, PDO::PARAM_STR);
+
+    } else {
+        // If no search query is submitted, retrieve all studies
+        $stmt = $pdo->prepare("SELECT * FROM `studies`");
+    }
+    $stmt->execute(); // Execute the prepared statement
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+    
+    // Count total studies
+    $totalStudies = count($studies);
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
 ?>
 
 <!-- Content Area -->
 <div id="content">
 
 <!-- Form for search -->
-<form action="" method="post" class="search landing-s result-s">
+<form action="" method="get" class="search landing-s result-s">
 
     <i class="fa fa-search"></i>
-    <input type="text" class="form-control" placeholder="Search">
+    <input type="text" class="form-control" name="search" placeholder="Search">
     <!-- Search Button -->
-    <button class="btn btn-warning">
+    <button type="submit" class="btn btn-warning">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
         </svg>
@@ -27,60 +61,72 @@
     <!-- List of studies -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside">
+            <?php foreach ($studies as $study): ?>
+                <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-4">
 
-                <!-- Title -->
-                <li class="list-group-item-title"> <a href="">Research Hub: Capstone Projects Repository</a></li>
+                    <!-- Title -->
+                    <li class="list-group-item-title d-flex">
+                        <a href="../user/display_study.php?id=<?php echo $study['id']; ?>">
+                            <?php $title = $study['title'];
+                                if (strlen($title) > 50) {
+                                    $words = explode(' ', $title);
+                                    $new_title = '';
+                                    $line_length = 0;
 
-                <!-- Information about the study -->
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-            </ul>
-        </li>
-        <li class="list-group-item p-4">
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside">
-                <li class="list-group-item-title"> <a href="">Research Hub: Capstone Projects Repository</a> </li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-            </ul>
-        </li>
-        <li class="list-group-item p-4">
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside">
-                <li class="list-group-item-title"> <a href="">Research Hub: Capstone Projects Repository</a> </li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-            </ul>
-        </li>
-        <li class="list-group-item p-4">
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside">
-                <li class="list-group-item-title"> <a href="">Research Hub: Capstone Projects Repository</a> </li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi alias similique ab veritatis veniam adipisci laudantium, tempora molestiae, cumque quidem atque non iusto rem voluptas illum. Officiis ullam, itaque cumque adipisci delectus soluta esse perspiciatis aut eveniet, necessitatibus numquam? Ex blanditiis recusandae eum cupiditate tempore molestiae saepe esse at odio.</li>
-                <li class="text-muted">Authors: Mizzy Perez, Haesser Naomi Ting, Iresh May Sajulga, Frahser Jay Tayag, Jed Allen Gubot</li>
-                <li class="text-muted">Department: Information Technology</li>
-                <li class="text-muted">Adviser: Lea Nisperos</li>
-            </ul>
+                                    foreach ($words as $word) {
+                                        if ($line_length + strlen($word) > 70) {
+                                            $new_title .= '<br>' . $word . ' ';
+                                            $line_length = strlen($word) + 1; 
+                                        } else {
+                                            $new_title .= $word . ' ';
+                                            $line_length += strlen($word) + 1; 
+                                        }
+                                    }
+                                    echo $new_title;
+                                } else {
+                                    echo $title;
+                                } 
+                            ?>
+                        </a>
+                    </li>
+
+                    <!-- Information about the study -->
+                    <li><?php echo substr($study['abstract'], 0, 300) . "..."; ?></li>
+                    <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
+                    <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
+                    <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
+                    <li class="text-muted">Published <?php echo $study['year']; ?></li>
+                    <hr>
+                    <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
+                </ul>
+            <?php endforeach; ?>
         </li>
     </ul>
 
     <!-- Pagination -->
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link">Previous</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-            <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
+    <?php if ($totalStudies > $studiesPerPage): ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                    $totalPages = ceil($totalStudies / $studiesPerPage);
+                    for ($i = 1; $i <= $totalPages; $i++):
+                ?>
+                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 
 </div>

@@ -1,18 +1,22 @@
 <?php
-session_start();
-if (!isset($_SESSION['fname'])) {
-    // Redirect the user to the sign-in page
-    header('Location: ../admin/aSignIn.php');
-    exit();
-}
 
-$page_title = "Dashboard";
+$page_title = "";
 include '../includes/header.php';
-include '../includes/sidebarAdmin.php';
+include '../user/sidebarUser.php';
+
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
 $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
+
+// Pagination variables
+$studiesPerPage = 10;
+$currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$offset = ($currentPage - 1) * $studiesPerPage;
+
+// Initialize $studies and $totalStudies
+$studies = [];
+$totalStudies = 0;
 
 // Fetch the study in table studies
 $study = null;
@@ -27,29 +31,7 @@ if (isset($_GET['id'])) {
     }
 }
 
-// Determine the back link and text based on the referring page
-$back_link = '';
-$back_text = '';
-$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-if (strpos($referrer, 'infotech.php') !== false) {
-    $back_link = '../admin/infotech.php';
-    $back_text = 'Back to Information Technology List';
-} elseif (strpos($referrer, 'comEng.php') !== false) {
-    $back_link = '../admin/comEng.php';
-    $back_text = 'Back to Computer Engineering List';
-} elseif (preg_match('/filter\.php\?year=(20\d{2})/', $referrer, $matches)) {
-    // Extract the year from the referring page URL
-    $year = $matches[1];
-    $back_link = "../admin/filter.php?year=$year";
-    $back_text = "Back to $year List";
-} else {
-    // Default back link and text
-    $year = date('Y'); // Set the default year to the current year
-    $back_link = "../admin/filter.php?year=$year";
-    $back_text = "Back to $year list";
-}
 ?>
-
 
 <!-- Content Area -->
 <div id="content">
@@ -64,7 +46,6 @@ if (strpos($referrer, 'infotech.php') !== false) {
             </a>
             <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
                 <?php if ($study): ?>
-                <!-- Display study details -->
                 <li class="list-group-item-title mb-3"><?php echo $study['title']; ?></li>
                 <li>Authors: <?php echo $study['authors']; ?></li>
                 <li>Department: <?php echo $study['dept']; ?></li>
@@ -74,7 +55,6 @@ if (strpos($referrer, 'infotech.php') !== false) {
                 <li class="mb-4" style="font-size: 20px;">Abstract</li>
                 <li><?php echo $study['abstract']; ?></li>
                 <?php else: ?>
-                <!-- If no study found -->
                 <li>No study found</li>
                 <?php endif; ?>
             </ul>
