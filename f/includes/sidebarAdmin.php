@@ -43,7 +43,7 @@
                 <div class="collapse" id="dashboard-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="contribute.php" class="link-dark rounded">Contribute</a></li>
-                        <li><a href="#" class="link-dark rounded">See statistics</a></li>
+                        <li><a href="statistics.php" class="link-dark rounded">See statistics</a></li>
                         <li><a href="mAdvisers.php" class="link-dark rounded">Manage advisers</a></li>
                         <li><a href="archive.php" class="link-dark rounded">Archive</a></li>
                     </ul>
