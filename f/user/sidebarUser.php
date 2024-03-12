@@ -7,10 +7,7 @@
         <span style="font-size: 25px; color: #28282B;">Research Hub</span></a>
         
     </div>
-    <ul class="list-unstyled ps-0">
-
-
-        
+    <ul class="list-unstyled ps-0">  
         <!-- List for the departments -->
         <li class="mb-1">
             <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
@@ -35,9 +32,44 @@
             <!-- Under dashboard -->
             <div class="collapse" id="dashboard-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="" class="link-dark rounded">Payroll</a></li>
-                    <li><a href="#" class="link-dark rounded">Inventory</a></li>
-                    <li><a href="#" class="link-dark rounded">Mobile games</a></li>
+                    <?php
+                    require_once '../includes/connection.php';
+
+                    try {
+                        $sql = "SELECT keywords FROM studies";
+                        $stmt = $handler->prepare($sql);
+                        $stmt->execute();
+                        $keywordCounts = array();
+                
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            $keywords = explode(",", $row["keywords"]);
+                            
+                            foreach ($keywords as $keyword) {
+                                $keyword = trim($keyword); 
+                                if (!empty($keyword)) { 
+                                    if (!isset($keywordCounts[$keyword])) {
+                                        $keywordCounts[$keyword] = 1;
+                                    } else {
+                                        $keywordCounts[$keyword]++;
+                                    }
+                                }
+                            }
+                        }
+
+                        arsort($keywordCounts);
+
+                        $counter = 0;
+                        foreach ($keywordCounts as $keyword => $count) {
+                            if ($counter >= 10) {
+                                break;
+                            }
+                            echo "<li><a href='?search=" . urlencode($keyword) . "' class='link-dark rounded'>$keyword ($count)</a></li>";
+                            $counter++;
+                        }
+                    } catch (PDOException $e) {
+                        echo "Error: " . $e->getMessage();
+                    }
+                    ?>
                 </ul>
             </div>
         </li>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2024 at 07:19 AM
+-- Generation Time: Mar 12, 2024 at 12:27 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -28,6 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admin` (
+  `id` int(11) NOT NULL,
   `fname` varchar(30) NOT NULL,
   `lname` varchar(30) NOT NULL,
   `email` varchar(50) NOT NULL,
@@ -35,17 +36,18 @@ CREATE TABLE `admin` (
   `pass` varchar(100) NOT NULL,
   `vercode` text NOT NULL,
   `verified` tinyint(1) NOT NULL DEFAULT 0,
-  `rescode` text NOT NULL
+  `rescode` text NOT NULL,
+  `approval` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`fname`, `lname`, `email`, `dept`, `pass`, `vercode`, `verified`, `rescode`) VALUES
-('Naomi', 'Ting', 'hnaomiting@gmail.com', '1', '$2y$10$ggVJ7XoxIg8kwOibVx7VGeoaj5FzUMzj3b85AbzwJ/rzNoE5bfcli', '92d886223c222c6549c75698b1f4436b', 1, 'd2b8419866d0d7b97319cb36185d90b4'),
-('Mizzy', 'Perez', 'mdperez@rtu.edu.ph', 'IT Department', '$2y$10$3gr7ehixT6yDuX0/G9PHQudSOFE2.mlsUFxp7hFtfDw3NoidZHSoG', 'c4bbed633ebf873c69c1f785fe238be5', 1, ''),
-('Mizzy', 'Perez', 'perez301mizzy@gmail.com', 'IT Department', '$2y$10$QY1aEbplnoGASXoAx83e8uuLnSr6LcR88a4z3r0pQu5e2dEcfnXbu', '3323697b2dc46b931c41791948cc4177', 1, '');
+INSERT INTO `admin` (`id`, `fname`, `lname`, `email`, `dept`, `pass`, `vercode`, `verified`, `rescode`, `approval`) VALUES
+(1, 'Naomi', 'Ting', 'hnaomiting@gmail.com', '1', '$2y$10$ggVJ7XoxIg8kwOibVx7VGeoaj5FzUMzj3b85AbzwJ/rzNoE5bfcli', '92d886223c222c6549c75698b1f4436b', 1, 'd2b8419866d0d7b97319cb36185d90b4', 1),
+(2, 'Mizzy', 'Perez', 'mdperez@rtu.edu.ph', 'IT Department', '$2y$10$3gr7ehixT6yDuX0/G9PHQudSOFE2.mlsUFxp7hFtfDw3NoidZHSoG', 'c4bbed633ebf873c69c1f785fe238be5', 0, '', 1),
+(4, 'Mizzy', 'Perez', 'perez301mizzy@gmail.com', 'IT Department', '$2y$10$NaNQm/R4XP8RdPGIZbAasuT1m6eeTbD9d4etRNLkeaS.vWN9Wtoei', '0913d4213c95ed8c9891811933d89870', 1, '', 1);
 
 -- --------------------------------------------------------
 
@@ -234,6 +236,7 @@ INSERT INTO `studies` (`id`, `title`, `authors`, `abstract`, `year`, `adviser`, 
 --
 
 CREATE TABLE `superadmin` (
+  `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL
@@ -243,12 +246,18 @@ CREATE TABLE `superadmin` (
 -- Dumping data for table `superadmin`
 --
 
-INSERT INTO `superadmin` (`name`, `username`, `password`) VALUES
-('Super Admin', 'supadmin', '$2y$10$T3lBKKAopXRwsTKnu8fqNulprqTsBUi2XcVhfRI0gyuoiYS.dIN9u');
+INSERT INTO `superadmin` (`id`, `name`, `username`, `password`) VALUES
+(1, 'Super Admin', 'supadmin', '$2y$10$T3lBKKAopXRwsTKnu8fqNulprqTsBUi2XcVhfRI0gyuoiYS.dIN9u');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `advisers`
@@ -269,8 +278,20 @@ ALTER TABLE `studies`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `superadmin`
+--
+ALTER TABLE `superadmin`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `advisers`
@@ -289,6 +310,12 @@ ALTER TABLE `archive`
 --
 ALTER TABLE `studies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=221;
+
+--
+-- AUTO_INCREMENT for table `superadmin`
+--
+ALTER TABLE `superadmin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
