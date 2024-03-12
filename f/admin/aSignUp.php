@@ -95,7 +95,7 @@
                     'verificationCode' => $verification_code
                 ];
         
-                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
+                $stmt = $pdo->prepare("INSERT INTO `accRequest`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
                 $stmt->execute($data);
 
                 $sucMsg = "Your account is successfully created. Check your email address for the activation link.";

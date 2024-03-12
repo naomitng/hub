@@ -7,6 +7,11 @@
         exit(); 
     }
 
+    else if (isset($_SESSION['supadmin'])) {
+        header('location: ../supadmin/aDashboard.php');
+        exit();
+    }
+
     $page_title = "Sign In";
     include '../includes/header.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signInStyle.css'>";
@@ -21,19 +26,32 @@
         $email = $_POST['email'];
         $pass = $_POST['pass'];
 
-        $stmt = $pdo->prepare("SELECT * FROM admin WHERE `email` = :email");
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Check if the user is a superadmin
+        $stmt_superadmin = $pdo->prepare("SELECT * FROM superadmin WHERE `username` = :username");
+        $stmt_superadmin->bindParam(':username', $email);
+        $stmt_superadmin->execute();
+        $superadmin_result = $stmt_superadmin->fetch(PDO::FETCH_ASSOC);
 
-        if ($result) {
-            $isVerified = $result['verified'];
+        if ($superadmin_result && password_verify($pass, $superadmin_result['password'])) {
+            $_SESSION['supadmin'] = true;
+            header('Location: ../supadmin/aDashboard.php');
+            exit();
+        }
+
+        // Check if the user is an admin
+        $stmt_admin = $pdo->prepare("SELECT * FROM admin WHERE `email` = :email");
+        $stmt_admin->bindParam(':email', $email);
+        $stmt_admin->execute();
+        $admin_result = $stmt_admin->fetch(PDO::FETCH_ASSOC);
+
+        if ($admin_result) {
+            $isVerified = $admin_result['verified'];
 
             if ($isVerified == 1) {
-                if (password_verify($pass, $result['pass'])) {
-                    $_SESSION['fname'] = $result['fname'];
-                    $_SESSION['lname'] = $result['lname'];
-                    header('location: ../admin/aDashboard.php');
+                if (password_verify($pass, $admin_result['pass'])) {
+                    $_SESSION['fname'] = $admin_result['fname'];
+                    $_SESSION['lname'] = $admin_result['lname'];
+                    header('Location: ../admin/aDashboard.php');
                     exit(); 
                 } else {
                     $errMsg = "Invalid email or password";
@@ -47,8 +65,8 @@
     } 
 
     $pdo = null;
-
 ?>
+
 
 
 <body class="d-flex align-items-center vh-100">
