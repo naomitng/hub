@@ -1,29 +1,44 @@
 <?php
+    // Initialize $totalSearchResults
+    $totalSearchResults = 0;
+
     session_start();
-    if (!isset($_SESSION['fname'])) {
+    if (!isset($_SESSION['supadmin'])) {
         // Redirect the user to the sign-in page
         header('Location: ../admin/aSignIn.php');
         exit();
     }
 
-    $page_title = "Information Technology";
+    $page_title = "Dashboard";
     include '../includes/header.php';
-    include '../includes/sidebarAdmin.php';
+    include '../includes/sidebarSupadmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
     $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-    // Initialize variables
-    $studies = [];
-    $totalStudies = 0;
 
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology'");
+    // Get the year from the url
+    $year = isset($_GET['year']) ? intval($_GET['year']) : null;
+
+    // Check if search param is set otherwise null
+    $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
+
+    // Pagination variables
+    $studiesPerPage = 10;
+    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($currentPage - 1) * $studiesPerPage;
+    
+    // Get studies based on the year from the URL
+    if(isset($_GET['year'])) {
+        $stmt = $pdo->prepare('SELECT * FROM `studies` WHERE year = :year');
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $totalStudies = count($studies);
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+    } else {
+        // Fetch all studies if year is not provided
+        $stmt = $pdo->prepare("SELECT * FROM `studies`");
+        $stmt->execute();
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // delete 
@@ -33,13 +48,14 @@
             $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/infotech.php";</script>';
+            echo '<script>window.location.href = "../admin/filter.php?='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
     }
 
+    // ARCHIVE 
     if(isset($_POST['archive'])) {
         $study_id = $_POST['study_id'];
         try {
@@ -61,20 +77,36 @@
             $stmt_insert_archive->bindParam(':keywords', $study['keywords']);
             $stmt_insert_archive->execute();
             
-            
             // Delete the study from the 'studies' table
             $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
             
             // Redirect back to the dashboard
-            echo '<script>window.location.href = "../admin/infotech.php";</script>';
+            echo '<script>window.location.href = "../admin/filter.php?'.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
     }
 
+    // Search
+    if($searchTerm !== null) {
+        $filteredStudies = array();
+        foreach($studies as $study) {
+            if($year === null || $study['year'] == $year) {
+                if (stripos($study['title'], $searchTerm) !== false || stripos($study['abstract'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
+                    $filteredStudies[] = $study;
+                }
+            }
+        }
+        $studies = $filteredStudies;
+        
+        // Count total search results
+        $totalSearchResults = count($filteredStudies);
+    }
+
+    // EDIT
     if(isset($_POST['saveChanges'])) {
         $study_id = $_POST['study_id'];
         $title = $_POST['title'];
@@ -83,10 +115,9 @@
         $year = $_POST['year'];
         $adviser = $_POST['adviser'];
         $dept = $_POST['dept']; 
-        $keywords = $_POST['keywords']; 
 
         try {
-            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept, `keywords`=:keywords WHERE id = :study_id");
+            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept WHERE id = :study_id");
             $stmt->bindParam(':study_id', $study_id);
             $stmt->bindParam(':title', $title); 
             $stmt->bindParam(':authors', $authors); 
@@ -94,52 +125,22 @@
             $stmt->bindParam(':year', $year); 
             $stmt->bindParam(':adviser', $adviser); 
             $stmt->bindParam(':dept', $dept); 
-            $stmt->bindParam(':keywords', $keywords); 
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/infotech.php";</script>';
+            echo '<script>window.location.href = "../admin/filter.php?year='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
         }
     }
-
-    // Pagination variables
-    $studiesPerPage = 10;
-    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $offset = ($currentPage - 1) * $studiesPerPage;
-
-    // Function to construct a search query
-    function constructSearchQuery($search) {
-        $keywords = explode(" ", $search);
-        $conditions = [];
-        foreach ($keywords as $keyword) {
-            $conditions[] = "(LOWER(title) LIKE '%$keyword%' OR LOWER(abstract) LIKE '%$keyword%' OR LOWER(keywords) LIKE '%$keyword%')";
-        }
-        return implode(" AND ", $conditions);
-    }
-
-    // Check if search term is provided
-    if(isset($_GET['search'])) {
-        $search = trim($_GET['search']);  
-        $search = htmlspecialchars($search);            
-        $searchQuery = constructSearchQuery(strtolower($search));
-
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND ($searchQuery)");
-            $stmt->execute();
-            $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $totalStudies = count($studies);
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-        }
-    }
+    
 ?>
 
 <!-- Content Area -->
 <div id="content">
 
     <!-- Search bar -->
-    <form class="search" action="" method="GET">
+    <form class="search" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
+        <input type="hidden" name="year" value="<?php echo isset($_GET['year']) ? $_GET['year'] : ''; ?>">
         <i class="fa fa-search"></i>
         <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
@@ -148,22 +149,25 @@
             </svg>
         </button>
     </form>
+
+
     <!-- List of studies -->
-    <ul class="list-group mt-5 mb-5">
+    <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
+            <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
                 <div class="mb-4">
-                    <i class="text-muted"><?php echo $totalStudies; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
+                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
                 </div>
             <?php endif; ?>
-            <a href="<?php echo isset($_GET['search']) ? '../admin/infotech.php' : '../admin/aDashboard.php'; ?>" class="text-decoration-none">
+            <!-- Back link to dashboard -->
+            <a href="../admin/aDashboard.php" class="text-decoration-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
-                </svg> 
-                <?php echo isset($_GET['search']) ? "Back to Information Technology List" : "Back to Dashboard"; ?>
+                </svg> Back to dashboard
             </a>
-                
             <?php foreach ($studies as $study): ?>
+                <!-- loop to display studies -->
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4 mt-3">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
@@ -221,7 +225,7 @@
                     <!-- For archive -->
                     <form action="" method="post">
                         <input type="hidden" name="study_id" value="<?php echo $study['id']; ?>" >
-                        <!-- Modal for delete confirmation -->
+                        <!-- Modal for archive confirmation -->
                         <div class="modal fade" id="archiveModal_<?php echo $study['id']; ?>" tabindex="-1" aria-labelledby="archiveModalLabel_<?php echo $study['id']; ?>" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -273,6 +277,8 @@
                             </div>
                         </div>
                     </form>
+                
+                    <!-- Edit -->
                     <form action="" method="post">
                         <!-- Modal for edit confirmation -->
                         <div class="modal fade" id="editModal_<?php echo $study['id']; ?>" tabindex="-1" aria-labelledby="editModalLabel_<?php echo $study['id']; ?>" aria-hidden="true">
@@ -315,7 +321,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="keywords" class="col-form-label" style="font-size: 17px;">Keywords</label>
-                                                <input type="text" name="keywords" class="form-control" id="year" value="<?php echo $study['keywords']; ?>">
+                                                <input type="text" name="keywords" class="form-control" id="keywords" value="<?php echo $study['keywords']; ?>">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -334,14 +340,13 @@
                     <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
                     <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
-                    <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>              
+                    <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
                 </ul>
             <?php endforeach; ?>
         </li>
-    </ul>
-
-    <!-- Pagination -->
-    <?php if ($totalStudies > $studiesPerPage): ?>
+    </ul>        
+<!-- Pagination -->
+<?php if ($totalSearchResults > $studiesPerPage): ?>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <?php if ($currentPage > 1): ?>
@@ -366,4 +371,3 @@
         </nav>
     <?php endif; ?>
 </div>
-
