@@ -73,7 +73,7 @@
 
                     <p><strong>Activation Link:</strong> <a href='https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "'>https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "</a></p>
 
-                    <p>Once you are redirected to the login page, you can sign in using your account login credentials.</p>
+                    <p>Once you are redirected to the login page, kindly wait for the Super Admin for your account approval.</p>
 
                     <p>If you have any questions or encounter any issues, kindly contact our support team at <a href='mailto:hubsupport@gmail.com'>hubsupport@gmail.com</a></p>
 
@@ -95,7 +95,7 @@
                     'verificationCode' => $verification_code
                 ];
         
-                $stmt = $pdo->prepare("INSERT INTO `accRequest`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
+                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
                 $stmt->execute($data);
 
                 $sucMsg = "Your account is successfully created. Check your email address for the activation link.";

@@ -46,22 +46,27 @@
 
         if ($admin_result) {
             $isVerified = $admin_result['verified'];
+            $isApproved = $admin_result['approval'];
 
             if ($isVerified == 1) {
-                if (password_verify($pass, $admin_result['pass'])) {
-                    $_SESSION['fname'] = $admin_result['fname'];
-                    $_SESSION['lname'] = $admin_result['lname'];
-                    header('Location: ../admin/aDashboard.php');
-                    exit(); 
+                if ($isApproved == 1) {
+                    if (password_verify($pass, $admin_result['pass'])) {
+                        $_SESSION['fname'] = $admin_result['fname'];
+                        $_SESSION['lname'] = $admin_result['lname'];
+                        header('Location: ../admin/aDashboard.php');
+                        exit(); 
+                    } else {
+                        $errMsg = "Invalid email or password";
+                    }
                 } else {
-                    $errMsg = "Invalid email or password";
+                    $errMsg = "Please wait for the Super Admin to review your account request.";
                 }
             } else {
-                $errMsg = "Please verify your admin account. A verification link is sent to your email address";
+                $errMsg = "Please verify your admin account. A verification link is sent to your email address.";
             }
         } else {
             $errMsg = "No user found with this email";
-        } 
+        }
     } 
 
     $pdo = null;
