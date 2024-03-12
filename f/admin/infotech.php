@@ -109,12 +109,11 @@
     $offset = ($currentPage - 1) * $studiesPerPage;
 
     // Function to construct a search query
-    function constructSearchQuery($search)
-    {
+    function constructSearchQuery($search) {
         $keywords = explode(" ", $search);
         $conditions = [];
         foreach ($keywords as $keyword) {
-            $conditions[] = "(LOWER(title) LIKE '%$keyword%' OR LOWER(keywords) LIKE '%$keyword%')";
+            $conditions[] = "(LOWER(title) LIKE '%$keyword%' OR LOWER(abstract) LIKE '%$keyword%' OR LOWER(keywords) LIKE '%$keyword%')";
         }
         return implode(" AND ", $conditions);
     }

@@ -107,8 +107,7 @@
     $offset = ($currentPage - 1) * $studiesPerPage;
 
     // Function to construct a search query
-    function constructSearchQuery($search)
-    {
+    function constructSearchQuery($search) {
         $keywords = explode(" ", $search);
         $conditions = [];
         foreach ($keywords as $keyword) {

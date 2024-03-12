@@ -3,8 +3,8 @@
     <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
 
         <!-- Logo -->
-        <a href="../user/results.php" style=" text-decoration: none;"><img src="../img/logo.png" alt="" style="width: 40px;"></a>
-        <span style="font-size: 25px; color: #28282B;">Research Hub</span>
+        <a href="../user/landing.php" style=" text-decoration: none;"><img src="../img/logo.png" alt="" style="width: 40px;">
+        <span style="font-size: 25px; color: #28282B;">Research Hub</span></a>
         
     </div>
     <ul class="list-unstyled ps-0">
