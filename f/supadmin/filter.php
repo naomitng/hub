@@ -95,7 +95,7 @@
         $filteredStudies = array();
         foreach($studies as $study) {
             if($year === null || $study['year'] == $year) {
-                if (stripos($study['title'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
+                if (stripos($study['title'], $searchTerm) !== false || stripos($study['abstract'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
                     $filteredStudies[] = $study;
                 }
             }
@@ -139,7 +139,8 @@
 <div id="content">
 
     <!-- Search bar -->
-    <form class="search" action="" method="GET">
+    <form class="search" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
+        <input type="hidden" name="year" value="<?php echo isset($_GET['year']) ? $_GET['year'] : ''; ?>">
         <i class="fa fa-search"></i>
         <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
@@ -148,6 +149,7 @@
             </svg>
         </button>
     </form>
+
 
     <!-- List of studies -->
     <ul class="list-group mb-5 mt-5">
