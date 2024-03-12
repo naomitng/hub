@@ -41,12 +41,23 @@
         $search = trim($_GET['search']);  
         $search = htmlspecialchars($search);            
         $searchQuery = constructSearchQuery(strtolower($search));
-
+    
         try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' AND ($searchQuery)");
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' AND ($searchQuery) LIMIT :limit OFFSET :offset");
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $totalStudies = count($studies);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' LIMIT :limit OFFSET :offset");
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
