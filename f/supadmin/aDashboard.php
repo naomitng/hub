@@ -29,7 +29,7 @@
             $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -64,7 +64,7 @@
             $stmt_delete->execute();
             
             // Redirect back to the dashboard
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -92,7 +92,7 @@
             $stmt->bindParam(':adviser', $adviser); 
             $stmt->bindParam(':dept', $dept); 
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
@@ -193,7 +193,7 @@
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a href="../admin/display_dash.php?id=<?php echo $study['id']; ?>">
+                        <a href="display_dash.php?id=<?php echo $study['id']; ?>">
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);

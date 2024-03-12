@@ -32,20 +32,20 @@ $back_link = '';
 $back_text = '';
 $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 if (strpos($referrer, 'infotech.php') !== false) {
-    $back_link = '../admin/infotech.php';
+    $back_link = 'infotech.php';
     $back_text = 'Back to Information Technology List';
 } elseif (strpos($referrer, 'comEng.php') !== false) {
-    $back_link = '../admin/comEng.php';
+    $back_link = 'comEng.php';
     $back_text = 'Back to Computer Engineering List';
 } elseif (preg_match('/filter\.php\?year=(20\d{2})/', $referrer, $matches)) {
     // Extract the year from the referring page URL
     $year = $matches[1];
-    $back_link = "../admin/filter.php?year=$year";
+    $back_link = "filter.php?year=$year";
     $back_text = "Back to $year List";
 } else {
     // Default back link and text
     $year = date('Y'); // Set the default year to the current year
-    $back_link = "../admin/filter.php?year=$year";
+    $back_link = "filter.php?year=$year";
     $back_text = "Back to $year list";
 }
 ?>

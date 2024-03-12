@@ -67,7 +67,7 @@ foreach ($itCpeData as $dept) {
                 <li>
                     <input type="hidden" name="report_type" value="it_cpe">
                     <h2>IT vs CpE report</h2>
-                    <p>This report focuses on studies from the <a href="../admin/infotech.php">Information Technology</a> <br>and <a href="../admin/comEng.php">Computer Engineering</a> departments stored in the Research Hub database.</p>
+                    <p>This report focuses on studies from the <a href="infotech.php">Information Technology</a> <br>and <a href="comEng.php">Computer Engineering</a> departments stored in the Research Hub database.</p>
                     <!-- place chart here -->
                     <div style="display: flex; justify-content: center;">
                         <canvas id="itCpeChart" width="400" height="300"></canvas>
@@ -113,7 +113,7 @@ foreach ($itCpeData as $dept) {
                 <li>
                     <input type="hidden" name="report_type" value="archive">
                     <h2>Archive report</h2>
-                    <p>This report shows the number of studies <a href="../admin/archive.php">archived</a> in the Research Hub database.</p>
+                    <p>This report shows the number of studies <a href="archive.php">archived</a> in the Research Hub database.</p>
                     <!-- place chart here -->
                     <div style="display: flex; justify-content: center;">
                         <canvas id="archiveChart" width="400" height="300"></canvas>
