@@ -6,7 +6,7 @@
         exit();
     }
 
-    $page_title = "Computer Engineering";
+    $page_title = "Information Technology";
     include '../includes/header.php';
     include '../includes/sidebarSupadmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
