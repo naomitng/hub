@@ -41,12 +41,23 @@
         $search = trim($_GET['search']);  
         $search = htmlspecialchars($search);            
         $searchQuery = constructSearchQuery(strtolower($search));
-
+    
         try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND ($searchQuery)");
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND ($searchQuery) LIMIT :limit OFFSET :offset");
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $totalStudies = count($studies);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' LIMIT :limit OFFSET :offset");
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -74,7 +85,7 @@
                     <i class="text-muted"><?php echo $totalStudies; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
                 </div>
             <?php endif; ?>
-            <a href="<?php echo isset($_GET['search']) ? '../admin/infotech.php' : '../admin/aDashboard.php'; ?>" class="text-decoration-none">
+            <a href="<?php echo isset($_GET['search']) ? 'infotech.php' : 'aDashboard.php'; ?>" class="text-decoration-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                 </svg> 
@@ -85,7 +96,7 @@
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4 mt-3">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a href="../admin/display_dash.php?id=<?php echo $study['id']; ?>">
+                        <a href="display_dash.php?id=<?php echo $study['id']; ?>">
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);

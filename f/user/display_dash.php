@@ -1,10 +1,5 @@
 <?php
 session_start();
-if (!isset($_SESSION['supadmin'])) {
-    // Redirect the user to the sign-in page
-    header('Location: ../admin/aSignIn.php');
-    exit();
-}
 
 $page_title = "Dashboard";
 include '../includes/header.php';
