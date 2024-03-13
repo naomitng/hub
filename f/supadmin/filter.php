@@ -1,6 +1,7 @@
 <?php
     // Initialize $totalSearchResults
     $totalSearchResults = 0;
+    $filteredStudies = array();
 
     session_start();
     if (!isset($_SESSION['supadmin'])) {
@@ -24,22 +25,27 @@
     $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
     // Pagination variables
-    $studiesPerPage = 10;
+    $studiesPerPage = 10; // Change this as needed
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
-    
-    // Get studies based on the year from the URL
-    if(isset($_GET['year'])) {
-        $stmt = $pdo->prepare('SELECT * FROM `studies` WHERE year = :year');
+
+    // Fetch studies with pagination
+    $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year" : "") . " LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    if ($year) {
         $stmt->bindParam(':year', $year, PDO::PARAM_INT);
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        // Fetch all studies if year is not provided
-        $stmt = $pdo->prepare("SELECT * FROM `studies`");
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    $stmt->execute();
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Count total studies (considering search filter)
+    if ($searchTerm !== null) {
+        $totalStudies = count($filteredStudies);
+    } else {
+        $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year" : ""))->fetchColumn();
+    }
+
 
     // delete 
     if(isset($_POST['delete'])) {
@@ -48,7 +54,7 @@
             $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "filter.php?='.$year.'";</script>';
+            echo '<script>window.location.href = "../supadmin/filter.php?='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -82,8 +88,8 @@
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
             
-            // Redirect back to the dashboard
-            echo '<script>window.location.href = "filter.php?'.$year.'";</script>';
+            // Redirect back to the filter
+            echo '<script>window.location.href = "../supadmin/filter.php?'.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -92,7 +98,6 @@
 
     // Search
     if($searchTerm !== null) {
-        $filteredStudies = array();
         foreach($studies as $study) {
             if($year === null || $study['year'] == $year) {
                 if (stripos($study['title'], $searchTerm) !== false || stripos($study['abstract'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
@@ -126,7 +131,7 @@
             $stmt->bindParam(':adviser', $adviser); 
             $stmt->bindParam(':dept', $dept); 
             $stmt->execute();
-            echo '<script>window.location.href = "filter.php?year='.$year.'";</script>';
+            echo '<script>window.location.href = "../supadmin/filter.php?year='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
@@ -150,18 +155,17 @@
         </button>
     </form>
 
-
     <!-- List of studies -->
     <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
             <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
-                <div class="mb-4">
+                <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
                     <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
             <!-- Back link to dashboard -->
-            <a href="aDashboard.php" class="text-decoration-none">
+            <a href="../supadmin/aDashboard.php" class="text-decoration-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                 </svg> Back to dashboard
@@ -171,7 +175,7 @@
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4 mt-3">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a href="display_dash.php?id=<?php echo $study['id']; ?>">
+                        <a href="../supadmin/display_dash.php?id=<?php echo $study['id']; ?>">
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);
@@ -345,29 +349,29 @@
             <?php endforeach; ?>
         </li>
     </ul>        
-<!-- Pagination -->
-<?php if ($totalSearchResults > $studiesPerPage): ?>
+    <?php if ($totalStudies > $studiesPerPage): ?>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <?php if ($currentPage > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&search=<?php echo $searchTerm ?? ''; ?>&page=<?php echo $currentPage - 1; ?>">Previous</a>
                     </li>
                 <?php endif; ?>
                 <?php
-                    $totalPages = ceil($totalStudies / $studiesPerPage);
-                    for ($i = 1; $i <= $totalPages; $i++):
-                ?>
+                $totalPages = ceil($totalStudies / $studiesPerPage);
+                for ($i = 1; $i <= $totalPages; $i++):
+                    ?>
                     <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&search=<?php echo $searchTerm ?? ''; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
                     </li>
                 <?php endfor; ?>
                 <?php if ($currentPage < $totalPages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&search=<?php echo $searchTerm ?? ''; ?>&page=<?php echo $currentPage + 1; ?>">Next</a>
                     </li>
                 <?php endif; ?>
             </ul>
         </nav>
     <?php endif; ?>
+
 </div>

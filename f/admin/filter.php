@@ -2,6 +2,8 @@
     // Initialize $totalSearchResults
     $totalSearchResults = 0;
 
+    $filteredStudies = array();
+
     session_start();
     if (!isset($_SESSION['fname'])) {
         // Redirect the user to the sign-in page
@@ -24,22 +26,27 @@
     $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
     // Pagination variables
-    $studiesPerPage = 10;
+    $studiesPerPage = 10; // Change this as needed
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
-    
-    // Get studies based on the year from the URL
-    if(isset($_GET['year'])) {
-        $stmt = $pdo->prepare('SELECT * FROM `studies` WHERE year = :year');
+
+    // Fetch studies with pagination
+    $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year" : "") . " LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    if ($year) {
         $stmt->bindParam(':year', $year, PDO::PARAM_INT);
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        // Fetch all studies if year is not provided
-        $stmt = $pdo->prepare("SELECT * FROM `studies`");
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    $stmt->execute();
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Count total studies (considering search filter)
+    if ($searchTerm !== null) {
+        $totalStudies = count($filteredStudies);
+    } else {
+        $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year" : ""))->fetchColumn();
+    }
+
 
     // delete 
     if(isset($_POST['delete'])) {
@@ -92,7 +99,6 @@
 
     // Search
     if($searchTerm !== null) {
-        $filteredStudies = array();
         foreach($studies as $study) {
             if($year === null || $study['year'] == $year) {
                 if (stripos($study['title'], $searchTerm) !== false || stripos($study['abstract'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
@@ -155,9 +161,9 @@
         <li class="list-group-item p-4">
             <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
-                <div class="mb-4">
+                <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
                     <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
             <!-- Back link to dashboard -->
             <a href="../admin/aDashboard.php" class="text-decoration-none">
@@ -344,29 +350,29 @@
             <?php endforeach; ?>
         </li>
     </ul>        
-<!-- Pagination -->
-<?php if ($totalSearchResults > $studiesPerPage): ?>
+    <?php if ($totalStudies > $studiesPerPage): ?>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <?php if ($currentPage > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&search=<?php echo $searchTerm ?? ''; ?>&page=<?php echo $currentPage - 1; ?>">Previous</a>
                     </li>
                 <?php endif; ?>
                 <?php
-                    $totalPages = ceil($totalStudies / $studiesPerPage);
-                    for ($i = 1; $i <= $totalPages; $i++):
-                ?>
+                $totalPages = ceil($totalStudies / $studiesPerPage);
+                for ($i = 1; $i <= $totalPages; $i++):
+                    ?>
                     <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&search=<?php echo $searchTerm ?? ''; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
                     </li>
                 <?php endfor; ?>
                 <?php if ($currentPage < $totalPages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&search=<?php echo $searchTerm ?? ''; ?>&page=<?php echo $currentPage + 1; ?>">Next</a>
                     </li>
                 <?php endif; ?>
             </ul>
         </nav>
     <?php endif; ?>
+
 </div>

@@ -49,6 +49,21 @@ try {
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
+
+// Delete from archive
+if(isset($_POST['delete'])) {
+    $study_id = $_POST['study_id'];
+    try {
+        $stmt = $pdo->prepare("DELETE FROM `archive` WHERE id = :id"); 
+        $stmt->bindParam(':id', $study_id); 
+        $stmt->execute();
+        echo '<script>window.location.href = "archive.php";</script>';
+        exit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
 ?>
 
 <!-- Content Area -->

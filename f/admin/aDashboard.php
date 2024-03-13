@@ -81,9 +81,10 @@
         $year = $_POST['year'];
         $adviser = $_POST['adviser'];
         $dept = $_POST['dept']; 
+        $keywords = $_POST['keywords']; 
 
         try {
-            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept WHERE id = :study_id");
+            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept, `keywords`=:keywords WHERE id = :study_id");
             $stmt->bindParam(':study_id', $study_id);
             $stmt->bindParam(':title', $title); 
             $stmt->bindParam(':authors', $authors); 
@@ -91,6 +92,7 @@
             $stmt->bindParam(':year', $year); 
             $stmt->bindParam(':adviser', $adviser); 
             $stmt->bindParam(':dept', $dept); 
+            $stmt->bindParam(':keywords', $keywords); 
             $stmt->execute();
             echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
             exit();
@@ -340,6 +342,10 @@
                                             <div class="mb-3">
                                                 <label for="year" class="col-form-label" style="font-size: 17px;">Year</label>
                                                 <input type="text" name="year" class="form-control" id="year" value="<?php echo $study['year']; ?>">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="keywords" class="col-form-label" style="font-size: 17px;">Keywords</label>
+                                                <input type="text" name="keywords" class="form-control" id="keywords" value="<?php echo $study['keywords']; ?>">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
