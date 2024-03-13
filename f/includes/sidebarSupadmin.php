@@ -8,7 +8,7 @@
 <body>
 
     <!-- Sidebar -->
-    <div class="flex-shrink-0 p-3 dash" style="width: 280px; height: 100%;">
+    <div class="flex-shrink-0 p-3 dash" id="adminside" style="width: 280px; height: 100%;">
         <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
 
             <!-- Logo -->

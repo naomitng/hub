@@ -3,7 +3,7 @@ session_start();
 
 $page_title = "Dashboard";
 include '../includes/header.php';
-include '../includes/sidebarSupadmin.php';
+include 'sidebarUser.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
