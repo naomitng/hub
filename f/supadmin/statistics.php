@@ -50,7 +50,9 @@ foreach ($itCpeData as $dept) {
 <div id="content" class="h-100">
     <ul class="list-group">
         <li class="list-group-item p-4">
-            <h3>Statistical for Research Hub database:</h3>
+            <h2>Statistical for Research Hub Database
+                <a target="_blank" href="print.php" class="btn btn-light float-end"><span style="font-size: 25px;" class="fa-solid fa-print"></span></a>
+            </h2>
             <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
                 <li>
                     <h2>Total Studies: <?php echo $totalStudies; ?></h2>
