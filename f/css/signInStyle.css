@@ -1,4 +1,7 @@
 body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
     background-image: url("../img/bg-rtu.jpg");
     background-size: cover;
     background-position: center;
@@ -7,16 +10,34 @@ body {
     color: white;
     transition: background-image 1s ease-in-out;
     font-family: 'Nunito Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
 } h1 {
     font-size: 25px;
     color: white;
 } a {
     color: white;
-} a:hover {
+} #forgotpass:hover,
+#register:hover {
     opacity: .7;
 } input.form-control:focus {
     border-color: none; 
     box-shadow: none;
 } .btn-warning:hover {
     background-color: #FFEA00;
+}  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+} .logo-img {
+    height: 30px;
+    margin-right: 5px;
+} #logoText {
+    font-size: 20px;
+    color: #28282B;
+    text-decoration: none;
 }

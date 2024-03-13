@@ -74,6 +74,9 @@
 ?>
 
 <div class="container-md">
+    <a href="" class="logo-container" id="logoText" title="Back to landing page">
+        <img src="../img/logo.png" alt="Research Hub logo" class="logo-img">
+    </a>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <form action="" method="post" class="text-center p-5 rounded shadow-lg" style="background-color: #00308F;">
@@ -106,7 +109,7 @@
                     <input type="text" name="email" class="form-control" placeholder="Email" required>
                 </div>
                 <button type="submit" name="forgotBtn" class="btn btn-warning w-100">Forgot password</button>
-                <p class="mt-5 mb-0">Have an admin account? <a href="../admin/aSignIn.php">Sign in</a> instead</p>
+                <p class="mt-5 mb-0">Have an admin account? <a href="../admin/aSignIn.php" id="signin">Sign in</a> instead</p>
             </form>    
         </div>
     </div>

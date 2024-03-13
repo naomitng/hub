@@ -75,7 +75,9 @@
 
 
 <body class="d-flex align-items-center vh-100">
-
+    <a href="" class="logo-container" id="logoText" title="Back to landing page">
+        <img src="../img/logo.png" alt="Research Hub logo" class="logo-img">
+    </a> 
     <div class="container-fluid h-100">
         <div class="row h-100">
             <div class="col-md-6 d-flex align-items-center justify-content-center shadow-lg" style="background-color: white;">
@@ -125,11 +127,11 @@
                                     <button type="submit" name="signinBtn" class="col-md-12 btn btn-warning">Sign In</button>
                                 </div>
                                 <div class="register-link">
-                                    <p class="text-center mt-2">No account? Register <a href="../admin/aSignUp.php">here</a></p>
+                                    <p class="text-center mt-2">No account? Register <a href="../admin/aSignUp.php"  id="register">here</a></p>
                                 </div>
                             </div>
                             <div class="register-link">
-                                <p class="text-center mt-5"><a href="../admin/forgotPass.php">Forgot password?</a></p>
+                                <p class="text-center mt-5"><a href="../admin/forgotPass.php" id="forgotpass">Forgot password?</a></p>
                             </div>
                         </div>
                     </div>

@@ -1,15 +1,36 @@
 body {
-    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    flex-direction: column;
 } p {
     font-size: 15px;
+} #signin {
+    color: white;
 } a {
     color: black;
-} a:hover {
+} #signin:hover, 
+a:hover {
     color: gray;
 } .btn-warning:hover {
     background-color: #FFEA00;
+} .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+} .logo-img {
+    height: 30px;
+    margin-right: 5px;
+} #logoText {
+    font-size: 20px;
+    color: #28282B;
+    text-decoration: none;
 }

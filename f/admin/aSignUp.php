@@ -109,6 +109,9 @@
 ?>
 
 <body class="d-flex align-items-center">
+    <a href="" class="logo-container" id="logoText" title="Back to landing page">
+        <img src="../img/logo.png" alt="Research Hub logo" class="logo-img">
+    </a>    
     <div class="row">
         <!-- Image column -->
         <div class="col-md-3 p-0 img-container">

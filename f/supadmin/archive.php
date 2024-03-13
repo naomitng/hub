@@ -68,7 +68,6 @@ if(isset($_POST['delete'])) {
 
 <!-- Content Area -->
 <div id="content">
-
     <!-- Search bar -->
     <form class="search" method="get">
         <i class="fa fa-search"></i>

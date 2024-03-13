@@ -1,5 +1,6 @@
 body {
-    height: 100vh;
+    min-height: 100vh;
+    padding: 0;
     margin: 0;
     display: flex;
     align-items: center;
@@ -8,44 +9,46 @@ body {
     overflow: hidden;
     background-color: #F5F5F5;
     color: white;
-}
-
-.container-fluid {
+    flex-direction: column;
+} .container-fluid {
     max-width: 100%;
-}
-
-.img-container {
+} .img-container {
     display: flex;
     align-items: stretch;
     margin-left: 12%;
-}
-
-.img-fluid {
+} .img-fluid {
     width: 100%;
     object-fit: cover;
-}
-
-.form-container {
+} .form-container {
     flex: 1;
     padding: 5%;
     background-color: #00308F
-}
-
-p {
+} p {
     font-size: 13px;
     opacity: .8;
-} 
-
-a {
+} a {
     color: white;
-}
-
-h1 {
+} h1 {
     font-size: 35px;
-}
-
-.shadow-left {
+} .shadow-left {
     box-shadow: -8px 10px 15px -3px rgba(0, 0, 0, 0.1), -4px 4px 6px -2px rgba(0, 0, 0, 0.05);
 } .btn-warning:hover {
     background-color: #FFEA00;
+} .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+} .logo-img {
+    height: 30px;
+    margin-right: 5px;
+} #logoText {
+    font-size: 20px;
+    color: #28282B;
+    text-decoration: none;
 }
+
+
