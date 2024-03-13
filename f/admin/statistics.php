@@ -1,23 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistics</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Add your CSS styles here */
-    </style>
-</head>
-<body>
 <?php
 session_start();
 if (!isset($_SESSION['fname'])) {
     // Redirect the user to the sign-in page
     header('Location: ../admin/aSignIn.php');
-    exit();
+    exit(); 
 }
-
 
 $page_title = "Statistics";
 include '../includes/header.php';
@@ -57,17 +44,29 @@ foreach ($itCpeData as $dept) {
         $cpeCount = $dept['count'];
     }
 }
+
 ?>
 
 <div id="content" class="h-100">
     <ul class="list-group">
         <li class="list-group-item p-4">
-            <h3>Statistical for Research Hub database:</h3>
+            <h2>Statistical for Research Hub Database
+                <a target="_blank" href="print.php" class="btn btn-light float-end"><span style="font-size: 25px;" class="fa-solid fa-print"></span></a>
+            </h2>
+            <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
+                <li>
+                    <h2>Total Studies: <?php echo $totalStudies; ?></h2>
+                    <div style="display: flex; justify-content: center;">
+
+                    </div>
+                </li>
+            </ul>
+
             <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
                 <li>
                     <input type="hidden" name="report_type" value="it_cpe">
                     <h2>IT vs CpE report</h2>
-                    <p>This report focuses on studies from the <a href="../admin/infotech.php">Information Technology</a> <br>and <a href="../admin/comEng.php">Computer Engineering</a> departments stored in the Research Hub database.</p>
+                    <p>This report focuses on studies from the <a href="infotech.php">Information Technology</a> <br>and <a href="comEng.php">Computer Engineering</a> departments stored in the Research Hub database.</p>
                     <!-- place chart here -->
                     <div style="display: flex; justify-content: center;">
                         <canvas id="itCpeChart" width="400" height="300"></canvas>
@@ -78,7 +77,7 @@ foreach ($itCpeData as $dept) {
                                 data: {
                                     labels: ['IT', 'CpE'],
                                     datasets: [{
-                                        label: 'IT and CpE Studies',
+                                        label: 'Total Studies',
                                         data: [<?php echo $itCount; ?>, <?php echo $cpeCount; ?>],
                                         backgroundColor: [
                                             'rgba(255, 99, 132, 0.2)',
@@ -113,7 +112,7 @@ foreach ($itCpeData as $dept) {
                 <li>
                     <input type="hidden" name="report_type" value="archive">
                     <h2>Archive report</h2>
-                    <p>This report shows the number of studies <a href="../admin/archive.php">archived</a> in the Research Hub database.</p>
+                    <p>This report shows the number of studies <a href="archive.php">archived</a> in the Research Hub database.</p>
                     <!-- place chart here -->
                     <div style="display: flex; justify-content: center;">
                         <canvas id="archiveChart" width="400" height="300"></canvas>
