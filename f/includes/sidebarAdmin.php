@@ -20,12 +20,12 @@
 
             <!-- List for the departments -->
             <li class="mb-1">
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
                     Departments
                 </button>
 
                 <!-- Departments -->
-                <div class="collapse show" id="home-collapse">
+                <div class="collapse" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="../admin/infotech.php" class="link-dark rounded">Information Technology</a></li>
                         <li><a href="../admin/comEng.php" class="link-dark rounded">Computer Engineering</a></li>
@@ -52,12 +52,12 @@
 
             <!-- List for filter -->
             <li class="">
-                <button class="btn btn-toggle align-items-center rounded collapsed mt-3" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="true">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false">
                     Filter searches
                 </button>
 
                 <!-- Year -->
-                <div class="collapse show" id="filter-collapse">
+                <div class="collapse" id="filter-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="../admin/filter.php?year=2020" class="link-dark rounded">Since 2020</a></li>
                         <li><a href="../admin/filter.php?year=2021" class="link-dark rounded">Since 2021</a></li>
