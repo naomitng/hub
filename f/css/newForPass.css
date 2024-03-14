@@ -33,4 +33,8 @@ a:hover {
     font-size: 20px;
     color: #28282B;
     text-decoration: none;
-}
+} span:hover {
+    color: gray;
+} #email {
+    color: black;
+} 

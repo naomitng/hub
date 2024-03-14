@@ -3,29 +3,28 @@
 $page_title = "";
 include '../includes/header.php';
 include '../user/sidebarUser.php';
-
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
 $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
-// Pagination variables
-$studiesPerPage = 10;
-$currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$offset = ($currentPage - 1) * $studiesPerPage;
-
-// Initialize $studies and $totalStudies
 $studies = [];
 $totalStudies = 0;
-
-// Fetch the study in table studies
 $study = null;
+$back_text = "Back to Home";
+$back_link = "results.php";
+
+// Fetch the study from the database
 if (isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
         $stmt->execute([$study_id]);
-        $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
+        $study = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($study) {
+            $page_title = isset($_GET['title']) ? $_GET['title'] : ""; // Set the page title to the study title
+            // Set the title directly within the HTML output
+            echo "<title>$page_title</title>";
+        }
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
@@ -33,9 +32,11 @@ if (isset($_GET['id'])) {
 
 ?>
 
+
+
+
 <!-- Content Area -->
 <div id="content">
-
     <!-- List of studies -->
     <ul class="list-group mb-5">
         <li class="list-group-item p-4">
@@ -60,5 +61,5 @@ if (isset($_GET['id'])) {
             </ul>
         </li>
     </ul>        
-
 </div>
+

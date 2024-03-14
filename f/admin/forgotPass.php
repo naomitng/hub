@@ -74,8 +74,9 @@
 ?>
 
 <div class="container-md">
-    <a href="" class="logo-container" id="logoText" title="Back to landing page">
+    <a href="../user/landing.php" class="logo-container" id="logoText" title="Back to landing page">
         <img src="../img/logo.png" alt="Research Hub logo" class="logo-img">
+        <span>Research Hub</span>
     </a>
     <div class="row justify-content-center">
         <div class="col-md-6">

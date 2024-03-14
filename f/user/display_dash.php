@@ -17,6 +17,10 @@ if (isset($_GET['id'])) {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
         $stmt->execute([$study_id]);
         $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
+        // Set the page title to the study title if a study is found
+        if ($study) {
+            $page_title = $study['title'];
+        }
     } catch (PDOException $e) {
         echo $e->getMessage();
     }

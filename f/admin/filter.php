@@ -147,7 +147,6 @@
     <!-- Search bar -->
     <form class="search" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
         <input type="hidden" name="year" value="<?php echo isset($_GET['year']) ? $_GET['year'] : ''; ?>">
-        <i class="fa fa-search"></i>
         <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -162,7 +161,7 @@
             <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
                 <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
-                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
+                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"<br></i>
                 <?php endif; ?>
             <?php endif; ?>
             <!-- Back link to dashboard -->

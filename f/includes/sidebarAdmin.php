@@ -6,15 +6,14 @@
     <title></title>
 </head>
 <body>
-
     <!-- Sidebar -->
     <div class="flex-shrink-0 p-3 dash" style="width: 280px; height: 100%;">
         <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-
             <!-- Logo -->
-            <a href="../admin/aDashboard.php" style=" text-decoration: none;"><img src="../img/logo.png" alt="" style="width: 40px;">
-            <span style="font-size: 25px; color: #28282B;">Research Hub</span></a>
-            
+            <a href="../admin/aDashboard.php" style="text-decoration: none;" class="d-flex align-items-center">
+                <img src="../img/logo.png" alt="" style="width: 40px;">
+                <span style="font-size: 25px; color: #28282B;">Research Hub</span>
+            </a>
         </div>
         <ul class="list-unstyled ps-0">
 

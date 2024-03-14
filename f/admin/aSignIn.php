@@ -16,6 +16,7 @@
     include '../includes/header.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signInStyle.css'>";
     echo "<script src='../script/slideshow.js'></script>";
+    echo "<script src='../script/showPass.js'></script>";
     
     $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
 
@@ -75,8 +76,9 @@
 
 
 <body class="d-flex align-items-center vh-100">
-    <a href="" class="logo-container" id="logoText" title="Back to landing page">
+    <a href="../user/landing.php" class="logo-container" id="logoText" title="Back to landing page">
         <img src="../img/logo.png" alt="Research Hub logo" class="logo-img">
+        <span>Research Hub</span>
     </a> 
     <div class="container-fluid h-100">
         <div class="row h-100">
@@ -118,11 +120,17 @@
                                             <path d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1"/>
                                         </svg>
                                     </span>
-                                    <input type="password" name="pass" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" required>
+                                    <input type="password" id="password" name="pass" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" required>
                                 </div>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="showPass" onclick="show()">
+                                <label class="form-check-label" for="showPass">
+                                    Show password
+                                </label>
+                            </div>
                             <!-- Submit Button -->
-                            <div class="mb-3">
+                            <div class="mb-3 mt-3">
                                 <div class="input-group">
                                     <button type="submit" name="signinBtn" class="col-md-12 btn btn-warning">Sign In</button>
                                 </div>

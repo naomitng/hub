@@ -11,8 +11,7 @@
     <!-- Form for search -->
     <form action="results.php" method="get" class="search landing-s result-s">
 
-        <i class="fa fa-search"></i>
-        <input type="text" class="form-control" placeholder="Search" name="search">
+        <input type="text" class="form-control" placeholder="Search" name="search" autocomplete="off">
         <!-- Search Button -->
         <button type="submit" class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">

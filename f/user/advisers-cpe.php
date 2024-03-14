@@ -40,7 +40,6 @@
 <div id="content">
     <!-- Search bar -->
     <form class="search" method="get">
-        <i class="fa fa-search"></i>
         <input type="text" class="form-control" placeholder="Search" name="search"> 
         <button class="btn btn-warning" type="submit"> 
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
