@@ -16,13 +16,11 @@
             </a>
         </div>
         <ul class="list-unstyled ps-0">
-
             <!-- List for the departments -->
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
                     Departments
                 </button>
-
                 <!-- Departments -->
                 <div class="collapse" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -31,13 +29,11 @@
                     </ul>
                 </div>
             </li>
-
             <!-- List for the dashboard -->
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
                     Dashboard
                 </button>
-
                 <!-- Under dashboard -->
                 <div class="collapse" id="dashboard-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -48,13 +44,11 @@
                     </ul>
                 </div>
             </li>
-
             <!-- List for filter -->
             <li class="">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false">
                     Filter searches
                 </button>
-
                 <!-- Year -->
                 <div class="collapse" id="filter-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -66,13 +60,11 @@
                     </ul>
                 </div>
             </li>
-
             <!-- Account setting -->
             <li class="border-top">
                 <button class="btn btn-toggle align-items-center rounded collapsed mt-3" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
                     <?php echo "Hello, admin " . $_SESSION['fname']; ?>
                 </button>
-
                 <!-- Under account settings -->
                 <div class="collapse" id="account-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">

@@ -57,7 +57,7 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 $pdf->AddPage();
 
-$pdf->Image('../img/logo.png', 33, 1, 15, 15, 'PNG', '', '', false, 300, '', false, false, 0);
+//$pdf->Image('../img/logo.png', 33, 1, 15, 15, 'PNG', '', '', false, 300, '', false, false, 0);
 
 $pdf->SetFont('dejavusans', '', 10);  
 $content = '';  

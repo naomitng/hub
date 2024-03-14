@@ -42,4 +42,6 @@ body {
     text-decoration: none;
 } span:hover {
     color: gray;
+} #email {
+    color: black;
 }

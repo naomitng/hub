@@ -153,13 +153,13 @@
                     <!-- First name -->
                     <div class="col">
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="fName" name="fName" placeholder="First name" required>
+                            <input type="text" class="form-control" id="fName" name="fName" placeholder="First name" autocomplete="off" required>
                         </div>
                     </div>
                     <!-- Last name -->
                     <div class="col">
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="lName" name="lName" placeholder="Last name" required>
+                            <input type="text" class="form-control" id="lName" name="lName" placeholder="Last name" autocomplete="off" required>
                         </div>
                     </div>
                 </div>
@@ -174,7 +174,7 @@
                             </svg>
                         </span>
                         <input type="text" class="form-control" placeholder="Email" name="email" aria-label="Email"
-                            aria-describedby="basic-addon1" required>
+                            aria-describedby="basic-addon1" autocomplete="off" required>
                     </div>
                     <p>You can use letters, numbers & periods</p>
                 </div>
