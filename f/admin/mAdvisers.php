@@ -1,90 +1,110 @@
 <?php
+session_start();
+if (!isset($_SESSION['fname'])) {
+    // Redirect the user to the sign-in page
+    header('Location: ../admin/aSignIn.php');
+    exit();
+}
+$page_title = "Manage Advisers";
+include '../includes/header.php';
+include '../includes/sidebarAdmin.php';
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";
+echo "<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>";
+echo "<script src='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js'></script>";
 
-    session_start();
-    if (!isset($_SESSION['fname'])) {
-        // Redirect the user to the sign-in page
-        header('Location: ../admin/aSignIn.php');
-        exit();
-    }
-    $page_title = "Manage Advisers";
-    include '../includes/header.php';
-    include '../includes/sidebarAdmin.php';
-    echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";
-    $sucMsg = "";
-    $errMsg = "";
+$sucMsg = "";
+$errMsg = "";
 
-    // save/add advisers
-    if(isset($_POST['save'])) {
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $dept = $_POST['dept'];
-        try {
-            $stmt = $pdo->prepare("INSERT INTO `advisers` (`name`, `email`, `dept`) VALUES (:name, :email, :dept)");
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':name', $name);
-            $stmt->bindParam(':dept', $dept);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            echo $errMsg = "Error: " . $e->getMessage();
-        }
-    } 
-    
-    // delete button
-    if(isset($_POST['delete'])) {
-        $adviser_id = $_POST['adviser_id'];
-        try {
-            $stmt = $pdo->prepare("DELETE FROM `advisers` WHERE id = :id");
-            $stmt->bindParam(':id', $adviser_id);
-            $stmt->execute();
-            
-        } catch (PDOException $e) {
-            $errMsg = "Error deleting adviser: " . $e->getMessage();
-        }
-    }
-    
-    // edit button
-    if(isset($_POST['saveChanges'])) {
-        $adviser_id = $_POST['adviser_id'];
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $dept = $_POST['dept'];
-        try {
-            $stmt = $pdo->prepare("UPDATE advisers SET name = :name, email = :email, dept = :dept WHERE id = :id");
-            $stmt->bindParam(':id', $adviser_id);
-            $stmt->bindParam(':name', $name);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':dept', $dept);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            
-        }
-    }
+// Set the number of advisers to display per page
+$advisersPerPage = 10;
 
-    // display advisers
+// save/add advisers
+if (isset($_POST['save'])) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $dept = $_POST['dept'];
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `advisers`");
-        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $errMsg = "Error fetching advisers: " . $e->getMessage();
-    }
-
-    try {
-        // Check if a search term is provided
-        if(isset($_GET['search'])) {
-            $search = $_GET['search'];
-            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search");
-            $stmt->bindValue(':search', "%$search%");
-        } else {
-            // If no search term provided, fetch all advisers
-            $stmt = $pdo->prepare("SELECT * FROM `advisers`");
-        }
+        $stmt = $pdo->prepare("INSERT INTO `advisers` (`name`, `email`, `dept`) VALUES (:name, :email, :dept)");
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':dept', $dept);
         $stmt->execute();
-        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        $errMsg = "Error fetching advisers: " . $e->getMessage();
+        echo $errMsg = "Error: " . $e->getMessage();
     }
+}
+
+// delete button
+if (isset($_POST['delete'])) {
+    $adviser_id = $_POST['adviser_id'];
+    try {
+        $stmt = $pdo->prepare("DELETE FROM `advisers` WHERE id = :id");
+        $stmt->bindParam(':id', $adviser_id);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        $errMsg = "Error deleting adviser: " . $e->getMessage();
+    }
+}
+
+// edit button
+if (isset($_POST['saveChanges'])) {
+    $adviser_id = $_POST['adviser_id'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $dept = $_POST['dept'];
+    try {
+        $stmt = $pdo->prepare("UPDATE advisers SET name = :name, email = :email, dept = :dept WHERE id = :id");
+        $stmt->bindParam(':id', $adviser_id);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':dept', $dept);
+        $stmt->execute();
+    } catch (PDOException $e) {
+    }
+}
+
+// display advisers
+try {
+    // Check if a search term is provided
+    if (isset($_GET['search'])) {
+        $search = $_GET['search'];
+        $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search");
+        $stmt->bindValue(':search', "%$search%");
+    } else {
+        // If no search term provided, fetch all advisers
+        $stmt = $pdo->prepare("SELECT * FROM `advisers`");
+    }
+    $stmt->execute();
+    $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errMsg = "Error fetching advisers: " . $e->getMessage();
+}
+
+// Calculate the total number of pages for pagination
+$totalPages = ceil(count($advisers) / $advisersPerPage);
+
+// Calculate the offset based on the current page
+$currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($currentPage - 1) * $advisersPerPage;
+
+// Fetch advisers for the current page
+try {
+    if (isset($_GET['search'])) {
+        $search = $_GET['search'];
+        $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search LIMIT :offset, :perPage");
+        $stmt->bindValue(':search', "%$search%");
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM `advisers` LIMIT :offset, :perPage");
+    }
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindValue(':perPage', $advisersPerPage, PDO::PARAM_INT);
+    $stmt->execute();
+    $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errMsg = "Error fetching advisers: " . $e->getMessage();
+}
 ?>
 
 <!-- Content Area -->
@@ -245,24 +265,22 @@
        </li>
     </ul>
     <?php
-    // Check if there are 5 or more entries
-    if (count($advisers) >= 5) {
-        echo '
-            <!-- Pagination -->
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link">Previous</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                    </li>
-                </ul>
-            </nav>
-            ';
-        }   
+    // Display pagination if there are multiple pages
+    if ($totalPages > 1) {
+        echo '<nav aria-label="Page navigation example">';
+        echo '<ul class="pagination justify-content-center">';
+        if ($currentPage > 1) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '">Previous</a></li>';
+        }
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo '<li class="page-item' . ($currentPage == $i ? " active" : "") . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+        }
+        if ($currentPage < $totalPages) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '">Next</a></li>';
+        }
+        echo '</ul>';
+        echo '</nav>';
+    }
     ?>
+</div>
 </div>

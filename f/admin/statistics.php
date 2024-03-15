@@ -13,23 +13,18 @@ echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/statistics.css'>";
 
-// Retrieve data and count occurrences
 $stmt = $pdo->query("SELECT COUNT(*) AS total FROM `studies`");
 $totalStudies = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-// Example: Count studies by department
 $stmtDept = $pdo->query("SELECT dept, COUNT(*) AS count FROM `studies` GROUP BY dept");
 $deptData = $stmtDept->fetchAll(PDO::FETCH_ASSOC);
 
-// Example: Count studies by year
 $stmtYear = $pdo->query("SELECT year, COUNT(*) AS count FROM `studies` GROUP BY year");
 $yearData = $stmtYear->fetchAll(PDO::FETCH_ASSOC);
 
-// Count number of studies in the archive table
 $stmtArchive = $pdo->query("SELECT COUNT(*) AS count FROM `archive`");
 $archiveCount = $stmtArchive->fetch(PDO::FETCH_ASSOC)['count'];
 
-// Get number of studies in IT and CpE departments
 $stmtITCpE = $pdo->query("SELECT dept, COUNT(*) AS count FROM `studies` WHERE dept IN ('Information Technology', 'Computer Engineering') GROUP BY dept");
 $itCpeData = $stmtITCpE->fetchAll(PDO::FETCH_ASSOC);
 $itCount = 0;
@@ -148,7 +143,7 @@ foreach ($itCpeData as $dept) {
                 <li>
                     <input type="hidden" name="report_type" value="yearly_studies">
                     <h2>Yearly Studies Report</h2>
-                    <p>This report shows the number of studies conducted each year from 2020 to 2024 in the Research Hub database.</p>
+                    <p>This report shows the number of studies conducted each year from 2020 to 2024 <br> in the Research Hub database.</p>
                     <!-- place chart here -->
                     <div style="display: flex; justify-content: center;">
                         <canvas id="yearlyStudiesChart" width="400" height="300"></canvas>

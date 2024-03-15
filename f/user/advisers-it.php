@@ -1,45 +1,54 @@
 <?php
-    session_start();
-    $page_title = "Manage Advisers";
-    include '../includes/header.php';
-    include '../user/sidebarUser.php';
+session_start();
+$page_title = "Advisers";
+include '../includes/header.php';
+include '../user/sidebarUser.php';
 
-    echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    try {
-        // Fetch advisers only from the Information Technology department
+// Set the number of advisers to display per page
+$advisersPerPage = 10;
+
+try {
+    // Check if a search term is provided
+    if (isset($_GET['search'])) {
+        $search = $_GET['search'];
+        // Fetch advisers from the Information Technology department with the provided search term
+        $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search AND dept = 'Information Technology'");
+        $stmt->bindValue(':search', "%$search%");
+    } else {
+        // If no search term provided, display all advisers from the Information Technology department
         $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology'");
-        $stmt->execute();
-        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $errMsg = "Error fetching advisers: " . $e->getMessage();
     }
 
-    try {
-        // Check if a search term is provided
-        if(isset($_GET['search'])) {
-            $search = $_GET['search'];
-            // Fetch advisers from the Information Technology department with the provided search term
-            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search AND dept = 'Information Technology'");
-            $stmt->bindValue(':search', "%$search%");
-        } else {
-            // If no search term provided, display all advisers from the Information Technology department
-            $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology'");
-        }
-        $stmt->execute();
-        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $errMsg = "Error fetching advisers: " . $e->getMessage();
-    }
+    $stmt->execute();
+    $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Calculate the total number of pages required for pagination
+    $totalPages = ceil(count($advisers) / $advisersPerPage);
+
+    // Calculate the offset based on the current page
+    $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+    $offset = ($currentPage - 1) * $advisersPerPage;
+
+    // Fetch advisers for the current page
+    $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology' LIMIT :offset, :perPage");
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindValue(':perPage', $advisersPerPage, PDO::PARAM_INT);
+    $stmt->execute();
+    $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errMsg = "Error fetching advisers: " . $e->getMessage();
+}
 ?>
 
 <!-- Content Area -->
 <div id="content">
     <!-- Search bar -->
     <form class="search" method="get"> <!-- Change method to get -->
-        <input type="text" class="form-control" placeholder="Search" name="search"> 
-        <button class="btn btn-warning" type="submit"> 
+        <input type="text" class="form-control" placeholder="Search" name="search">
+        <button class="btn btn-warning" type="submit">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
             </svg>
@@ -57,7 +66,7 @@
                     </svg> Back to home
                 </a>
             </div>
-            <!-- Advisers --> 
+            <!-- Advisers -->
             <?php foreach ($advisers as $adviser): ?>
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-4">
                     <!-- Name -->
@@ -72,24 +81,27 @@
         </li>
     </ul>
     <?php
-    // Check if there are 5 or more entries
-    if (count($advisers) >= 5) {
+    // Pagination
+    if ($totalPages > 1) {
         echo '
             <!-- Pagination -->
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link">Previous</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
+                    <li class="page-item ' . ($currentPage == 1 ? 'disabled' : '') . '">
+                        <a class="page-link" href="?page=' . ($currentPage - 1) . '">Previous</a>
+                    </li>';
+
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo "<li class='page-item " . ($currentPage == $i ? 'active' : '') . "'><a class='page-link' href='?page=$i'>$i</a></li>";
+        }
+
+        echo '
+                    <li class="page-item ' . ($currentPage == $totalPages ? 'disabled' : '') . '">
+                        <a class="page-link" href="?page=' . ($currentPage + 1) . '">Next</a>
                     </li>
                 </ul>
             </nav>
-            ';
-    }   
+        ';
+    }
     ?>
 </div>

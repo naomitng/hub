@@ -7,7 +7,7 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
+    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
     // display advisers
     try {
         $stmt = $pdo->prepare("SELECT * FROM studies");

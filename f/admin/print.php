@@ -1,8 +1,11 @@
 <?php
+
 ob_start();
 
 date_default_timezone_set('Asia/Manila');
 include '../includes/header.php';
+$page_title = "Statistics";
+
 
 // Retrieve data and count occurrences
 $stmt = $pdo->query("SELECT COUNT(*) AS total FROM `studies`");

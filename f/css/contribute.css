@@ -25,4 +25,8 @@ body {
     opacity: .7;
 } .privacytxt {
     font-size: 17px;
+} span, #asterisk {
+    color: red;
+} #file {
+    font-style: italic;
 }

@@ -1,55 +1,64 @@
 <?php
 
-    session_start();
-    if (!isset($_SESSION['fname'])) {
-        // Redirect the user to the sign-in page
-        header('Location: ../admin/aSignIn.php');
-        exit();
-    }
-    $page_title = "Archive";
-    include '../includes/header.php';
-    include '../includes/sidebarAdmin.php';
-    echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-    // Fetch the study in table archive
-    if(isset($_GET['id'])) {
-        $study_id = $_GET['id'];
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM `archive` WHERE id = ?");
-            $stmt->execute([$study_id]);
-            $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
-    }
+session_start();
+if (!isset($_SESSION['fname'])) {
+    // Redirect the user to the sign-in page
+    header('Location: ../admin/aSignIn.php');
+    exit();
+}
+$page_title = "Archive";
+include '../includes/header.php';
+include '../includes/sidebarAdmin.php';
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+// Initialize $totalStudies variable
+$totalStudies = 0;
+// Define offset, studiesPerPage, and currentPage variables
+$offset = 0; // You can change this value according to your requirements
+$studiesPerPage = 10; // You can change this value according to your requirements
+$currentPage = isset($_GET['page']) ? $_GET['page'] : 1; // Default to page 1 if not set
+// Fetch the study in table archive
+if(isset($_GET['id'])) {
+    $study_id = $_GET['id'];
     try {
-        if(isset($_GET['search'])) {
-            $search = '%' . preg_replace('/[^a-zA-Z0-9\s]/', '', $_GET['search']) . '%';
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE (dept = 'Computer Engineering') AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search) LIMIT :offset, :limit");
-            $stmt->bindParam(':search', $search, PDO::PARAM_STR);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-    
-            // Fetch total number of studies for search results
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering' AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search)");
-            $totalStmt->bindValue(':search', $search, PDO::PARAM_STR);
-        } else {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' LIMIT :offset, :limit");
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-    
-            // Fetch total number of all studies for the Computer Engineering department
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering'");
-        }
-        $stmt->execute(); // Execute the prepared statement
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-        // Execute totalStmt to get total number of studies
-        $totalStmt->execute();
-        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $stmt = $pdo->prepare("SELECT * FROM `archive` WHERE id = ?");
+        $stmt->execute([$study_id]);
+        $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
+}
+try {
+    if(isset($_GET['search'])) {
+        $search = '%' . preg_replace('/[^a-zA-Z0-9\s]/', '', $_GET['search']) . '%';
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE (dept = 'Computer Engineering') AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search) LIMIT :offset, :limit");
+        $stmt->bindParam(':search', $search, PDO::PARAM_STR);
+        // Bind offset and limit parameters
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+        
+        // Fetch total number of studies for search results
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering' AND (LOWER(title) REGEXP :search OR LOWER(keywords) REGEXP :search)");
+        $totalStmt->bindValue(':search', $search, PDO::PARAM_STR);
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' LIMIT :offset, :limit");
+        // Bind offset and limit parameters
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+        
+        // Fetch total number of all studies for the Computer Engineering department
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering'");
+    }
+    $stmt->execute(); // Execute the prepared statement
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+    // Execute totalStmt to get total number of studies
+    $totalStmt->execute();
+    $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
 ?>
+
 
 <!-- Content Area -->
 <div id="content">
@@ -61,42 +70,21 @@
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                 </svg> Back to home
             </a>
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
-                <li class="list-group-item-title mb-3"><?php echo $study['title']; ?></li>
-                <li>Authors: <?php echo $study['authors']; ?></li>
-                <li>Department: <?php echo $study['dept']; ?></li>
-                <li>Adviser: <?php echo $study['adviser']; ?></li>
-                <li class="">Year: <?php echo $study['year']; ?></li>
-                <hr>
+            <?php if ($study): ?> <!-- Check if $study is not null -->
+                <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
+                    <li class="list-group-item-title mb-3"><?php echo $study['title']; ?></li>
+                    <li>Authors: <?php echo $study['authors']; ?></li>
+                    <li>Department: <?php echo $study['dept']; ?></li>
+                    <li>Adviser: <?php echo $study['adviser']; ?></li>
+                    <li class="">Year: <?php echo $study['year']; ?></li>
+                    <hr>
 
-                <li class="mb-4" style="font-size: 20px;">Abstract</li>
-                <li><?php echo $study['abstract']; ?></li>
-            </ul>
+                    <li class="mb-4" style="font-size: 20px;">Abstract</li>
+                    <li><?php echo $study['abstract']; ?></li>
+                </ul>
+            <?php else: ?>
+                <p>No study found with the provided ID.</p>
+            <?php endif; ?>
         </li>
     </ul>        
-    <!-- Pagination -->
-    <?php if ($totalStudies > $studiesPerPage): ?>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <?php if ($currentPage > 1): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
-                    </li>
-                <?php endif; ?>
-                <?php
-                    $totalPages = ceil($totalStudies / $studiesPerPage);
-                    for ($i = 1; $i <= $totalPages; $i++):
-                ?>
-                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                    </li>
-                <?php endfor; ?>
-                <?php if ($currentPage < $totalPages): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    <?php endif; ?>
 </div>
