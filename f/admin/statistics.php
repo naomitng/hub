@@ -13,10 +13,6 @@ echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/statistics.css'>";
 
-
-$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-//$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
 // Retrieve data and count occurrences
 $stmt = $pdo->query("SELECT COUNT(*) AS total FROM `studies`");
 $totalStudies = $stmt->fetch(PDO::FETCH_ASSOC)['total'];

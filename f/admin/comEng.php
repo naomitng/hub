@@ -5,20 +5,13 @@
         header('Location: ../admin/aSignIn.php');
         exit();
     }
-
     $page_title = "Computer Engineering";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
-    // Initialize variables
     $studies = [];
     $totalStudies = 0;
-
     try {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering'");
         $stmt->execute();
@@ -27,8 +20,7 @@
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
-
-    // delete 
+    // FOR DELETE 
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
         try {
@@ -41,7 +33,6 @@
             echo $e->getMessage();
         }
     }
-
     if(isset($_POST['archive'])) {
         $study_id = $_POST['study_id'];
         try {
@@ -50,7 +41,6 @@
             $stmt_select->bindParam(':study_id', $study_id);
             $stmt_select->execute();
             $study = $stmt_select->fetch(PDO::FETCH_ASSOC);
-            
             // Insert the study into the 'archive' table
             $stmt_insert_archive = $pdo->prepare("INSERT INTO `archive`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords)");
             $stmt_insert_archive->bindParam(':title', $study['title']);
@@ -62,13 +52,10 @@
             $stmt_insert_archive->bindParam(':filename', $study['filename']);
             $stmt_insert_archive->bindParam(':keywords', $study['keywords']);
             $stmt_insert_archive->execute();
-            
-            
             // Delete the study from the 'studies' table
             $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
-            
             // Redirect back to the dashboard
             echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
             exit();
@@ -76,7 +63,7 @@
             echo $e->getMessage();
         }
     }
-
+    // FOR EDIT
     if(isset($_POST['saveChanges'])) {
         $study_id = $_POST['study_id'];
         $title = $_POST['title'];
@@ -86,7 +73,6 @@
         $adviser = $_POST['adviser'];
         $dept = $_POST['dept']; 
         $keywords = $_POST['keywords']; 
-
         try {
             $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept, `keywords`=:keywords WHERE id = :study_id");
             $stmt->bindParam(':study_id', $study_id);
@@ -104,12 +90,10 @@
             echo $e->getMessage(); 
         }
     }
-
     // Pagination variables
     $studiesPerPage = 10;
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
-
     // Function to construct a search query
     function constructSearchQuery($search) {
         $keywords = explode(" ", $search);
@@ -119,13 +103,11 @@
         }
         return implode(" AND ", $conditions);
     }
-
     // Check if search term is provided
     if(isset($_GET['search'])) {
         $search = trim($_GET['search']);  
         $search = htmlspecialchars($search);            
         $searchQuery = constructSearchQuery(strtolower($search));
-    
         try {
             $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' AND ($searchQuery) LIMIT :limit OFFSET :offset");
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
@@ -183,7 +165,6 @@
                                     $words = explode(' ', $title);
                                     $new_title = '';
                                     $line_length = 0;
-
                                     foreach ($words as $word) {
                                         if ($line_length + strlen($word) > 70) {
                                             $new_title .= '<br>' . $word . ' ';

@@ -5,16 +5,11 @@ if (!isset($_SESSION['fname'])) {
     header('Location: ../admin/aSignIn.php');
     exit();
 }
-
 $page_title = "Dashboard";
 include '../includes/header.php';
 include '../includes/sidebarAdmin.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-//$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
 // Fetch the study in table studies
 $study = null;
 if (isset($_GET['id'])) {
@@ -27,7 +22,6 @@ if (isset($_GET['id'])) {
         echo $e->getMessage();
     }
 }
-
 // Determine the back link and text based on the referring page
 $back_link = '';
 $back_text = '';
@@ -50,11 +44,8 @@ if (strpos($referrer, 'infotech.php') !== false) {
     $back_text = "Back to $year list";
 }
 ?>
-
-
 <!-- Content Area -->
 <div id="content">
-
     <!-- List of studies -->
     <ul class="list-group mb-5">
         <li class="list-group-item p-4">
@@ -81,5 +72,4 @@ if (strpos($referrer, 'infotech.php') !== false) {
             </ul>
         </li>
     </ul>        
-
 </div>

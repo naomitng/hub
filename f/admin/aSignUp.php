@@ -1,25 +1,16 @@
 <?php
-
     session_start();
-
     $page_title = "Sign Up";
     include '../includes/header.php';
     require '../../vendor/autoload.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signUpStyle.css'>";
     echo "<script src='../script/showPass.js'></script>";
-
     // PHPMailer
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
-
     $errMsg = "";
     $sucMsg = "";
-
-    // Establish database connection
-    //$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
     if(isset($_POST['submit-btn'])) {
         $fname = $_POST['fName'];
         $lname = $_POST['lName'];        
@@ -27,19 +18,14 @@
         $dept = $_POST['dept'];
         $pass = $_POST['pass'];
         $passRpt = $_POST['passRpt'];
-
         $mail = new PHPMailer(true);
-
         $hubEmail = 'uresearch.hub@gmail.com';
         $hubPass = 'ucha lrxy ebcf kfps';
-
         //Check if email is already used
         $emailToCheck = $email;
-
         $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = :email");
         $stmt->execute([':email' => $emailToCheck]);
         $user = $stmt->fetch();
-
         if ($pass !== $passRpt) {
             $errMsg = "Passwords do not match. Please try again.";
         } elseif ($user) {
@@ -63,29 +49,19 @@
                 $mail->setFrom($hubEmail, 'noreply');
                 $mail->addAddress($email, $fname . ' ' . $lname);
                 $mail->isHTML(true);
-
-
                 $verification_code = md5(uniqid(rand(), true));
                 $mail->Subject = 'Account activation for Research Hub';
                 $mail->Body = "
                     <p>Hello $fname!</p>
-                    
                     <p>Welcome to Research Hub. We are writing to inform you that your Research Hub admin account has been successfully created. You may now activate your account by following the link below:</p>
-
                     <p><strong>Activation Link:</strong> <a href='https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "'>https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "</a></p>
-
                     <p>Once you are redirected to the login page, kindly wait for the Super Admin for your account approval.</p>
-
                     <p>If you have any questions or encounter any issues, kindly contact our support team at <a href='mailto:hubsupport@gmail.com'>hubsupport@gmail.com</a></p>
-
                     <br>
-
                     <p style='font-style: italic; color: #888;'>Best regards,</p>
                     <p style='font-style: italic; color: #888;'>Research Hub Team</p>
                 ";
-
                 $mail->send();
-
                 $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
                 $data = [
                     'fname' => $fname,
@@ -95,17 +71,14 @@
                     'hashedPass' => $hashedPass,
                     'verificationCode' => $verification_code
                 ];
-        
                 $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
                 $stmt->execute($data);
-
                 $sucMsg = "Your account is successfully created. Check your email address for the activation link.";
             } catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
             }
         }
     }
-
     $pdo = null;
 ?>
 
@@ -147,9 +120,6 @@
                             <div style="display: none;" class="alert alert-danger" role="alert"></div>
                             <div style="display: none;" class="alert alert-success" role="alert"></div>
                 <?php } ?>
-                
-                
-
                 <div class="row">
                     <!-- First name -->
                     <div class="col">

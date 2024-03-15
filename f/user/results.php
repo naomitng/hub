@@ -7,12 +7,10 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
+    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
     // display advisers
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies`");
+        $stmt = $pdo->prepare("SELECT * FROM studies");
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
     } catch (PDOException $e) {
@@ -23,7 +21,7 @@
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
         try {
-            $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
+            $stmt = $pdo->prepare("DELETE FROM studies WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
             echo '<script>window.location.href = "results.php";</script>';
@@ -39,45 +37,46 @@
     $offset = ($currentPage - 1) * $studiesPerPage;
 
     try {
-    if(isset($_GET['search'])) {
-        $keywords = explode(" ", $_GET['search']);
-        $searchTerms = [];
-        $bindings = [];
-
-        // Construct the search query for each keyword
-        foreach ($keywords as $index => $keyword) {
-            $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
-            $bindings[":search{$index}"] = '%' . $keyword . '%';
+        if(isset($_GET['search'])) {
+            $keywords = explode(" ", $_GET['search']);
+            $searchTerms = [];
+            $bindings = [];
+        
+            // Construct the search query for each keyword
+            foreach ($keywords as $index => $keyword) {
+                $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
+                $bindings[":search{$index}"] = '%' . $keyword . '%';
+            }
+        
+            $searchQuery = implode(" AND ", $searchTerms);
+        
+            // Construct the final SQL query with keyword filter
+            $stmt = $pdo->prepare("SELECT * FROM studies WHERE {$searchQuery} LIMIT :offset, :limit");
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+        
+            // Bind parameters for each search term
+            foreach ($bindings as $key => $value) {
+                $stmt->bindParam($key, $value, PDO::PARAM_STR);
+            }
+        
+            // Fetch total number of studies for search results
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE {$searchQuery}");
+        
+            // Bind parameters for totalStmt
+            foreach ($bindings as $key => $value) {
+                $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
+            }
+        } else {
+            // If no search query is provided, fetch all studies
+            $stmt = $pdo->prepare("SELECT * FROM studies LIMIT :offset, :limit");
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+        
+            // Fetch total number of all studies
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies");
         }
-
-        $searchQuery = implode(" AND ", $searchTerms);
-
-        // Construct the final SQL query
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} LIMIT :offset, :limit");
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Bind parameters for each search term
-        foreach ($bindings as $key => $value) {
-            $stmt->bindParam($key, $value, PDO::PARAM_STR);
-        }
-
-        // Fetch total number of studies for search results
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery}");
-
-        // Bind parameters for totalStmt
-        foreach ($bindings as $key => $value) {
-            $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
-        }
-    } else {
-        // If no search query is provided, fetch all studies
-        $stmt = $pdo->prepare("SELECT * FROM `studies` LIMIT :offset, :limit");
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Fetch total number of all studies
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies`");
-    }
+        
 } catch (PDOException $e) {
     // Handle database errors here
     echo "Error: " . $e->getMessage();
@@ -164,30 +163,37 @@
     </ul>
 
 
-    <!-- Pagination -->
-    <?php if ($totalStudies > $studiesPerPage): ?>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <?php if ($currentPage > 1): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
-                    </li>
-                <?php endif; ?>
+<!-- Pagination -->
+<?php if ($totalStudies > $studiesPerPage): ?>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <?php if ($currentPage > 1): ?>
                 <?php
-                    $totalPages = ceil($totalStudies / $studiesPerPage);
-                    for ($i = 1; $i <= $totalPages; $i++):
+                    $prevPageUrl = isset($_GET['search']) ? "?page=" . ($currentPage - 1) . "&search=" . urlencode($_GET['search']) : "?page=" . ($currentPage - 1);
                 ?>
-                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                    </li>
-                <?php endfor; ?>
-                <?php if ($currentPage < $totalPages): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    <?php endif; ?>
-</div>
+                <li class="page-item">
+                    <a class="page-link" href="<?php echo $prevPageUrl; ?>">Previous</a>
+                </li>
+            <?php endif; ?>
+            <?php
+                $totalPages = ceil($totalStudies / $studiesPerPage);
+                for ($i = 1; $i <= $totalPages; $i++):
+                    $pageUrl = isset($_GET['search']) ? "?page=$i&search=" . urlencode($_GET['search']) : "?page=$i";
+            ?>
+                <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                    <a class="page-link" href="<?php echo $pageUrl; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            <?php if ($currentPage < $totalPages): ?>
+                <?php
+                    $nextPageUrl = isset($_GET['search']) ? "?page=" . ($currentPage + 1) . "&search=" . urlencode($_GET['search']) : "?page=" . ($currentPage + 1);
+                ?>
+                <li class="page-item">
+                    <a class="page-link" href="<?php echo $nextPageUrl; ?>">Next</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+<?php endif; ?>
 
+</div>

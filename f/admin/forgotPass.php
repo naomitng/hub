@@ -3,25 +3,17 @@
     include '../includes/header.php';
     require '../../vendor/autoload.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/newForPass.css'>";
-
     // PHPMailer
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
-
-    //$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", "root", "");
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
     $errMsg = "";
     $sucMsg = "";
-
     if(isset($_POST['forgotBtn'])) {
         $email = $_POST['email'];
-
         $stmt = $pdo->prepare("SELECT * FROM admin WHERE `email` = :email");
         $stmt->execute([':email' => $email]);
         $result = $stmt->fetch();
-
         if($result) {
             try {
                 $mail = new PHPMailer(true);
@@ -31,39 +23,30 @@
                 $mail->Password = 'hhqw syqz eawo rrdb';
                 $mail->Port = 587;
                 $mail->SMTPAuth = true;
-
                 // Fetch user details
                 $fname = $result['fname'];
                 $lname = $result['lname'];
-
                 $mail->setFrom('noreply@yourdomain.com', 'noreply');
                 $mail->addAddress($email, $fname . ' ' . $lname);
                 $mail->isHTML(true);
-
                 $rescode = md5(uniqid(rand(), true));
                 $mail->Subject = 'Password reset link for Research Hub';
                 $mail->Body = "<p>Hello $fname!</p>
-                    
                 <p>We have received a request to reset your Research Hub admin account's password. Click the link below to reset your password:</p>
                 <p><strong>Reset Link:</strong> <a href='https://localhost/hub/f/admin/newPass.php?code=" . urlencode($rescode) . "'>https://localhost/hub/f/admin/newPass.php?code=" . urlencode($rescode) . "</a></p>
                 <p>If you did not request a password reset, please disregard this email and if you have any questions or encounter any issues, kindly contact our support team at <a href='mailto:hubsupport@gmail.com'>hubsupport@gmail.com</a></p>
-
                 <br>
-
                 <p style='font-style: italic; color: #888;'>Best regards,</p>
                 <p style='font-style: italic; color: #888;'>Research Hub Team</p>";
 
                 // Send the email
                 $mail->send();
-
                 $data = [
                     'rescode' => $rescode,
                     'email' => $email
                 ];
-
                 $stmt = $pdo->prepare("UPDATE admin SET rescode = :rescode WHERE email = :email");
                 $stmt->execute($data);
-
                 $sucMsg = "Password reset link sent successfully!";
             } catch (Exception $e) {
                 $errMsg = "Error: " . $mail->ErrorInfo;
@@ -106,7 +89,6 @@
                             <div style="display: none;" class="alert alert-danger" role="alert"></div>
                             <div style="display: none;" class="alert alert-success" role="alert"></div>
                 <?php } ?>
-                    
                 <div class="input-group mb-3 mx-auto">
                     <input type="text" name="email" class="form-control" placeholder="Email" required>
                 </div>

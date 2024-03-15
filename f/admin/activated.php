@@ -1,19 +1,12 @@
 <?php
     $page_title = "Account successfully activated";
     include '../includes/header.php';
-    
-    // Establish database connection
-    //$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
-    if(isset($_GET['code'])) {
+        if(isset($_GET['code'])) {
         $verification_code = $_GET['code'];
-
         // Select query
         $stmt = $pdo->prepare("SELECT * FROM admin WHERE vercode = :vercode");
         $stmt->execute([':vercode' => $verification_code]);
         $user = $stmt->fetch();
-
         if($user) {
             // Update the verified column to 1 
             // If 0 means not verified if 1 means verified
@@ -28,7 +21,6 @@
                 function redirectToPHPFile() {
                     window.location.href = '../admin/aSignIn.php'
                 }
-            
                 // Execute the redirection after 5 seconds when the page loads
                 window.onload = function () {
                     setTimeout(redirectToPHPFile, 5000); // 5000 milliseconds = 5 seconds
@@ -43,7 +35,6 @@
         // Handle the case where the code parameter is not present in the URL
         echo "Verification code not provided.";
     }
-
     $pdo = null;
 ?>
 

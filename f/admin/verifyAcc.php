@@ -1,7 +1,6 @@
 <?php
     $page_title = "Verify Account";
     include '../includes/header.php';
-
     echo "<link rel='stylesheet' type='text/css' href='../css/verifyAcc.css'>";
 
 ?>

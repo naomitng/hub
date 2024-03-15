@@ -1,37 +1,25 @@
 <?php
     // Initialize $totalSearchResults
     $totalSearchResults = 0;
-
     $filteredStudies = array();
-
     session_start();
     if (!isset($_SESSION['fname'])) {
         // Redirect the user to the sign-in page
         header('Location: ../admin/aSignIn.php');
         exit();
     }
-
     $page_title = "Dashboard";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
     // Get the year from the url
     $year = isset($_GET['year']) ? intval($_GET['year']) : null;
-
-    // Check if search param is set otherwise null
     $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
-
     // Pagination variables
     $studiesPerPage = 10; // Change this as needed
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
-
-    // Fetch studies with pagination
     $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year" : "") . " LIMIT :limit OFFSET :offset");
     $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -40,15 +28,12 @@
     }
     $stmt->execute();
     $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     // Count total studies (considering search filter)
     if ($searchTerm !== null) {
         $totalStudies = count($filteredStudies);
     } else {
         $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year" : ""))->fetchColumn();
     }
-
-
     // delete 
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
@@ -62,7 +47,6 @@
             echo $e->getMessage();
         }
     }
-
     // ARCHIVE 
     if(isset($_POST['archive'])) {
         $study_id = $_POST['study_id'];
@@ -72,7 +56,6 @@
             $stmt_select->bindParam(':study_id', $study_id);
             $stmt_select->execute();
             $study = $stmt_select->fetch(PDO::FETCH_ASSOC);
-            
             // Insert the study into the 'archive' table
             $stmt_insert_archive = $pdo->prepare("INSERT INTO `archive`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords)");
             $stmt_insert_archive->bindParam(':title', $study['title']);
@@ -84,12 +67,10 @@
             $stmt_insert_archive->bindParam(':filename', $study['filename']);
             $stmt_insert_archive->bindParam(':keywords', $study['keywords']);
             $stmt_insert_archive->execute();
-            
             // Delete the study from the 'studies' table
             $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
-            
             // Redirect back to the dashboard
             echo '<script>window.location.href = "../admin/filter.php?'.$year.'";</script>';
             exit();
@@ -97,7 +78,6 @@
             echo $e->getMessage();
         }
     }
-
     // Search
     if($searchTerm !== null) {
         foreach($studies as $study) {
@@ -108,11 +88,9 @@
             }
         }
         $studies = $filteredStudies;
-        
         // Count total search results
         $totalSearchResults = count($filteredStudies);
     }
-
     // EDIT
     if(isset($_POST['saveChanges'])) {
         $study_id = $_POST['study_id'];
@@ -122,7 +100,6 @@
         $year = $_POST['year'];
         $adviser = $_POST['adviser'];
         $dept = $_POST['dept']; 
-
         try {
             $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept WHERE id = :study_id");
             $stmt->bindParam(':study_id', $study_id);
@@ -139,12 +116,10 @@
             echo $e->getMessage(); 
         }
     }
-    
 ?>
 
 <!-- Content Area -->
 <div id="content">
-
     <!-- Search bar -->
     <form class="search" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
         <input type="hidden" name="year" value="<?php echo isset($_GET['year']) ? $_GET['year'] : ''; ?>">
@@ -155,7 +130,6 @@
             </svg>
         </button>
     </form>
-
     <!-- List of studies -->
     <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
@@ -198,7 +172,6 @@
                                 } 
                             ?>
                         </a>
-
                         <!-- Button group for edit and delete -->
                         <div class="ml-auto">
                             <!-- Edit btn -->
@@ -208,7 +181,6 @@
                                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                                 </svg>
                             </button>
-
                             <!-- Delete btn -->
                             <button type="submit" class="btn btn-link text-secondary" name="delete" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal_<?php echo $study['id']; ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -216,7 +188,6 @@
                                 <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
                                 </svg>                            
                             </button>
-
                             <!-- Archive btn -->
                             <button type="button" class="btn btn-link text-secondary" data-bs-toggle="modal" name="archive" title="Archive" data-bs-target="#archiveModal_<?php echo $study['id']; ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-zip" viewBox="0 0 16 16">
@@ -226,7 +197,6 @@
                             </button>
                         </div>
                     </li>
-
                     <!-- For archive -->
                     <form action="" method="post">
                         <input type="hidden" name="study_id" value="<?php echo $study['id']; ?>" >
@@ -254,7 +224,6 @@
                             </div>
                         </div>
                     </form>
-
                     <!-- For delete -->
                     <form action="" method="post">
                         <input type="hidden" name="study_id" value="<?php echo $study['id']; ?>" >
@@ -282,7 +251,6 @@
                             </div>
                         </div>
                     </form>
-                
                     <!-- Edit -->
                     <form action="" method="post">
                         <!-- Modal for edit confirmation -->
@@ -337,7 +305,6 @@
                             </div>
                         </div>
                     </form>
-
                     <!-- Information about the study -->
                     <li><?php echo substr($study['abstract'], 0, 300) . "..."; ?></li>
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
@@ -374,5 +341,4 @@
             </ul>
         </nav>
     <?php endif; ?>
-
 </div>

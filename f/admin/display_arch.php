@@ -6,16 +6,11 @@
         header('Location: ../admin/aSignIn.php');
         exit();
     }
-
     $page_title = "Archive";
     include '../includes/header.php';
     include '../includes/sidebarAdmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
     // Fetch the study in table archive
     if(isset($_GET['id'])) {
         $study_id = $_GET['id'];
@@ -27,7 +22,6 @@
             echo $e->getMessage();
         }
     }
-
     try {
         if(isset($_GET['search'])) {
             $search = '%' . preg_replace('/[^a-zA-Z0-9\s]/', '', $_GET['search']) . '%';
@@ -47,22 +41,18 @@
             // Fetch total number of all studies for the Computer Engineering department
             $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE dept = 'Computer Engineering'");
         }
-        
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-    
         // Execute totalStmt to get total number of studies
         $totalStmt->execute();
         $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
-
 ?>
 
 <!-- Content Area -->
 <div id="content">
-
     <!-- List of studies -->
     <ul class="list-group mb-5">
         <li class="list-group-item p-4">
@@ -81,33 +71,32 @@
 
                 <li class="mb-4" style="font-size: 20px;">Abstract</li>
                 <li><?php echo $study['abstract']; ?></li>
-                
             </ul>
         </li>
     </ul>        
     <!-- Pagination -->
     <?php if ($totalStudies > $studiesPerPage): ?>
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <?php if ($currentPage > 1): ?>
-                        <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
-                        </li>
-                    <?php endif; ?>
-                    <?php
-                        $totalPages = ceil($totalStudies / $studiesPerPage);
-                        for ($i = 1; $i <= $totalPages; $i++):
-                    ?>
-                        <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                        </li>
-                    <?php endfor; ?>
-                    <?php if ($currentPage < $totalPages): ?>
-                        <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
-                        </li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
-        <?php endif; ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                    $totalPages = ceil($totalStudies / $studiesPerPage);
+                    for ($i = 1; $i <= $totalPages; $i++):
+                ?>
+                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>

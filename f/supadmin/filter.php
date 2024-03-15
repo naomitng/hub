@@ -16,9 +16,6 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
     // Get the year from the url
     $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 

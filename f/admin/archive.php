@@ -12,9 +12,6 @@ include '../includes/sidebarAdmin.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-//$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
 // Pagination variables
 $studiesPerPage = 10;
 $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;

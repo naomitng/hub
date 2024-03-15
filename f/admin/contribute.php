@@ -15,8 +15,7 @@ echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' href='../css/contribute.css'>";
 
-$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-//$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+//$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
     
 $errMsg = '';
 if (isset($_POST['submit'])) {
@@ -74,7 +73,10 @@ if (isset($_POST['submit'])) {
             <form id="uploadForm" action="" method="post" enctype="multipart/form-data">
                 <div class="row justify-content-center align-items-center">
                     <div class="col mt-4">
-                        <input class="form-control" name="file" type="file" id="formFile" accept=".pdf, image/*" multiple required>
+                        <input class="form-control" name="file" type="file" id="formFile" accept="image/*" required>
+                    </div>
+                    <div class="col mt-4">
+                        <input class="form-control" name="file" type="file" id="formFile" accept="image/*" required>
                     </div>
                 </div>
 

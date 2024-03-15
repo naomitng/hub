@@ -11,10 +11,6 @@ include '../includes/header.php';
 include '../includes/sidebarSupadmin.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-//$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-
 // Fetch the study in table studies
 $study = null;
 if (isset($_GET['id'])) {
