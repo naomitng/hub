@@ -3,7 +3,8 @@
     include '../includes/header.php';
     
     // Establish database connection
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+    //$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
 
     if(isset($_GET['code'])) {
         $verification_code = $_GET['code'];

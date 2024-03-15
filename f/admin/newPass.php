@@ -5,7 +5,8 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/newForPass.css'>";
     echo "<script src='../script/showPass.js'></script>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+    //$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
 
     $errMsg = "";
     $sucMsg = "";

@@ -15,7 +15,8 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+    //$pdo = new PDO("mysql:host=127.0.0.1;dbname=hub", 'root', '');
+    $pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
 
     $sucMsg = "";
     $errMsg = "";
