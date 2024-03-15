@@ -43,7 +43,7 @@ $pdf->SetTitle('Statistics Report');
 $pdf->SetSubject('Statistics Report');
 $pdf->SetKeywords('Statistics, PDF');
 
-$pdf->SetHeaderData('', PDF_HEADER_LOGO_WIDTH, 'Reseach Hub', 'Statistics Report Generated on ' . date('Y-m-d H:i:s'));
+$pdf->SetHeaderData('', PDF_HEADER_LOGO_WIDTH, 'Research Hub', 'Statistics Report Generated on ' . date('Y-m-d H:i:s'));
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
@@ -57,7 +57,7 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 $pdf->AddPage();
 
-//$pdf->Image('../img/logo.png', 33, 1, 15, 15, 'PNG', '', '', false, 300, '', false, false, 0);
+$pdf->Image('../img/logo.png', 33, 1, 15, 15, 'PNG', '', '', false, 300, '', false, false, 0);
 
 $pdf->SetFont('dejavusans', '', 10);  
 $content = '';  
