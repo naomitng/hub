@@ -15,15 +15,17 @@ echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' href='../css/contribute.css'>";
 
+//$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
+    
 $errMsg = '';
 if (isset($_POST['submit'])) {
     $dir = 'uploads/';
-    $filename = basename($_FILES['file']['name']);
+    $filename = basename($_FILES['filepdf']['name']);
     $newname = $dir . $filename;
     $filetype = pathinfo($newname, PATHINFO_EXTENSION);
 
-    if ($filetype == "jpg" || $filetype == "png") {
-        if(move_uploaded_file($_FILES['file']['tmp_name'], $newname)) {
+    if ($filetype == "pdf") {
+        if(move_uploaded_file($_FILES['filepdf']['tmp_name'], $newname)) {
             $title = $_POST['title'];
             $authors = $_POST['authors'];
             $abstract = $_POST['abstract'];
@@ -71,40 +73,45 @@ if (isset($_POST['submit'])) {
             <form id="uploadForm" action="" method="post" enctype="multipart/form-data">
                 <div class="row justify-content-center align-items-center">
                     <div class="col mt-4">
-                        <input class="form-control" name="file" type="file" id="formFile" accept=".pdf, image/*" multiple required>
+                        <label for="file" class="text-muted" id="file">Upload abstract and title page <span>*</span></label>
+                        <input class="form-control mt-2" name="file[]" type="file" id="formFile" accept="image/*" multiple required>
+                    </div>
+                    <div class="col mt-4">
+                        <label for="filepdf" class="text-muted" id="file">Upload PDF (optional)</label>
+                        <input class="form-control mt-2" id="filepdf" name="filepdf" type="file" id="formFile" accept=".pdf">
                     </div>
                 </div>
 
                 <div id="parsedData">
                     <!-- title -->
                     <div class="form-floating mb-4 mt-4">
-                        <input type="text" name="title" class="form-control" id="title" placeholder="Title" required>
-                        <label for="authors">Title</label>
+                        <input type="text" autocomplete="off" name="title" class="form-control" id="title" placeholder="Title" required>
+                        <label for="authors">Title <span>*</span></label>
                     </div>
                     <!-- authors -->
                     <div class="form-floating mb-4">
-                        <input type="text" name="authors" class="form-control" id="authors" placeholder="Authors" required>
-                        <label for="authors">Authors</label>
+                        <input type="text" autocomplete="off" name="authors" class="form-control" id="authors" placeholder="Authors" required>
+                        <label for="authors">Authors <span>*</span></label>
                         <p class="text-muted mt-1">Ex. Haesser Naomi Ting, Mizzy Perez, Iresh Sajulga, Frahser Jay Tayag, Jed Allen Gubot</p>
                     </div>
                     <div class="row">
                         <!-- abstract -->
                         <div class="col-md">
                             <div class="form-floating">
-                                <textarea class="form-control abstract" name="abstract" placeholder="Abstract" id="abstract" style="height: 408px;" required></textarea>
-                                <label for="abstract">Abstract</label>
+                                <textarea class="form-control abstract" autocomplete="off" name="abstract" placeholder="Abstract" id="abstract" style="height: 408px;" required></textarea>
+                                <label for="abstract">Abstract <span>*</span></label>
                             </div>
                         </div>
                         <div class="col-md">
                             <!-- year -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="year" class="form-control" id="year" placeholder="Year" oninput="validateNumericInput(this)" required>
-                                <label for="year">Year</label>
+                                <input type="text" name="year" autocomplete="off" class="form-control" id="year" placeholder="Year" oninput="validateNumericInput(this)" required>
+                                <label for="year">Year <span>*</span></label>
                             </div>
                             <!-- adviser -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="adviser" class="form-control" id="adviser" placeholder="Adviser" required>
-                                <label for="adviser">Adviser</label>
+                                <input type="text" name="adviser" autocomplete="off" class="form-control" id="adviser" placeholder="Adviser" required>
+                                <label for="adviser">Adviser <span>*</span></label>
                             </div>
                             <!-- department -->
                             <div class="form-floating">
@@ -113,18 +120,17 @@ if (isset($_POST['submit'])) {
                                     <option value="Information Technology">Information Technology</option>
                                     <option value="Computer Engineering">Computer Engineering</option>
                                 </select>
-                                <label for="selectDept">Department</label>
+                                <label for="selectDept">Department <span id="asterisk">*</span></label>
                             </div>
                             <!-- keywords -->
                             <div class="form-floating mt-4">
-                                <input type="text" name="keywords" class="form-control" id="keywords" placeholder="Keywords" required>
-                                <label for="keywords">Keywords</label>
+                                <input type="text" name="keywords" autocomplete="off" class="form-control" id="keywords" placeholder="Keywords" required>
+                                <label for="keywords">Keywords <span>*</span></label>
                             </div>
                             <!-- Terms -->
                             <div class="mb-3 mt-3">
                                 <input type="checkbox" name="check" id="check" required>
-                                <label for="check" class=""> Agree to our<button type="button" class="btn btn-link check" data-bs-toggle="modal" name="privacypol" title="privacypol" data-bs-target="#privacypol">Terms, Conditions, Privacy and Policies</button>
-</label>
+                                <label for="check" class=""> Agree to our<button type="button" class="btn btn-link check" data-bs-toggle="modal" name="privacypol" title="privacypol" data-bs-target="#privacypol">Terms, Conditions, Privacy and Policies</button></label>
                             </div>
 
                             <!-- Modal for Terms and Conditions -->

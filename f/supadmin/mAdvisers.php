@@ -1,13 +1,13 @@
 <?php
 session_start();
-if (!isset($_SESSION['fname'])) {
+if (!isset($_SESSION['supadmin'])) {
     // Redirect the user to the sign-in page
     header('Location: ../admin/aSignIn.php');
     exit();
 }
 $page_title = "Manage Advisers";
 include '../includes/header.php';
-include '../includes/sidebarAdmin.php';
+include '../includes/sidebarSupadmin.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/mAdvisers.css'>";

@@ -74,7 +74,7 @@ if (isset($_POST['submit'])) {
                 <div class="row justify-content-center align-items-center">
                     <div class="col mt-4">
                         <label for="file" class="text-muted" id="file">Upload abstract and title page <span>*</span></label>
-                        <input class="form-control mt-2" name="file" type="file" id="formFile" accept="image/*" required>
+                        <input class="form-control mt-2" name="file[]" type="file" id="formFile" accept="image/*" multiple required>
                     </div>
                     <div class="col mt-4">
                         <label for="filepdf" class="text-muted" id="file">Upload PDF (optional)</label>
