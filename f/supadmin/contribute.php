@@ -71,7 +71,12 @@ if (isset($_POST['submit'])) {
             <form id="uploadForm" action="" method="post" enctype="multipart/form-data">
                 <div class="row justify-content-center align-items-center">
                     <div class="col mt-4">
-                        <input class="form-control" name="file" type="file" id="formFile" accept=".pdf, image/*" multiple required>
+                        <label for="file" class="text-muted" id="file">Upload abstract and title page <span>*</span></label>
+                        <input class="form-control mt-2" name="file" type="file" id="formFile" accept="image/*" required>
+                    </div>
+                    <div class="col mt-4">
+                        <label for="filepdf" class="text-muted" id="file">Upload PDF (optional)</label>
+                        <input class="form-control mt-2" id="filepdf" name="filepdf" type="file" id="formFile" accept=".pdf">
                     </div>
                 </div>
 

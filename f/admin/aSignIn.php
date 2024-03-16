@@ -15,7 +15,6 @@
     $page_title = "Sign In";
     include '../includes/header.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/signInStyle.css'>";
-    echo "<script src='../script/slideshow.js'></script>";
     echo "<script src='../script/showPass.js'></script>";
 
     $errMsg = "";
@@ -146,4 +145,23 @@
             <div class="col-md-6 d-none d-md-block container-two"></div>
         </div>
     </div>
+    <script>
+        const imgPaths = [
+            '../img/bg-quad.jpg',
+            '../img/bg-rtu.jpg',
+        ];
+
+        let currentIndex = 0;
+
+        function changeBackground() {
+            document.body.style.backgroundImage = `url(${imgPaths[currentIndex]})`;
+            currentIndex = (currentIndex + 1) % imgPaths.length;
+        }
+
+        const intervalId = setInterval(changeBackground, 3000); // Change image every 3 seconds
+
+        window.addEventListener('beforeunload', () => {
+            clearInterval(intervalId);
+        });
+    </script>
 </body>

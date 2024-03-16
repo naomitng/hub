@@ -24,6 +24,43 @@
   <!-- CSS -->
   <link rel="stylesheet" href="f/css/index.css">
 
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent scrollbars */
+      background-color: #f5f5f5;
+    }
+
+    img {
+      max-width: 100%; 
+      max-height: 100%;body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #f5f5f5;
+    }
+
+    img {
+      max-width: 100%; 
+      max-height: 100%;
+    }
+
+    .d-flex {
+      height: 100%; /* Set height to 100% */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 <body>
 
@@ -35,13 +72,13 @@
 
     // Execute the redirection after 2 seconds when the page loads
     window.onload = function () {
-      setTimeout(redirectToPHPFile, 2000); // 2000 milliseconds = 2 seconds
+      setTimeout(redirectToPHPFile, 6000); // 2000 milliseconds = 2 seconds
     };
   </script>
 
-  <div class="d-flex justify-content-center align-items-center text-center vh-100">
+  <div class="d-flex justify-content-center align-items-center text-center">
     <div class="my-auto">
-        <img src="f/img/loading.gif" alt="Research Hub logo" class="h-100"><br>
+        <img src="f/img/loading.gif" alt="Research Hub logo"><br>
     </div>
   </div>
 

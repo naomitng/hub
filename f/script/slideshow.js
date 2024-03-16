@@ -1,17 +1,16 @@
-// Array of backgrounds
 const imgPaths = [
+    '../img/bg-quad.jpg',
     '../img/bg-rtu.jpg',
-    '../img/bg-quad.jpg'
 ];
 
+let currentIndex = 0;
+
 function changeBackground() {
-    const randomIndex = Math.floor(Math.random() * imgPaths.length);
-    const imageUrl = `url(${imgPaths[randomIndex]})`;
-    document.body.style.backgroundImage = imageUrl;
+    document.body.style.backgroundImage = `url(${imgPaths[currentIndex]})`;
+    currentIndex = (currentIndex + 1) % imgPaths.length;
 }
 
-//  Change bg every 3 seconds
-    //const intervalId = setInterval(changeBackground, 3000);
+const intervalId = setInterval(changeBackground, 3000); // Change image every 3 seconds
 
 window.addEventListener('beforeunload', () => {
     clearInterval(intervalId);
