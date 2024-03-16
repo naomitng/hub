@@ -61,7 +61,7 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
                 <li>Authors: <?php echo $study['authors']; ?></li>
                 <li>Department: <?php echo $study['dept']; ?></li>
                 <li>Adviser: <?php echo $study['adviser']; ?></li>
-                <li class="">Year: <?php echo $study['year']; ?></li>
+                <li class="">Year: <?php echo $study['year']; ?></li> <br>
 
                 <!-- PDF Button -->
                 <?php if(isset($study['filename']) && !empty($study['filename'])): ?>
