@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2024 at 12:27 PM
+-- Generation Time: Mar 15, 2024 at 06:15 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -67,7 +67,21 @@ CREATE TABLE `advisers` (
 --
 
 INSERT INTO `advisers` (`id`, `name`, `email`, `dept`) VALUES
-(1, 'Mizzy Perez', 'perez301mizzy@gmail.com', 'Information Technology');
+(2, 'Lea S. Nisperos', 'lnisperos@rtu.edu.ph', 'Information Technology'),
+(3, 'Noel Gutierrez', 'ngutierrez@rtu.edu.ph', 'Information Technology'),
+(4, 'Richmond Allen Villanueva', 'rdvillanueva02@rtu.edu.ph', 'Information Technology'),
+(5, 'May Figueroa', 'mbfigueroa@rtu.edu.ph', 'Information Technology'),
+(6, 'Kenneth Martinez', 'kmartinez@rtu.edu.ph', 'Information Technology'),
+(8, 'Aphril Alcalde', 'aaalcalde@rtu.edu.ph', 'Information Technology'),
+(9, 'Michael Fernandez', 'mmfernandez@rtu.edu.ph', 'Information Technology'),
+(10, 'Jaevier Villanueva ', 'javillanueva02@rtu.edu.ph', 'Information Technology'),
+(11, 'Greta Rosario', 'gmrosario@rtu.edu.ph', 'Information Technology'),
+(12, 'Christopher Lee Zaplan', 'clzaplan02@rtu.edu.ph', 'Computer Engineering'),
+(13, 'Alquin Cezar', 'adcezar@rtu.edu.ph', 'Computer Engineering'),
+(14, 'Dolores Cruz', 'dacruz002@rtu.edu.ph', 'Computer Engineering'),
+(15, 'Floyd De Vela', 'fdevela@rtu.edu.ph', 'Computer Engineering'),
+(16, 'Julius Cabauatan', 'jucabauatan@rtu.edu.ph', 'Computer Engineering'),
+(17, 'Jenelyn Luna', 'jeluna@rtu.edu.ph', 'Computer Engineering');
 
 -- --------------------------------------------------------
 
@@ -297,7 +311,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `advisers`
 --
 ALTER TABLE `advisers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `archive`
