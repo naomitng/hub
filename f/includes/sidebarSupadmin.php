@@ -35,6 +35,8 @@
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="contribute.php" class="link-dark rounded">Contribute</a></li>
                         <li><a href="statistics.php" class="link-dark rounded">See Statistics</a></li>
+                        
+                        <!-- di nareredirect sa mAdvisers -->
                         <li><a href="mAdvisers.php" class="link-dark rounded">Manage Advisers</a></li>
                         <li><a href="aRequests.php" class="link-dark rounded">Admin Account Requests</a></li>
                         <li><a href="archive.php" class="link-dark rounded">Archive</a></li>
