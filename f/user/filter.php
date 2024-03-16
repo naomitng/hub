@@ -141,28 +141,28 @@ if(isset($_GET['year'])) {
     </ul>        
 
 <!-- Pagination -->
-<?php if ($totalSearchResults > $studiesPerPage): ?>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <?php if ($currentPage > 1): ?>
-                <li class="page-item">
-                    <a class="page-link" href="?search=<?php echo urlencode($_GET['search']); ?>&page=<?php echo $currentPage - 1; ?>">Previous</a>
-                </li>
-            <?php endif; ?>
-            <?php
-                $totalPages = ceil($totalSearchResults / $studiesPerPage);
+<?php if ($totalStudies > $studiesPerPage): ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?year=<?php echo $year; ?>&page=<?php echo $currentPage - 1; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                $totalPages = ceil($totalStudies / $studiesPerPage);
                 for ($i = 1; $i <= $totalPages; $i++):
-            ?>
-                <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                    <a class="page-link" href="?search=<?php echo urlencode($_GET['search']); ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                </li>
-            <?php endfor; ?>
-            <?php if ($currentPage < $totalPages): ?>
-                <li class="page-item">
-                    <a class="page-link" href="?search=<?php echo urlencode($_GET['search']); ?>&page=<?php echo $currentPage + 1; ?>">Next</a>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </nav>
-<?php endif; ?>
+                    ?>
+                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?year=<?php echo $year; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?year=<?php echo $year; ?>&page=<?php echo $currentPage + 1; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>
