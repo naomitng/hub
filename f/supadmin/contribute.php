@@ -18,12 +18,12 @@ echo "<link rel='stylesheet' href='../css/contribute.css'>";
 $errMsg = '';
 if (isset($_POST['submit'])) {
     $dir = 'uploads/';
-    $filename = basename($_FILES['filepdf']['name']);
+    $filename = basename($_FILES['file']['name']);
     $newname = $dir . $filename;
     $filetype = pathinfo($newname, PATHINFO_EXTENSION);
 
-    if ($filetype == "pdf") {
-        if(move_uploaded_file($_FILES['filepdf']['tmp_name'], $newname)) {
+    if ($filetype == "jpg" || $filetype == "png") {
+        if(move_uploaded_file($_FILES['file']['tmp_name'], $newname)) {
             $title = $_POST['title'];
             $authors = $_POST['authors'];
             $abstract = $_POST['abstract'];
@@ -72,7 +72,7 @@ if (isset($_POST['submit'])) {
                 <div class="row justify-content-center align-items-center">
                     <div class="col mt-4">
                         <label for="file" class="text-muted" id="file">Upload abstract and title page <span>*</span></label>
-                        <input class="form-control mt-2" name="file[]" type="file" id="formFile" accept="image/*" multiple required>
+                        <input class="form-control mt-2" name="file" type="file" id="formFile" accept="image/*" required>
                     </div>
                     <div class="col mt-4">
                         <label for="filepdf" class="text-muted" id="file">Upload PDF (optional)</label>
@@ -128,7 +128,8 @@ if (isset($_POST['submit'])) {
                             <!-- Terms -->
                             <div class="mb-3 mt-3">
                                 <input type="checkbox" name="check" id="check" required>
-                                <label for="check" class=""> Agree to our<button type="button" class="btn btn-link check" data-bs-toggle="modal" name="privacypol" title="privacypol" data-bs-target="#privacypol">Terms, Conditions, Privacy and Policies</button></label>
+                                <label for="check" class=""> Agree to our<button type="button" class="btn btn-link check" data-bs-toggle="modal" name="privacypol" title="privacypol" data-bs-target="#privacypol">Terms, Conditions, Privacy and Policies</button>
+</label>
                             </div>
 
                             <!-- Modal for Terms and Conditions -->
