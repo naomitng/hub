@@ -81,7 +81,8 @@
                                 if ($counter >= 10) {
                                     break;
                                 }
-                                echo "<li><a href='./results.php?search=" . urlencode($keyword) . "' class='link-dark rounded'>$keyword ($count)</a></li>";
+                                echo "<li><a href='./results.php?collection=" . urlencode($keyword) . "' class='link-dark rounded'>$keyword ($count)</a></li>";
+
                                 $counter++;
                             }
                         } catch (PDOException $e) {

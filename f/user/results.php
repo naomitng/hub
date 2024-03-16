@@ -38,6 +38,7 @@
 
     try {
         if(isset($_GET['search'])) {
+            // Search query
             $keywords = explode(" ", $_GET['search']);
             $searchTerms = [];
             $bindings = [];
@@ -67,8 +68,19 @@
             foreach ($bindings as $key => $value) {
                 $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
             }
+        } elseif(isset($_GET['collection'])) {
+            // Collection query
+            $keyword = $_GET['collection'];
+            $stmt = $pdo->prepare("SELECT * FROM studies WHERE keywords LIKE :keyword LIMIT :offset, :limit");
+            $stmt->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+        
+            // Fetch total number of studies for collection results
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE keywords LIKE :keyword");
+            $totalStmt->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
         } else {
-            // If no search query is provided, fetch all studies
+            // If no search or collection query is provided, fetch all studies
             $stmt = $pdo->prepare("SELECT * FROM studies LIMIT :offset, :limit");
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
@@ -77,24 +89,29 @@
             $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies");
         }
         
-} catch (PDOException $e) {
-    // Handle database errors here
-    echo "Error: " . $e->getMessage();
-}
+    } catch (PDOException $e) {
+        // Handle database errors here
+        echo "Error: " . $e->getMessage();
+    }
 
     try {
         // Execute the prepared statement
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-        $totalSearchResults = $stmt->rowCount();
-        
-        // Execute totalStmt to get total number of studies
+    
+        // Execute totalStmt to get total number of search results
         $totalStmt->execute();
-        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $totalSearchResults = $totalStmt->fetchColumn();
+    
+        // Count total number of studies for pagination
+        $totalStudies = $totalSearchResults; // Total studies equals total search results
+    
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
-?>
+    
+
+    ?>
 
 <!-- Content Area -->
 <div id="content">
@@ -117,6 +134,10 @@
             <?php if (isset($_GET['search'])): ?>
                 <div class="mb-4">
                     <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
+                </div>
+            <?php elseif(isset($_GET['collection'])): ?>
+                <div class="mb-4">
+                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for collection "<?php echo htmlspecialchars($_GET['collection']); ?>"</i>
                 </div>
             <?php endif; ?>
 
@@ -163,8 +184,8 @@
     </ul>
 
 
-<!-- Pagination -->
-<?php if ($totalStudies > $studiesPerPage): ?>
+<!-- Pagination for search results -->
+<?php if ($totalStudies > $studiesPerPage && !isset($_GET['collection'])): ?>
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
             <?php if ($currentPage > 1): ?>
@@ -187,6 +208,39 @@
             <?php if ($currentPage < $totalPages): ?>
                 <?php
                     $nextPageUrl = isset($_GET['search']) ? "?page=" . ($currentPage + 1) . "&search=" . urlencode($_GET['search']) : "?page=" . ($currentPage + 1);
+                ?>
+                <li class="page-item">
+                    <a class="page-link" href="<?php echo $nextPageUrl; ?>">Next</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+<?php endif; ?>
+
+<!-- Pagination for collection results -->
+<?php if ($totalStudies > $studiesPerPage && isset($_GET['collection'])): ?>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <?php if ($currentPage > 1): ?>
+                <?php
+                    $prevPageUrl = isset($_GET['collection']) ? "?collection_page=" . ($currentPage - 1) . "&collection=" . urlencode($_GET['collection']) : "?collection_page=" . ($currentPage - 1);
+                ?>
+                <li class="page-item">
+                    <a class="page-link" href="<?php echo $prevPageUrl; ?>">Previous</a>
+                </li>
+            <?php endif; ?>
+            <?php
+                $totalPages = ceil($totalStudies / $studiesPerPage);
+                for ($i = 1; $i <= $totalPages; $i++):
+                    $pageUrl = isset($_GET['collection']) ? "?collection_page=$i&collection=" . urlencode($_GET['collection']) : "?collection_page=$i";
+            ?>
+                <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                    <a class="page-link" href="<?php echo $pageUrl; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            <?php if ($currentPage < $totalPages): ?>
+                <?php
+                    $nextPageUrl = isset($_GET['collection']) ? "?collection_page=" . ($currentPage + 1) . "&collection=" . urlencode($_GET['collection']) : "?collection_page=" . ($currentPage + 1);
                 ?>
                 <li class="page-item">
                     <a class="page-link" href="<?php echo $nextPageUrl; ?>">Next</a>
