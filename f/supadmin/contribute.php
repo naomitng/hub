@@ -15,8 +15,6 @@ echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' href='../css/contribute.css'>";
 
-//$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-    
 $errMsg = '';
 if (isset($_POST['submit'])) {
     $dir = 'uploads/';
@@ -85,33 +83,33 @@ if (isset($_POST['submit'])) {
                 <div id="parsedData">
                     <!-- title -->
                     <div class="form-floating mb-4 mt-4">
-                        <input type="text" autocomplete="off" name="title" class="form-control" id="title" placeholder="Title" required>
-                        <label for="authors">Title <span>*</span></label>
+                        <input type="text" name="title" class="form-control" id="title" placeholder="Title" required>
+                        <label for="authors">Title</label>
                     </div>
                     <!-- authors -->
                     <div class="form-floating mb-4">
-                        <input type="text" autocomplete="off" name="authors" class="form-control" id="authors" placeholder="Authors" required>
-                        <label for="authors">Authors <span>*</span></label>
+                        <input type="text" name="authors" class="form-control" id="authors" placeholder="Authors" required>
+                        <label for="authors">Authors</label>
                         <p class="text-muted mt-1">Ex. Haesser Naomi Ting, Mizzy Perez, Iresh Sajulga, Frahser Jay Tayag, Jed Allen Gubot</p>
                     </div>
                     <div class="row">
                         <!-- abstract -->
                         <div class="col-md">
                             <div class="form-floating">
-                                <textarea class="form-control abstract" autocomplete="off" name="abstract" placeholder="Abstract" id="abstract" style="height: 408px;" required></textarea>
-                                <label for="abstract">Abstract <span>*</span></label>
+                                <textarea class="form-control abstract" name="abstract" placeholder="Abstract" id="abstract" style="height: 408px;" required></textarea>
+                                <label for="abstract">Abstract</label>
                             </div>
                         </div>
                         <div class="col-md">
                             <!-- year -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="year" autocomplete="off" class="form-control" id="year" placeholder="Year" oninput="validateNumericInput(this)" required>
-                                <label for="year">Year <span>*</span></label>
+                                <input type="text" name="year" class="form-control" id="year" placeholder="Year" oninput="validateNumericInput(this)" required>
+                                <label for="year">Year</label>
                             </div>
                             <!-- adviser -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="adviser" autocomplete="off" class="form-control" id="adviser" placeholder="Adviser" required>
-                                <label for="adviser">Adviser <span>*</span></label>
+                                <input type="text" name="adviser" class="form-control" id="adviser" placeholder="Adviser" required>
+                                <label for="adviser">Adviser</label>
                             </div>
                             <!-- department -->
                             <div class="form-floating">
@@ -120,12 +118,12 @@ if (isset($_POST['submit'])) {
                                     <option value="Information Technology">Information Technology</option>
                                     <option value="Computer Engineering">Computer Engineering</option>
                                 </select>
-                                <label for="selectDept">Department <span id="asterisk">*</span></label>
+                                <label for="selectDept">Department</label>
                             </div>
                             <!-- keywords -->
                             <div class="form-floating mt-4">
-                                <input type="text" name="keywords" autocomplete="off" class="form-control" id="keywords" placeholder="Keywords" required>
-                                <label for="keywords">Keywords <span>*</span></label>
+                                <input type="text" name="keywords" class="form-control" id="keywords" placeholder="Keywords" required>
+                                <label for="keywords">Keywords</label>
                             </div>
                             <!-- Terms -->
                             <div class="mb-3 mt-3">

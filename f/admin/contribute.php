@@ -20,12 +20,12 @@ echo "<link rel='stylesheet' href='../css/contribute.css'>";
 $errMsg = '';
 if (isset($_POST['submit'])) {
     $dir = 'uploads/';
-    $filename = basename($_FILES['file']['name']);
+    $filename = basename($_FILES['filepdf']['name']);
     $newname = $dir . $filename;
     $filetype = pathinfo($newname, PATHINFO_EXTENSION);
 
-    if ($filetype == "jpg" || $filetype == "png") {
-        if(move_uploaded_file($_FILES['file']['tmp_name'], $newname)) {
+    if ($filetype == "pdf") {
+        if(move_uploaded_file($_FILES['filepdf']['tmp_name'], $newname)) {
             $title = $_POST['title'];
             $authors = $_POST['authors'];
             $abstract = $_POST['abstract'];
