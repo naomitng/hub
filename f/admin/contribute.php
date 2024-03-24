@@ -16,7 +16,7 @@ echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 echo "<link rel='stylesheet' href='../css/contribute.css'>";
 
 //$pdo = new PDO("mysql:host=sql209.infinityfree.com; dbname=if0_36132900_hub", "if0_36132900", "Hs96nqZI1Gd9ED");
-    
+
 $errMsg = '';
 if (isset($_POST['submit'])) {
     $dir = 'uploads/';
@@ -110,8 +110,11 @@ if (isset($_POST['submit'])) {
                             </div>
                             <!-- adviser -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="adviser" autocomplete="off" class="form-control" id="adviser" placeholder="Adviser" required>
-                                <label for="adviser">Adviser <span>*</span></label>
+                                <select class="form-select" name="dept" id="selectDept" aria-label="Floating label select example" required>
+                                    <option value='' selected disabled>Choose a Adviser</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                </select>
+                                <label for="selectDept">Adviser <span id="asterisk">*</span></label>
                             </div>
                             <!-- department -->
                             <div class="form-floating">

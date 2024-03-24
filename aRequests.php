@@ -42,8 +42,7 @@ try {
 // ----------------------------------------------------------------------------------------------------------
 
 // APPROVE ACC REQUEST
-function approve($adname, $ademail, $verification_code) {
-    global $pdo;
+function approve($adname, $ademail) {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
@@ -54,14 +53,18 @@ function approve($adname, $ademail, $verification_code) {
     $mail->setFrom('uresearch.hub@gmail.com', 'noreply');
     $mail->addAddress($ademail, $adname);
     $mail->isHTML(true);
+
+
+    $verification_code = md5(uniqid(rand(), true));
     $mail->Subject = 'Account Request Aprroved';
     $mail->Body = "
         <p>Hello $adname!</p>
         
-        <p>Welcome to Research Hub. You received this email to inform you that your Research Hub admin account has been approved. You may now activate your admin account.</p>
+        <p>Welcome to Research Hub. You received this email to inform you that your Research Hub admin account has been approved. You may now sign in your account:</p>
 
-        <p><strong>Activation Link:</strong> <a href='https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "'>https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "</a></p>
-        <p>Once activated you will be redirected to the login page. You can sign in using your account login credentials.</p>
+        <p><strong>Sign In Link:</strong> <a href='http://localhost/hub/f/admin/aSignin.php'>https://localhost/hub/f/admin/aSignin.php</a></p>
+
+        <p>Once you are redirected to the login page, you can sign in using your account login credentials.</p>
 
         <p>If you have any questions or encounter any issues, kindly contact our support team at <a href='mailto:hubsupport@gmail.com'>hubsupport@gmail.com</a></p>
 
@@ -72,11 +75,11 @@ function approve($adname, $ademail, $verification_code) {
     ";
 
     $mail->send();
+
 }
 
 // DECLINE ACC REQUEST
 function decline($adname, $ademail) {
-    global $pdo;
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
@@ -112,14 +115,11 @@ if (isset($_POST['approve'])) {
     $id = $_POST['admins_id'];
     $adname = $_POST['admins_name'];
     $ademail = $_POST['admins_email'];
-    $verification_code = md5(uniqid(rand(), true));
-
     try {
-        $stmt = $pdo->prepare("UPDATE `admin` SET approval = 1, vercode = :vercode WHERE id = :id");
+        $stmt = $pdo->prepare("UPDATE `admin` SET approval = 1 WHERE id = :id");
         $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':vercode', $verification_code);
         $stmt->execute();
-        approve($adname, $ademail, $verification_code);
+        approve($adname, $ademail);
         $_SESSION['success'] = "Admin account approved successfully.";
     } catch (PDOException $e) {
         $_SESSION['error']= "Error updating approval status: " . $e->getMessage();

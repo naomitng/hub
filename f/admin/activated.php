@@ -12,8 +12,7 @@
             // If 0 means not verified if 1 means verified
             $updateStmt = $pdo->prepare("UPDATE admin SET verified = 1 WHERE vercode = :vercode");
             $updateStmt->execute([':vercode' => $verification_code]);
-            $sucMsg = "Please wait for the Super Admin approval.";
-            echo "<center><h3 style='margin-top: 20%;'>You have successfully activated your admin account.<br>Kindly wait for the Super Admin to approve your account.<br>
+            echo "<center><h3 style='margin-top: 20%;'>You have successfully activated your admin account.
                     You will be redirected to the log in page shortly.</h3></center>";
             // Javascript for timeout
             echo "<script>

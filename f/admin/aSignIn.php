@@ -132,7 +132,7 @@
                                     <button type="submit" name="signinBtn" class="col-md-12 btn btn-warning">Sign In</button>
                                 </div>
                                 <div class="register-link">
-                                    <p class="text-center mt-2">No account? Register <a href="../admin/aSignUp.php"  id="register">here</a></p>
+                                    <p class="text-center mt-2">No account? Request <a href="../admin/aSignUp.php"  id="register">here</a></p>
                                 </div>
                             </div>
                             <div class="register-link">

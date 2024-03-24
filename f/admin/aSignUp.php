@@ -40,28 +40,6 @@
             $errMsg = "Your Password Must Contain At Least 1 Lowercase Letter!";
         } else {
             try {
-                $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->Username = 'uresearch.hub@gmail.com';
-                $mail->Password = 'hhqw syqz eawo rrdb';
-                $mail->Port = 587;
-                $mail->SMTPAuth = true;
-                $mail->setFrom($hubEmail, 'noreply');
-                $mail->addAddress($email, $fname . ' ' . $lname);
-                $mail->isHTML(true);
-                $verification_code = md5(uniqid(rand(), true));
-                $mail->Subject = 'Account activation for Research Hub';
-                $mail->Body = "
-                    <p>Hello $fname!</p>
-                    <p>Welcome to Research Hub. We are writing to inform you that your Research Hub admin account has been successfully created. You may now activate your account by following the link below:</p>
-                    <p><strong>Activation Link:</strong> <a href='https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "'>https://localhost/hub/f/admin/activated.php?code=" . urlencode($verification_code) . "</a></p>
-                    <p>Once you are redirected to the login page, kindly wait for the Super Admin for your account approval.</p>
-                    <p>If you have any questions or encounter any issues, kindly contact our support team at <a href='mailto:hubsupport@gmail.com'>hubsupport@gmail.com</a></p>
-                    <br>
-                    <p style='font-style: italic; color: #888;'>Best regards,</p>
-                    <p style='font-style: italic; color: #888;'>Research Hub Team</p>
-                ";
-                $mail->send();
                 $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
                 $data = [
                     'fname' => $fname,
@@ -69,9 +47,8 @@
                     'email' => $email,
                     'dept' => $dept,
                     'hashedPass' => $hashedPass,
-                    'verificationCode' => $verification_code
                 ];
-                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`, `vercode`) VALUES (:fname, :lname, :email, :dept, :hashedPass, :verificationCode)");
+                $stmt = $pdo->prepare("INSERT INTO `admin`(`fname`, `lname`, `email`, `dept`, `pass`) VALUES (:fname, :lname, :email, :dept, :hashedPass)");
                 $stmt->execute($data);
                 $sucMsg = "Your account is successfully created. Check your email address for the activation link.";
             } catch (PDOException $e) {
@@ -95,7 +72,7 @@
         <!-- Form column -->
         <div class="col-md-6 p-0">
             <form action="" method="post" class="shadow-lg p-5 rounded-end form-container">
-                <h1 class="mb-4 text-center">Register for an admin account</h1>
+                <h1 class="mb-4 text-center">Request for an admin account</h1>
                 <!-- Alert signing up -->
                 <?php if($errMsg !== "") { ?>
                     <div class="alert alert-danger" role="alert">
