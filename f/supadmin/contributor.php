@@ -16,7 +16,7 @@
 
     // display advisers
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 ORDER BY `contributor` DESC");
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
     } catch (PDOException $e) {
@@ -180,28 +180,22 @@
     </form>
 
     <?php
-        try {
-            $pdo = new PDO("mysql:host=localhost;dbname=hub", "root", "");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
-        }
+    // Fetch contributions made by each admin
+    // Fetch contributions made by each admin
+$stmt_contributions = $pdo->prepare("SELECT CONCAT(a.fname, ' ', a.lname) AS full_name, COUNT(*) as contribution_count FROM studies s JOIN admin a ON s.contributor = a.id GROUP BY s.contributor");
+$stmt_contributions->execute();
+$contributions = $stmt_contributions->fetchAll(PDO::FETCH_ASSOC);
 
-        $sql = "SELECT popularity FROM studies WHERE verified = 1";
+// Prepare data for bar graph
+$admin_names = [];
+$contribution_counts = [];
 
-        try {
-            // Prepare the statement
-            $stmt = $pdo->prepare($sql);
-            // Execute the query
-            $stmt->execute();
-            // Fetch popularity data
-            $popularity_data = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        } catch(PDOException $e) {
-            die("Error retrieving popularity data: " . $e->getMessage());
-        }
+foreach ($contributions as $contribution) {
+    $admin_names[] = $contribution['full_name'];
+    $contribution_counts[] = $contribution['contribution_count'];
+}
 
-        $pdo = null;
-    ?>
+?>
 
     <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
         <li>
@@ -210,66 +204,53 @@
             <p>This report focuses on popularity of a study based on clicks or visits.</p>
             <!-- place chart here -->
             <div style="display: flex; justify-content: center;">
-                <canvas style="height: 50vh; width: 100%;" id="popularityChart"></canvas>
+                <canvas style="height: 50vh; width: 100%;" id="contributionsChart"></canvas>
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        var ctx = document.getElementById('popularityChart').getContext('2d');
-                        var studies = <?php echo json_encode(array_column($studies, 'title')); ?>;
-                        var popularityData = <?php echo json_encode(array_column($studies, 'popularity')); ?>;
-                        var customLabels = studies.map(function(title, index) {
-                            return 'Study ' + (index + 1);
-                        });
+                    var ctx = document.getElementById('contributionsChart').getContext('2d');
+                    var adminNames = <?php echo json_encode($admin_names); ?>;
+                    var contributionCounts = <?php echo json_encode($contribution_counts); ?>;
 
-                        var popularityChart = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: customLabels,
-                                datasets: [{
-                                    label: 'Popularity',
-                                    data: popularityData,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 159, 64, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
+                    var contributionChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: adminNames,
+                            datasets: [{
+                                label: 'Contributions',
+                                data: contributionCounts,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+
+                                    precision: 0
+                                }
                             },
-                            options: {
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
-                                    }
-                                },
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                var dataIndex = context.dataIndex;
-                                                var studyTitle = studies[dataIndex];
-                                                var popularityCount = popularityData[dataIndex];
-                                                return popularityCount + ': ' +studyTitle;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false,
-                                    }
+                            plugins: {
+                                legend: {
+                                    display: false,
                                 }
                             }
-                        });
+                        }
                     });
                 </script>
             </div>
@@ -463,7 +444,20 @@
                     <hr>
                     <li class="text-muted">
                         Keywords: <?php echo $study['keywords']; ?>
-                        <span class="float-end" style="font-weight: bold; color: blue;">Popularity: <?=$study['popularity']?></span>
+                        <span class="float-end" style="font-weight: bold; color: blue;">
+                            <?php
+                                $stmt_contributor = $pdo->prepare("SELECT fname, lname FROM admin WHERE id = :contributor_id");
+                                $stmt_contributor->bindParam(':contributor_id', $study['contributor']);
+                                $stmt_contributor->execute();
+                                $contributor = $stmt_contributor->fetch(PDO::FETCH_ASSOC);
+
+                                if ($contributor) {
+                                    echo 'Contributor: ' . $contributor['fname'] . ' ' . $contributor['lname'];
+                                } else {
+                                    echo 'Contributor: Not available';
+                                }
+                            ?>
+                        </span>
                     </li>
                 </ul>
             <?php endforeach; ?>

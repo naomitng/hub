@@ -19,7 +19,7 @@
                 <div class="collapse" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="popularity.php" class="link-dark rounded">Popular studies</a></li>
-                        <li><a href="comEng.php" class="link-dark rounded">Admin contributors</a></li>
+                        <li><a href="contributor.php" class="link-dark rounded">Admin contributors</a></li>
                         <li><a href="statistics.php" class="link-dark rounded">Statistical report</a></li>
                     </ul>
                 </div>

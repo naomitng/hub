@@ -52,10 +52,11 @@ if (isset($_POST['submit'])) {
         $dept = $_POST['dept'];
         $adviser = $_POST['adviser'];
         $year = $_POST['year'];
+        $contri = $_SESSION['contri'];
 
         try {
             // Adjusted the insertion query to handle the optional file input
-            $stmt = $pdo->prepare("INSERT INTO `studies`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords)");
+            $stmt = $pdo->prepare("INSERT INTO `studies`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`, `contributor`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords, :contributor)");
             $stmt->execute(array(
                 ':title' => $title,
                 ':authors' => $authors,
@@ -65,7 +66,8 @@ if (isset($_POST['submit'])) {
                 ':dept' => $dept,
                 // Use $filename if a PDF file is uploaded, otherwise use an empty string
                 ':filename' => isset($filename) ? $newname : '',
-                ':keywords' => $keywords
+                ':keywords' => $keywords,
+                ':contributor' => $contri
             ));
             echo "<script>alert('Data inserted successfully');</script>";
         } catch (\Throwable $th) {
