@@ -1,6 +1,6 @@
 <?php
     session_start();
-    if (!isset($_SESSION['fname'])) {
+    if (!isset($_SESSION['supadmin'])) {
         // Redirect the user to the sign-in page
         header('Location: ../admin/aSignIn.php');
         exit();
@@ -8,15 +8,13 @@
 
     $page_title = "Dashboard";
     include '../includes/header.php';
-    include '../includes/sidebarAdmin.php';
+    include '../includes/sidebarSupadmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
     // display advisers
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1");
+        $stmt = $pdo->prepare("SELECT * FROM `studies`");
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
     } catch (PDOException $e) {
@@ -27,10 +25,10 @@
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
         try {
-            $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id AND `verified` = 1");
+            $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -42,7 +40,7 @@
         $study_id = $_POST['study_id'];
         try {
             // Get study details from 'studies' table
-            $stmt_select = $pdo->prepare("SELECT * FROM `studies` WHERE id = :study_id AND `verified` = 1");
+            $stmt_select = $pdo->prepare("SELECT * FROM `studies` WHERE id = :study_id");
             $stmt_select->bindParam(':study_id', $study_id);
             $stmt_select->execute();
             $study = $stmt_select->fetch(PDO::FETCH_ASSOC);
@@ -60,12 +58,12 @@
             $stmt_insert_archive->execute();
             
             // Delete the study from the 'studies' table
-            $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id AND `verified` = 1");
+            $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
             
             // Redirect back to the dashboard
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -82,10 +80,9 @@
         $year = $_POST['year'];
         $adviser = $_POST['adviser'];
         $dept = $_POST['dept']; 
-        $keywords = $_POST['keywords']; 
 
         try {
-            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept, `keywords`=:keywords WHERE id = :study_id AND `verified` = 1");
+            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept WHERE id = :study_id");
             $stmt->bindParam(':study_id', $study_id);
             $stmt->bindParam(':title', $title); 
             $stmt->bindParam(':authors', $authors); 
@@ -93,9 +90,8 @@
             $stmt->bindParam(':year', $year); 
             $stmt->bindParam(':adviser', $adviser); 
             $stmt->bindParam(':dept', $dept); 
-            $stmt->bindParam(':keywords', $keywords); 
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
@@ -122,7 +118,7 @@
         $searchQuery = implode(" AND ", $searchTerms);
 
         // Construct the final SQL query
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} AND `verified` = 1 LIMIT :offset, :limit");
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} LIMIT :offset, :limit");
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
 
@@ -132,7 +128,7 @@
         }
 
         // Fetch total number of studies for search results
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1");
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery}");
 
         // Bind parameters for totalStmt
         foreach ($bindings as $key => $value) {
@@ -140,12 +136,12 @@
         }
     } else {
         // If no search query is provided, fetch all studies
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 LIMIT :offset, :limit");
+        $stmt = $pdo->prepare("SELECT * FROM `studies` LIMIT :offset, :limit");
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
 
         // Fetch total number of all studies
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1");
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies`");
     }
 } catch (PDOException $e) {
     // Handle database errors here
@@ -171,7 +167,8 @@
 
     <!-- Search bar -->
     <form class="search" action="" method="GET">
-        <input type="text" class="form-control" name="search" placeholder="Search for a study" autocomplete="off" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+        <i class="fa fa-search"></i>
+        <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -195,7 +192,7 @@
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a href="../admin/display_dash.php?id=<?php echo $study['id']; ?>">
+                        <a href="display_dash.php?id=<?php echo $study['id']; ?>">
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);
@@ -203,7 +200,7 @@
                                     $line_length = 0;
 
                                     foreach ($words as $word) {
-                                        if ($line_length + strlen($word) > 50) {
+                                        if ($line_length + strlen($word) > 70) {
                                             $new_title .= '<br>' . $word . ' ';
                                             $line_length = strlen($word) + 1; 
                                         } else {
@@ -343,10 +340,6 @@
                                                 <label for="year" class="col-form-label" style="font-size: 17px;">Year</label>
                                                 <input type="text" name="year" class="form-control" id="year" value="<?php echo $study['year']; ?>">
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="keywords" class="col-form-label" style="font-size: 17px;">Keywords</label>
-                                                <input type="text" name="keywords" class="form-control" id="keywords" value="<?php echo $study['keywords']; ?>">
-                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="submit" name="saveChanges" class="btn btn-warning addbtn">Save changes</button>
@@ -362,7 +355,7 @@
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
                     <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
                     <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
-                    <li class="text-muted">Year: <?php echo $study['year']; ?></li>
+                    <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
                     <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
                 </ul>
