@@ -28,7 +28,7 @@
     $offset = ($currentPage - 1) * $studiesPerPage;
 
     // Fetch studies with pagination
-    $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year" : "") . " LIMIT :limit OFFSET :offset");
+    $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year AND verified = 1" : " WHERE verified = 1") . " LIMIT :limit OFFSET :offset");
     $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     if ($year) {
@@ -41,7 +41,7 @@
     if ($searchTerm !== null) {
         $totalStudies = count($filteredStudies);
     } else {
-        $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year" : ""))->fetchColumn();
+        $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year AND verified = 1" : " WHERE verified = 1"))->fetchColumn();
     }
 
 

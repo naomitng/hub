@@ -51,8 +51,8 @@
         
             $searchQuery = implode(" AND ", $searchTerms);
         
-            // Construct the final SQL query with keyword filter
-            $stmt = $pdo->prepare("SELECT * FROM studies WHERE {$searchQuery} LIMIT :offset, :limit");
+            // Construct the final SQL query with keyword filter and verification check
+            $stmt = $pdo->prepare("SELECT * FROM studies WHERE {$searchQuery} AND verified = 1 LIMIT :offset, :limit");
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
         
@@ -62,7 +62,7 @@
             }
         
             // Fetch total number of studies for search results
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE {$searchQuery}");
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE {$searchQuery} AND verified = 1");
         
             // Bind parameters for totalStmt
             foreach ($bindings as $key => $value) {
@@ -71,28 +71,28 @@
         } elseif(isset($_GET['collection'])) {
             // Collection query
             $keyword = $_GET['collection'];
-            $stmt = $pdo->prepare("SELECT * FROM studies WHERE keywords LIKE :keyword LIMIT :offset, :limit");
+            $stmt = $pdo->prepare("SELECT * FROM studies WHERE keywords LIKE :keyword AND verified = 1 LIMIT :offset, :limit");
             $stmt->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
         
             // Fetch total number of studies for collection results
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE keywords LIKE :keyword");
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE keywords LIKE :keyword AND verified = 1");
             $totalStmt->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
         } else {
-            // If no search or collection query is provided, fetch all studies
-            $stmt = $pdo->prepare("SELECT * FROM studies LIMIT :offset, :limit");
+            // If no search or collection query is provided, fetch all studies where verified = 1
+            $stmt = $pdo->prepare("SELECT * FROM studies WHERE verified = 1 LIMIT :offset, :limit");
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
         
-            // Fetch total number of all studies
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies");
+            // Fetch total number of all studies where verified = 1
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM studies WHERE verified = 1");
         }
         
     } catch (PDOException $e) {
         // Handle database errors here
         echo "Error: " . $e->getMessage();
-    }
+    }    
 
     try {
         // Execute the prepared statement
