@@ -15,7 +15,7 @@ $study = null;
 if (isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT s.*, a.name as adviser_name FROM `studies` s JOIN `advisers` a ON s.adviser = a.id WHERE s.id = ?");
         $stmt->execute([$study_id]);
         $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
     } catch (PDOException $e) {
@@ -52,7 +52,7 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
                 <li class="list-group-item-title mb-3"><?php echo $study['title']; ?></li>
                 <li>Authors: <?php echo $study['authors']; ?></li>
                 <li>Department: <?php echo $study['dept']; ?></li>
-                <li>Adviser: <?php echo $study['adviser']; ?></li>
+                <li>Adviser: <?php echo $study['adviser_name']; ?></li>
                 <li class="">Year: <?php echo $study['year']; ?></li> <br>
 
                 <!-- PDF Button -->

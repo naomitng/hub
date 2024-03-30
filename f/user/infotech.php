@@ -123,7 +123,20 @@ if(isset($_GET['search'])) {
                     <li><?php echo substr($study['abstract'], 0, 300) . "..."; ?></li>
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
                     <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
-                    <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
+                    <li class="text-muted">
+                        <?php
+                            $stmt_adviser = $pdo->prepare("SELECT name FROM advisers WHERE id = :adviser_id");
+                            $stmt_adviser->bindParam(':adviser_id', $study['adviser']);
+                            $stmt_adviser->execute();
+                            $adviser = $stmt_adviser->fetch(PDO::FETCH_ASSOC);
+
+                            if ($adviser) {
+                                echo 'Adviser: ' . $adviser['name'];
+                            } else {
+                                echo 'Adviser: Not available';
+                            }
+                        ?>
+                    </li>
                     <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
                     <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>              

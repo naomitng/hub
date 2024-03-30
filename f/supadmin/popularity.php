@@ -1,14 +1,14 @@
 <?php
     session_start();
-    if (!isset($_SESSION['fname'])) {
+    if (!isset($_SESSION['supadmin'])) {
         // Redirect the user to the sign-in page
         header('Location: ../admin/aSignIn.php');
         exit();
     }
 
-    $page_title = "Dashboard";
+    $page_title = "Popularity";
     include '../includes/header.php';
-    include '../includes/sidebarAdmin.php';
+    include '../includes/sidebarSupadmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
@@ -16,7 +16,7 @@
 
     // display advisers
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1");
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
     } catch (PDOException $e) {
@@ -30,7 +30,7 @@
             $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id AND `verified` = 1");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -65,7 +65,7 @@
             $stmt_delete->execute();
             
             // Redirect back to the dashboard
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -95,7 +95,7 @@
             $stmt->bindParam(':dept', $dept); 
             $stmt->bindParam(':keywords', $keywords); 
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
@@ -132,7 +132,7 @@
         }
 
         // Fetch total number of studies for search results
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1");
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1 ORDER BY `popularity` DESC");
 
         // Bind parameters for totalStmt
         foreach ($bindings as $key => $value) {
@@ -145,7 +145,7 @@
         $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
 
         // Fetch total number of all studies
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1");
+        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
     }
 } catch (PDOException $e) {
     // Handle database errors here
@@ -179,6 +179,103 @@
         </button>
     </form>
 
+    <?php
+        try {
+            $pdo = new PDO("mysql:host=localhost;dbname=hub", "root", "");
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch(PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
+
+        $sql = "SELECT popularity FROM studies WHERE verified = 1";
+
+        try {
+            // Prepare the statement
+            $stmt = $pdo->prepare($sql);
+            // Execute the query
+            $stmt->execute();
+            // Fetch popularity data
+            $popularity_data = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch(PDOException $e) {
+            die("Error retrieving popularity data: " . $e->getMessage());
+        }
+
+        $pdo = null;
+    ?>
+
+    <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
+        <li>
+            <input type="hidden" name="report_type" value="yearly_studies">
+            <h2>Popularity</h2>
+            <p>This report focuses on popularity of a study based on clicks or visits.</p>
+            <!-- place chart here -->
+            <div style="display: flex; justify-content: center;">
+                <canvas style="height: 50vh; width: 100%;" id="popularityChart"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var ctx = document.getElementById('popularityChart').getContext('2d');
+                        var studies = <?php echo json_encode(array_column($studies, 'title')); ?>;
+                        var popularityData = <?php echo json_encode(array_column($studies, 'popularity')); ?>;
+                        var customLabels = studies.map(function(title, index) {
+                            return 'Study ' + (index + 1);
+                        });
+
+                        var popularityChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: customLabels,
+                                datasets: [{
+                                    label: 'Popularity',
+                                    data: popularityData,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                var dataIndex = context.dataIndex;
+                                                var studyTitle = studies[dataIndex];
+                                                var popularityCount = popularityData[dataIndex];
+                                                return popularityCount + ': ' +studyTitle;
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        display: false,
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+        </li>
+    </ul>
+
     <!-- List of studies -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
@@ -195,7 +292,7 @@
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a href="../admin/display_dash.php?id=<?php echo $study['id']; ?>">
+                        <a href="display_dash.php?id=<?php echo $study['id']; ?>">
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);
@@ -361,23 +458,13 @@
                     <li><?php echo substr($study['abstract'], 0, 300) . "..."; ?></li>
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
                     <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
-                    <li class="text-muted">
-                        <?php
-                            $stmt_adviser = $pdo->prepare("SELECT name FROM advisers WHERE id = :adviser_id");
-                            $stmt_adviser->bindParam(':adviser_id', $study['adviser']);
-                            $stmt_adviser->execute();
-                            $adviser = $stmt_adviser->fetch(PDO::FETCH_ASSOC);
-
-                            if ($adviser) {
-                                echo 'Adviser: ' . $adviser['name'];
-                            } else {
-                                echo 'Adviser: Not available';
-                            }
-                        ?>
-                    </li>
+                    <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
                     <li class="text-muted">Year: <?php echo $study['year']; ?></li>
                     <hr>
-                    <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
+                    <li class="text-muted">
+                        Keywords: <?php echo $study['keywords']; ?>
+                        <span class="float-end" style="font-weight: bold; color: blue;">Popularity: <?=$study['popularity']?></span>
+                    </li>
                 </ul>
             <?php endforeach; ?>
         </li>
@@ -410,4 +497,3 @@
         </nav>
     <?php endif; ?>
 </div>
-

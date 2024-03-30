@@ -9,15 +9,20 @@ echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
 // Fetch the study in table studies
 $study = null;
+$study = null;
 if (isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT s.*, a.name as adviser_name FROM `studies` s JOIN `advisers` a ON s.adviser = a.id WHERE s.id = ?");
         $stmt->execute([$study_id]);
         $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
         // Set the page title to the study title if a study is found
         if ($study) {
             $page_title = $study['title'];
+
+            // popularity
+            $increment_stmt = $pdo->prepare("UPDATE `studies` SET `popularity` = `popularity` + 1 WHERE id = ?");
+            $increment_stmt->execute([$study_id]);
         }
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -65,7 +70,7 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
                 <li class="list-group-item-title mb-3"><?php echo $study['title']; ?></li>
                 <li>Authors: <?php echo $study['authors']; ?></li>
                 <li>Department: <?php echo $study['dept']; ?></li>
-                <li>Adviser: <?php echo $study['adviser']; ?></li>
+                <li>Adviser: <?php echo $study['adviser_name']; ?></li>
                 <li class="">Year: <?php echo $study['year']; ?></li>
                 <hr>
                 <li class="mb-4" style="font-size: 20px;">Abstract</li>

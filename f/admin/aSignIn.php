@@ -51,6 +51,7 @@
                     if (password_verify($pass, $admin_result['pass'])) {
                         $_SESSION['fname'] = $admin_result['fname'];
                         $_SESSION['lname'] = $admin_result['lname'];
+                        $_SESSION['contri'] = $admin_result['id'];
                         header('Location: ../admin/aDashboard.php');
                         exit(); 
                     } else {

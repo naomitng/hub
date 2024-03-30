@@ -23,7 +23,7 @@ $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($currentPage - 1) * $studiesPerPage;
 
 // Fetch studies with pagination
-$stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year" : "") . " LIMIT :limit OFFSET :offset");
+$stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year AND verified = 1" : " WHERE verified = 1") . " LIMIT :limit OFFSET :offset");
 $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 if ($year) {
@@ -36,7 +36,7 @@ $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($searchTerm !== null) {
     $totalStudies = count($filteredStudies);
 } else {
-    $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year" : ""))->fetchColumn();
+    $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year AND verified = 1" : " WHERE verified = 1"))->fetchColumn();
 }
 
 // Get studies based on the year from the URL
@@ -131,7 +131,20 @@ if(isset($_GET['year'])) {
                     <li><?php echo substr($study['abstract'], 0, 300) . "..."; ?></li>
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
                     <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
-                    <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
+                    <li class="text-muted">
+                        <?php
+                            $stmt_adviser = $pdo->prepare("SELECT name FROM advisers WHERE id = :adviser_id");
+                            $stmt_adviser->bindParam(':adviser_id', $study['adviser']);
+                            $stmt_adviser->execute();
+                            $adviser = $stmt_adviser->fetch(PDO::FETCH_ASSOC);
+
+                            if ($adviser) {
+                                echo 'Adviser: ' . $adviser['name'];
+                            } else {
+                                echo 'Adviser: Not available';
+                            }
+                        ?>
+                    </li>
                     <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
                     <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
