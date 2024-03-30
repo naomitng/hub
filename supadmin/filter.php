@@ -1,6 +1,10 @@
 <?php
+    // Initialize $totalSearchResults
+    $totalSearchResults = 0;
+    $filteredStudies = array();
+
     session_start();
-    if (!isset($_SESSION['fname'])) {
+    if (!isset($_SESSION['supadmin'])) {
         // Redirect the user to the sign-in page
         header('Location: ../admin/aSignIn.php');
         exit();
@@ -8,29 +12,47 @@
 
     $page_title = "Dashboard";
     include '../includes/header.php';
-    include '../includes/sidebarAdmin.php';
+    include '../includes/sidebarSupadmin.php';
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
+    // Get the year from the url
+    $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 
-    // display advisers
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1");
-        $stmt->execute(); // Execute the prepared statement
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-    } catch (PDOException $e) {
-        echo $e->getMessage();
+    // Check if search param is set otherwise null
+    $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
+
+    // Pagination variables
+    $studiesPerPage = 10; // Change this as needed
+    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($currentPage - 1) * $studiesPerPage;
+
+    // Fetch studies with pagination
+    $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year" : "") . " LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    if ($year) {
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
     }
+    $stmt->execute();
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Count total studies (considering search filter)
+    if ($searchTerm !== null) {
+        $totalStudies = count($filteredStudies);
+    } else {
+        $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year" : ""))->fetchColumn();
+    }
+
 
     // delete 
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
         try {
-            $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id AND `verified` = 1");
+            $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "../supadmin/filter.php?='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -42,7 +64,7 @@
         $study_id = $_POST['study_id'];
         try {
             // Get study details from 'studies' table
-            $stmt_select = $pdo->prepare("SELECT * FROM `studies` WHERE id = :study_id AND `verified` = 1");
+            $stmt_select = $pdo->prepare("SELECT * FROM `studies` WHERE id = :study_id");
             $stmt_select->bindParam(':study_id', $study_id);
             $stmt_select->execute();
             $study = $stmt_select->fetch(PDO::FETCH_ASSOC);
@@ -60,19 +82,33 @@
             $stmt_insert_archive->execute();
             
             // Delete the study from the 'studies' table
-            $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id AND `verified` = 1");
+            $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id");
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
             
-            // Redirect back to the dashboard
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            // Redirect back to the filter
+            echo '<script>window.location.href = "../supadmin/filter.php?'.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
     }
 
-    
+    // Search
+    if($searchTerm !== null) {
+        foreach($studies as $study) {
+            if($year === null || $study['year'] == $year) {
+                if (stripos($study['title'], $searchTerm) !== false || stripos($study['abstract'], $searchTerm) !== false || stripos($study['keywords'], $searchTerm) !== false) {
+                    $filteredStudies[] = $study;
+                }
+            }
+        }
+        $studies = $filteredStudies;
+        
+        // Count total search results
+        $totalSearchResults = count($filteredStudies);
+    }
+
     // EDIT
     if(isset($_POST['saveChanges'])) {
         $study_id = $_POST['study_id'];
@@ -82,10 +118,9 @@
         $year = $_POST['year'];
         $adviser = $_POST['adviser'];
         $dept = $_POST['dept']; 
-        $keywords = $_POST['keywords']; 
 
         try {
-            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept, `keywords`=:keywords WHERE id = :study_id AND `verified` = 1");
+            $stmt = $pdo->prepare("UPDATE `studies` SET `title`=:title, `authors`=:authors, `abstract`=:abstract, `year`=:year, `adviser`=:adviser, `dept`=:dept WHERE id = :study_id");
             $stmt->bindParam(':study_id', $study_id);
             $stmt->bindParam(':title', $title); 
             $stmt->bindParam(':authors', $authors); 
@@ -93,85 +128,24 @@
             $stmt->bindParam(':year', $year); 
             $stmt->bindParam(':adviser', $adviser); 
             $stmt->bindParam(':dept', $dept); 
-            $stmt->bindParam(':keywords', $keywords); 
             $stmt->execute();
-            echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
+            echo '<script>window.location.href = "../supadmin/filter.php?year='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
         }
     }
-
-    // Pagination variables
-    $studiesPerPage = 10;
-    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $offset = ($currentPage - 1) * $studiesPerPage;
-
-    try {
-    if(isset($_GET['search'])) {
-        $keywords = explode(" ", $_GET['search']);
-        $searchTerms = [];
-        $bindings = [];
-
-        // Construct the search query for each keyword
-        foreach ($keywords as $index => $keyword) {
-            $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
-            $bindings[":search{$index}"] = '%' . $keyword . '%';
-        }
-
-        $searchQuery = implode(" AND ", $searchTerms);
-
-        // Construct the final SQL query
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} AND `verified` = 1 LIMIT :offset, :limit");
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Bind parameters for each search term
-        foreach ($bindings as $key => $value) {
-            $stmt->bindParam($key, $value, PDO::PARAM_STR);
-        }
-
-        // Fetch total number of studies for search results
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1");
-
-        // Bind parameters for totalStmt
-        foreach ($bindings as $key => $value) {
-            $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
-        }
-    } else {
-        // If no search query is provided, fetch all studies
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 LIMIT :offset, :limit");
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Fetch total number of all studies
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1");
-    }
-} catch (PDOException $e) {
-    // Handle database errors here
-    echo "Error: " . $e->getMessage();
-}
-
-    try {
-        // Execute the prepared statement
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-        $totalSearchResults = $stmt->rowCount();
-        
-        // Execute totalStmt to get total number of studies
-        $totalStmt->execute();
-        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
+    
 ?>
 
 <!-- Content Area -->
 <div id="content">
 
     <!-- Search bar -->
-    <form class="search" action="" method="GET">
-        <input type="text" class="form-control" name="search" placeholder="Search for a study" autocomplete="off" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+    <form class="search" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
+        <input type="hidden" name="year" value="<?php echo isset($_GET['year']) ? $_GET['year'] : ''; ?>">
+        <i class="fa fa-search"></i>
+        <input type="text" class="form-control" name="search" placeholder="Search for a study" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit" class="btn btn-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -180,22 +154,26 @@
     </form>
 
     <!-- List of studies -->
-    <ul class="list-group mt-5 mb-5">
+    <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
-
             <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
-                <div class="mb-4">
-                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
-                </div>
+                <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
+                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i> <br> <br>
+                <?php endif; ?>
             <?php endif; ?>
-
-            <!-- loop to display studies -->
+            <!-- Back link to dashboard -->
+            <a href="../supadmin/aDashboard.php" class="text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg> Back to dashboard
+            </a>
             <?php foreach ($studies as $study): ?>
-                <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
+                <!-- loop to display studies -->
+                <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4 mt-3">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a href="../admin/display_dash.php?id=<?php echo $study['id']; ?>">
+                        <a href="../supadmin/display_dash.php?id=<?php echo $study['id']; ?>">
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);
@@ -203,7 +181,7 @@
                                     $line_length = 0;
 
                                     foreach ($words as $word) {
-                                        if ($line_length + strlen($word) > 50) {
+                                        if ($line_length + strlen($word) > 70) {
                                             $new_title .= '<br>' . $word . ' ';
                                             $line_length = strlen($word) + 1; 
                                         } else {
@@ -362,39 +340,36 @@
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
                     <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
                     <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
-                    <li class="text-muted">Year: <?php echo $study['year']; ?></li>
+                    <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
                     <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>
                 </ul>
             <?php endforeach; ?>
         </li>
-    </ul>
-
-
-    <!-- Pagination -->
+    </ul>        
     <?php if ($totalStudies > $studiesPerPage): ?>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <?php if ($currentPage > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&page=<?php echo $currentPage - 1; ?>">Previous</a>
                     </li>
                 <?php endif; ?>
                 <?php
-                    $totalPages = ceil($totalStudies / $studiesPerPage);
-                    for ($i = 1; $i <= $totalPages; $i++):
-                ?>
+                $totalPages = ceil($totalStudies / $studiesPerPage);
+                for ($i = 1; $i <= $totalPages; $i++):
+                    ?>
                     <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
                     </li>
                 <?php endfor; ?>
                 <?php if ($currentPage < $totalPages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                        <a class="page-link" href="?year=<?php echo $year; ?>&page=<?php echo $currentPage + 1; ?>">Next</a>
                     </li>
                 <?php endif; ?>
             </ul>
         </nav>
     <?php endif; ?>
-</div>
 
+</div>

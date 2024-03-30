@@ -12,14 +12,15 @@
             <!-- List for the departments -->
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-                    Departments
+                    Data Analytics
                 </button>
 
                 <!-- Departments -->
                 <div class="collapse" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="infotech.php" class="link-dark rounded">Information Technology</a></li>
-                        <li><a href="comEng.php" class="link-dark rounded">Computer Engineering</a></li>
+                        <li><a href="infotech.php" class="link-dark rounded">Popular studies</a></li>
+                        <li><a href="comEng.php" class="link-dark rounded">Admin contributors</a></li>
+                        <li><a href="statistics.php" class="link-dark rounded">Statistical report</a></li>
                     </ul>
                 </div>
             </li>
@@ -27,37 +28,14 @@
             <!-- List for the dashboard -->
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                    Dashboard
+                    Manage requests
                 </button>
 
                 <!-- Under dashboard -->
                 <div class="collapse" id="dashboard-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="contribute.php" class="link-dark rounded">Contribute</a></li>
-                        <li><a href="statistics.php" class="link-dark rounded">See Statistics</a></li>
-                        
-                        <!-- di nareredirect sa mAdvisers -->
-                        <li><a href="mAdvisers.php" class="link-dark rounded">Manage Advisers</a></li>
-                        <li><a href="aRequests.php" class="link-dark rounded">Admin Account Requests</a></li>
-                        <li><a href="archive.php" class="link-dark rounded">Archive</a></li>
-                    </ul>
-                </div>
-            </li>
-
-            <!-- List for filter -->
-            <li class="">
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false">
-                    Filter searches
-                </button>
-
-                <!-- Year -->
-                <div class="collapse" id="filter-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="filter.php?year=2020" class="link-dark rounded">Since 2020</a></li>
-                        <li><a href="filter.php?year=2021" class="link-dark rounded">Since 2021</a></li>
-                        <li><a href="filter.php?year=2022" class="link-dark rounded">Since 2022</a></li>
-                        <li><a href="filter.php?year=2023" class="link-dark rounded">Since 2023</a></li>
-                        <li><a href="filter.php?year=2024" class="link-dark rounded">Since 2024</a></li>
+                        <li><a href="aRequests.php" class="link-dark rounded">Account request approval </a></li>
+                        <li><a href="capstone_reqs.php" class="link-dark rounded">Capstone request approval</a></li>
                     </ul>
                 </div>
             </li>
