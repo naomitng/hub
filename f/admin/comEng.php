@@ -332,7 +332,23 @@
                     </li>
                     <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
-                    <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>              
+                    <li class="text-muted">
+                        Keywords: <?php echo $study['keywords']; ?>
+                        <span class="float-end" style="font-weight: bold; color: blue;">
+                            <?php
+                                $stmt_contributor = $pdo->prepare("SELECT fname, lname FROM admin WHERE id = :contributor_id");
+                                $stmt_contributor->bindParam(':contributor_id', $study['contributor']);
+                                $stmt_contributor->execute();
+                                $contributor = $stmt_contributor->fetch(PDO::FETCH_ASSOC);
+
+                                if ($contributor) {
+                                    echo 'Uploaded by: ' . $contributor['fname'] . ' ' . $contributor['lname'];
+                                } else {
+                                    echo 'Uploaded by: Not available';
+                                }
+                            ?>
+                        </span>
+                    </li>             
                 </ul>
             <?php endforeach; ?>
         </li>
