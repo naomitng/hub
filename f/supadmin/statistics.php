@@ -239,7 +239,18 @@ foreach ($contributions as $contribution) {
                                 // PHP variables containing popularity data
                                 var studies = <?php echo json_encode(array_column($popularity_data, 'title')); ?>;
                                 var popularityData = <?php echo json_encode(array_column($popularity_data, 'popularity')); ?>;
-                                var customLabels = studies.map(function(title, index) {
+                                
+                                // Filter out data points with zero popularity
+                                var filteredStudies = [];
+                                var filteredPopularityData = [];
+                                for (var i = 0; i < popularityData.length; i++) {
+                                    if (popularityData[i] !== 0) {
+                                        filteredStudies.push(studies[i]);
+                                        filteredPopularityData.push(popularityData[i]);
+                                    }
+                                }
+
+                                var customLabels = filteredStudies.map(function(title, index) {
                                     return 'Study ' + (index + 1);
                                 });
 
@@ -249,7 +260,7 @@ foreach ($contributions as $contribution) {
                                         labels: customLabels,
                                         datasets: [{
                                             label: 'Popularity',
-                                            data: popularityData,
+                                            data: filteredPopularityData,
                                             backgroundColor: [
                                                 'rgba(255, 99, 132, 0.2)',
                                                 'rgba(54, 162, 235, 0.2)',
@@ -281,8 +292,8 @@ foreach ($contributions as $contribution) {
                                                 callbacks: {
                                                     label: function(context) {
                                                         var dataIndex = context.dataIndex;
-                                                        var studyTitle = studies[dataIndex];
-                                                        var popularityCount = popularityData[dataIndex];
+                                                        var studyTitle = filteredStudies[dataIndex];
+                                                        var popularityCount = filteredPopularityData[dataIndex];
                                                         return popularityCount + ': ' + studyTitle;
                                                     }
                                                 }
