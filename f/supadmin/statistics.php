@@ -25,6 +25,25 @@ $deptData = $stmtDept->fetchAll(PDO::FETCH_ASSOC);
 $stmtYear = $pdo->query("SELECT year, COUNT(*) AS count FROM `studies` GROUP BY year");
 $yearData = $stmtYear->fetchAll(PDO::FETCH_ASSOC);
 
+$yearLabels = [];
+$yearlyStudiesData = [];
+
+$currentYear = 2020;
+$currentYearIndex = 0;
+
+for ($i = $currentYear; $i <= date('Y'); $i++) {
+    // Check if data exists for the current year
+    if ($currentYearIndex < count($yearData) && $yearData[$currentYearIndex]['year'] == $i) {
+        $yearLabels[] = $i;
+        $yearlyStudiesData[] = $yearData[$currentYearIndex]['count'];
+        $currentYearIndex++;
+    } else {
+        // If no data exists for the current year, set count to 0
+        $yearLabels[] = $i;
+        $yearlyStudiesData[] = 0;
+    }
+}
+
 // Count number of studies in the archive table
 $stmtArchive = $pdo->query("SELECT COUNT(*) AS count FROM `archive`");
 $archiveCount = $stmtArchive->fetch(PDO::FETCH_ASSOC)['count'];
@@ -41,6 +60,25 @@ foreach ($itCpeData as $dept) {
         $cpeCount = $dept['count'];
     }
 }
+
+// popular stuidies
+$stmtPopularity = $pdo->prepare("SELECT title, popularity FROM studies WHERE verified = 1");
+$stmtPopularity->execute();
+$popularity_data = $stmtPopularity->fetchAll(PDO::FETCH_ASSOC);
+
+// admin contributors
+$stmt_contributions = $pdo->prepare("SELECT CONCAT(a.fname, ' ', a.lname) AS full_name, COUNT(*) as contribution_count FROM studies s JOIN admin a ON s.contributor = a.id GROUP BY s.contributor");
+$stmt_contributions->execute();
+$contributions = $stmt_contributions->fetchAll(PDO::FETCH_ASSOC);
+
+$admin_names = [];
+$contribution_counts = [];
+
+foreach ($contributions as $contribution) {
+    $admin_names[] = $contribution['full_name'];
+    $contribution_counts[] = $contribution['contribution_count'];
+}
+
 
 ?>
 
@@ -161,10 +199,10 @@ foreach ($itCpeData as $dept) {
                             var yearlyStudiesChart = new Chart(ctx, {
                                 type: 'line',
                                 data: {
-                                    labels: ['2020', '2021', '2022', '2023', '2024'],
+                                    labels: <?php echo json_encode($yearLabels); ?>,
                                     datasets: [{
                                         label: 'Number of Studies',
-                                        data: [<?php echo $yearData[0]['count']; ?>, <?php echo $yearData[1]['count']; ?>, <?php echo $yearData[2]['count']; ?>, <?php echo $yearData[3]['count']; ?>, <?php echo $yearData[4]['count']; ?>],
+                                        data: <?php echo json_encode($yearlyStudiesData); ?>,
                                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
                                         borderColor: 'rgba(54, 162, 235, 1)',
                                         borderWidth: 1
@@ -179,6 +217,139 @@ foreach ($itCpeData as $dept) {
                                                 beginAtZero: true
                                             }
                                         }]
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                </li>
+            </ul>
+            <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
+                <li>
+                    <input type="hidden" name="report_type" value="contribution">
+                    <h2>Popularity</h2>
+                    <p>This report focuses on popularity of a study based on clicks or visits.</p>
+                    <!-- place chart here -->
+                    <div style="display: flex; justify-content: center;">
+                        <canvas id="popularityChart" width="400" height="300"></canvas>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var ctx = document.getElementById('popularityChart').getContext('2d');
+
+                                // PHP variables containing popularity data
+                                var studies = <?php echo json_encode(array_column($popularity_data, 'title')); ?>;
+                                var popularityData = <?php echo json_encode(array_column($popularity_data, 'popularity')); ?>;
+                                var customLabels = studies.map(function(title, index) {
+                                    return 'Study ' + (index + 1);
+                                });
+
+                                var popularityChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: customLabels,
+                                        datasets: [{
+                                            label: 'Popularity',
+                                            data: popularityData,
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: false,
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        },
+                                        plugins: {
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        var dataIndex = context.dataIndex;
+                                                        var studyTitle = studies[dataIndex];
+                                                        var popularityCount = popularityData[dataIndex];
+                                                        return popularityCount + ': ' + studyTitle;
+                                                    }
+                                                }
+                                            },
+                                            legend: {
+                                                display: false,
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </li>
+            </ul>
+            <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
+                <li>
+                    <input type="hidden" name="report_type" value="contribution">
+                    <h2>Contribution</h2>
+                    <p>This report focuses on how many studies uploaded by each admin.</p>
+                    <!-- place chart here -->
+                    <div style="display: flex; justify-content: center;">
+                        <canvas id="contributionsChart" width="400" height="300"></canvas>
+                        <script>
+                            var ctx = document.getElementById('contributionsChart').getContext('2d');
+                            var adminNames = <?php echo json_encode($admin_names); ?>;
+                            var contributionCounts = <?php echo json_encode($contribution_counts); ?>;
+
+                            var contributionChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: adminNames,
+                                    datasets: [{
+                                        label: 'Contributions',
+                                        data: contributionCounts,
+                                        backgroundColor: [
+                                            'rgba(255, 99, 132, 0.2)',
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 206, 86, 0.2)',
+                                            'rgba(75, 192, 192, 0.2)',
+                                            'rgba(153, 102, 255, 0.2)',
+                                            'rgba(255, 159, 64, 0.2)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(255, 99, 132, 1)',
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 206, 86, 1)',
+                                            'rgba(75, 192, 192, 1)',
+                                            'rgba(153, 102, 255, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+
+                                            precision: 0
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            display: false,
+                                        }
                                     }
                                 }
                             });
