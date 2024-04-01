@@ -24,12 +24,19 @@
         $result_admins = $stmt_admins->fetch(PDO::FETCH_ASSOC);
         $admin_count = $result_admins['admin_count'];
     
-        // count studies
-        $sql_studies = "SELECT COUNT(*) AS study_count FROM studies";
-        $stmt_studies = $pdo->prepare($sql_studies);
-        $stmt_studies->execute();
-        $result_studies = $stmt_studies->fetch(PDO::FETCH_ASSOC);
-        $study_count = $result_studies['study_count'];
+        // count infotech studies
+        $sql_it = "SELECT COUNT(*) AS it_count FROM studies WHERE dept = 'Information Technology'";
+        $stmt_it = $pdo->prepare($sql_it);
+        $stmt_it->execute();
+        $result_it = $stmt_it->fetch(PDO::FETCH_ASSOC);
+        $it_count = $result_it['it_count'];
+
+        // count comeng studies
+        $sql_cpe = "SELECT COUNT(*) AS cpe_count FROM studies WHERE dept = 'Computer Engineering'";
+        $stmt_cpe = $pdo->prepare($sql_cpe);
+        $stmt_cpe->execute();
+        $result_cpe = $stmt_cpe->fetch(PDO::FETCH_ASSOC);
+        $cpe_count = $result_cpe['cpe_count'];
     } catch(PDOException $e) {
         die("Error: " . $e->getMessage());
     }
@@ -69,17 +76,17 @@
             <div class="row">
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px;" class="p-3 rounded ulInside mb-3">
-                        <li>Total Capstone Records</li> <br>
+                        <li>Total IT Capstone Records</li> <br>
                         <span style="font-size: 78px;">
-                            <?php echo $study_count ?>
+                            <?php echo $it_count ?>
                         </span>
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px;" class="p-3 rounded ulInside">
-                        <li>Total Capstone Records</li> <br>
+                        <li>Total CpE Capstone Records</li> <br>
                         <span style="font-size: 78px;">
-                            <?php echo $study_count ?>
+                            <?php echo $cpe_count ?>
                         </span>
                     </ul>
                 </div>
