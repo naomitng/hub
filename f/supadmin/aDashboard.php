@@ -76,6 +76,25 @@
 
 ?>
 
+<style>
+    .viewDetails {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.7); 
+        padding: 5px 10px;
+        border-radius: 5px;
+        opacity: 0; 
+        transition: opacity 0.3s ease; 
+        text-decoration: none;
+    }
+    .ulInside:hover .viewDetails {
+        opacity: 1;
+    }
+</style>
+
 <div id="content">
     <!-- List of studies -->
     <ul class="list-group">
@@ -93,17 +112,21 @@
                             <span style="font-size: 78px;">
                                 <?php echo $adviser_count ?>
                             </span>
+                            <!-- Hover button -->
+                            <a href="mAdvisers.php" id="viewDetails1" class="viewDetails">View Details</a>
                         </div>
                     </ul>
                 </div>
                 <div class="col-md-6">
-                    <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
+                    <ul style="list-style-type  : none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
                         <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
                         <div style="position: relative; z-index: 1;">
                             <li>Number of Registered <br>Admins</li> <br>
                             <span style="font-size: 78px;">
                                 <?php echo $admin_count ?>
                             </span>
+                            <!-- Hover button -->
+                            <a href="mAdmins.php" id="viewDetails1" class="viewDetails">View Details</a>
                         </div>
                     </ul>
                 </div>
@@ -116,6 +139,8 @@
                         <span style="font-size: 78px;">
                             <?php echo $countIT ?>
                         </span>
+                        <!-- Hover button -->
+                        <a href="infotech.php" id="viewDetails1" class="viewDetails">View Details</a>
                     </ul>
                 </div>
                 <div class="col-md-6">
@@ -125,6 +150,8 @@
                         <span style="font-size: 78px;">
                             <?php echo $countCpE ?>
                         </span>
+                        <!-- Hover button -->
+                        <a href="comEng.php" id="viewDetails1" class="viewDetails">View Details</a>
                     </ul>
                 </div>
             </div>
