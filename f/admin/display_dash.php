@@ -56,7 +56,7 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
                 <li class="">Year: <?php echo $study['year']; ?></li> <br>
 
                 <!-- PDF Button -->
-                <?php if(isset($study['filename']) && !empty($study['filename'])): ?>
+                <?php if(isset($study['filename']) && $study['filename'] !== '' && $study['filename'] !== 'uploads/'): ?>
                     <li><a target="_blank" href="<?php echo $study['filename']?>" class="btn btn-warning">Click to see PDF</a></li>
                 <?php else: ?>
                     <li><span style="color: red">PDF file not available</span></li>
