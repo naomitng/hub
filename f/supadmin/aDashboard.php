@@ -24,19 +24,12 @@
         $result_admins = $stmt_admins->fetch(PDO::FETCH_ASSOC);
         $admin_count = $result_admins['admin_count'];
     
-        // count studies IT
-        $sql_studies = "SELECT COUNT(*) AS countIT FROM studies WHERE dept = 'Information Technology'";
+        // count studies
+        $sql_studies = "SELECT COUNT(*) AS study_count FROM studies";
         $stmt_studies = $pdo->prepare($sql_studies);
         $stmt_studies->execute();
         $result_studies = $stmt_studies->fetch(PDO::FETCH_ASSOC);
-        $countIT = $result_studies['countIT'];
-
-        // count studies IT
-        $sql_studies = "SELECT COUNT(*) AS countCpE FROM studies WHERE dept = 'Computer Engineering'";
-        $stmt_studies = $pdo->prepare($sql_studies);
-        $stmt_studies->execute();
-        $result_studies = $stmt_studies->fetch(PDO::FETCH_ASSOC);
-        $countCpE = $result_studies['countCpE'];
+        $study_count = $result_studies['study_count'];
     } catch(PDOException $e) {
         die("Error: " . $e->getMessage());
     }
@@ -83,25 +76,19 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
-                        <div style="position: relative; z-index: 1;">
-                            <li>Total Capstone <br> Records (IT)</li> <br>
-                            <span style="font-size: 78px;">
-                                <?php echo $countIT ?>
-                            </span>
-                        </div>
+                    <ul style="list-style-type: none; height: 200px;" class="p-3 rounded ulInside mb-3">
+                        <li>Total Capstone Records</li> <br>
+                        <span style="font-size: 78px;">
+                            <?php echo $study_count ?>
+                        </span>
                     </ul>
                 </div>
                 <div class="col-md-6">
-                    <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
-                        <div style="position: relative; z-index: 1;">
-                            <li>Total Capstone <br> Records (CPE)</li> <br>
-                            <span style="font-size: 78px;">
-                                <?php echo $countCpE ?>
-                            </span>
-                        </div>
+                    <ul style="list-style-type: none; height: 200px;" class="p-3 rounded ulInside">
+                        <li>Total Capstone Records</li> <br>
+                        <span style="font-size: 78px;">
+                            <?php echo $study_count ?>
+                        </span>
                     </ul>
                 </div>
             </div>
