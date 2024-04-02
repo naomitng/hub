@@ -209,8 +209,9 @@ foreach ($contributions as $contribution) {
                                     datasets: [{
                                         label: 'Number of Studies',
                                         data: <?php echo json_encode($yearlyStudiesData); ?>,
-                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        fill: true,
+                                        backgroundColor: 'rgba(128, 128, 128, 0.2)',
+                                        borderColor: 'rgb(75, 192, 192)',
                                         borderWidth: 1
                                     }]
                                 },
