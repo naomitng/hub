@@ -100,9 +100,17 @@
     </form>
 
     <!-- List of studies -->
-    <ul class="list-group mt-5 mb-5">
+    <ul class="list-group mt-5 mb-5">   
         <li class="list-group-item p-4">
-
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <!-- Previous/back link -->
+                <a href="aDashboard.php" class="text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg> Back to dashboard
+                </a>
+    
+            </div>
             <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
                 <div class="mb-4">
@@ -115,7 +123,7 @@
                 <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
                     <!-- Title -->
                     <li class="list-group-item-title d-flex">
-                        <a style="color: #000; text-decoration: none;" href="display_dash.php?id=<?php echo $study['id']; ?>">
+                        <h4>
                             <?php $title = $study['title'];
                                 if (strlen($title) > 50) {
                                     $words = explode(' ', $title);
@@ -136,10 +144,14 @@
                                     echo $title;
                                 } 
                             ?>
-                        </a>
+                        </h4>
                     </li>
 
                     <!-- Information about the study -->
+                    <div class="text-muted">
+                        <li>Department: <?= $study['dept']; ?></li>
+                        <li>Year: <?= $study['year']; ?></li>
+                    </div>
                     <hr>
                     <li class="text-muted">
                         <span style="font-weight: bold; color: blue;">Popularity: <?=$study['popularity']?></span>

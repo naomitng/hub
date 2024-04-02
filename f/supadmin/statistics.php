@@ -93,14 +93,20 @@ foreach ($contributions as $contribution) {
                     </svg> Download report
                 </a>
             </h2>
-            <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
-                <li>
-                    <h2>Total Studies: <?php echo $totalStudies; ?></h2>
-                    <div style="display: flex; justify-content: center;">
 
-                    </div>
-                </li>
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Previous/back link -->
+                <a href="aDashboard.php" class="text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg> Back to dashboard
+                </a>
+            </div>
+
+            <ul style="list-style-type: none; margin: 0; padding: 0;" class="p-3 rounded ulInside mt-3">
+                <h3 style="margin: 0;">Total Studies: <?php echo $totalStudies; ?></h3>
             </ul>
+
 
             <ul style="list-style-type: none;" class="p-3 rounded ulInside mt-3">
                 <li>
