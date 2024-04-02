@@ -24,12 +24,20 @@
         $result_admins = $stmt_admins->fetch(PDO::FETCH_ASSOC);
         $admin_count = $result_admins['admin_count'];
     
-        // count studies
-        $sql_studies = "SELECT COUNT(*) AS study_count FROM studies";
+        // count studies it
+        $sql_studies = "SELECT COUNT(*) AS countIT FROM studies WHERE dept = 'Information Technology'";
         $stmt_studies = $pdo->prepare($sql_studies);
         $stmt_studies->execute();
         $result_studies = $stmt_studies->fetch(PDO::FETCH_ASSOC);
-        $study_count = $result_studies['study_count'];
+        $countIT = $result_studies['countIT'];
+
+        // count studies cpe
+        $sql_studies = "SELECT COUNT(*) AS countCpE FROM studies WHERE dept = 'Computer Engineering'";
+        $stmt_studies = $pdo->prepare($sql_studies);
+        $stmt_studies->execute();
+        $result_studies = $stmt_studies->fetch(PDO::FETCH_ASSOC);
+        $countCpE = $result_studies['countCpE'];
+
     } catch(PDOException $e) {
         die("Error: " . $e->getMessage());
     }
@@ -52,7 +60,7 @@
                     <!-- Apply background image to the left half of the ul -->
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
                         <!-- Background image container with rounded corners -->
-                        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
                         <!-- Content -->
                         <div style="position: relative; z-index: 1;">
                             <li>Number of Advisers</li> <br><br>
@@ -64,7 +72,7 @@
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
                         <div style="position: relative; z-index: 1;">
                             <li>Number of Registered <br>Admins</li> <br>
                             <span style="font-size: 78px;">
@@ -76,18 +84,20 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <ul style="list-style-type: none; height: 200px;" class="p-3 rounded ulInside mb-3">
-                        <li>Total Capstone Records</li> <br>
+                    <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
+                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>   
+                        <li>Total Capstone Records <br>for IT Department</li> <br>
                         <span style="font-size: 78px;">
-                            <?php echo $study_count ?>
+                            <?php echo $countIT ?>
                         </span>
                     </ul>
                 </div>
                 <div class="col-md-6">
-                    <ul style="list-style-type: none; height: 200px;" class="p-3 rounded ulInside">
-                        <li>Total Capstone Records</li> <br>
+                    <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside">
+                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <li>Total Capstone Records <br>for CpE Department</li> <br>
                         <span style="font-size: 78px;">
-                            <?php echo $study_count ?>
+                            <?php echo $countCpE ?>
                         </span>
                     </ul>
                 </div>
@@ -97,22 +107,28 @@
                 <h4>Popular adviser</h4>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
                         <div style="position: relative; z-index: 1;">
                             <li>Computer Engineering <br> Department</li> <br>
-                            <span style="font-size: 50px;">
-                                <?php echo "Inocentes"; ?>
+                            <span style="font-size: 17px;">
+                                <?php echo "Haesser Naomi Ting" ?>
+                            </span><br>
+                            <span style="font-size: 15px;">
+                                <?php echo "10 advisee"; ?>
                             </span>
                         </div>
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside">
-                        <div style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>    
+                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>    
                         <div style="position: relative; z-index: 1;">
-                            <li>Information Technology <br> Department</li> <br>
-                            <span style="font-size: 78px;">
-                                <?php echo $countCpE ?>
+                            <li>Computer Engineering <br> Department</li> <br>
+                            <span style="font-size: 17px;">
+                                <?php echo "Haesser Naomi Ting" ?>
+                            </span><br>
+                            <span style="font-size: 15px;">
+                                <?php echo "10 advisee"; ?>
                             </span>
                         </div>
                     </ul>
