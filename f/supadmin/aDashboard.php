@@ -90,9 +90,15 @@
         transition: opacity 0.3s ease; 
         text-decoration: none;
     }
+
+    .ulInside:hover {
+        box-shadow: 0 0 20px rgba(255, 165, 0, 0.8); /* Orange light shadow effect */
+    }
+
     .ulInside:hover .viewDetails {
         opacity: 1;
     }
+
     .cardPic {
         position: absolute; 
         top: 0; 
@@ -102,9 +108,10 @@
         background-image: url('../img/bg-quad.jpg'); 
         background-size: cover; 
         background-position: center; 
-        border-radius: 0 5px 5px 0;"
+        border-radius: 0 5px 5px 0;
     }
 </style>
+
 
 <div id="content">
     <!-- List of studies -->
