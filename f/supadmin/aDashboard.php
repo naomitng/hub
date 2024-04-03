@@ -93,6 +93,17 @@
     .ulInside:hover .viewDetails {
         opacity: 1;
     }
+    .cardPic {
+        position: absolute; 
+        top: 0; 
+        right: 0; 
+        width: 55%; 
+        height: 100%; 
+        background-image: url('../img/bg-quad.jpg'); 
+        background-size: cover; 
+        background-position: center; 
+        border-radius: 0 5px 5px 0;"
+    }
 </style>
 
 <div id="content">
@@ -105,7 +116,7 @@
                     <!-- Apply background image to the left half of the ul -->
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
                         <!-- Background image container with rounded corners -->
-                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <div class="cardPic"></div>
                         <!-- Content -->
                         <div style="position: relative; z-index: 1;">
                             <li>Number of Advisers</li> <br><br>
@@ -119,7 +130,7 @@
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type  : none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <div class="cardPic"></div>
                         <div style="position: relative; z-index: 1;">
                             <li>Number of Registered <br>Admins</li> <br>
                             <span style="font-size: 78px;">
@@ -134,7 +145,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>   
+                        <div class="cardPic"></div>   
                         <li>Total Capstone Records <br>for IT Department</li> <br>
                         <span style="font-size: 78px;">
                             <?php echo $countIT ?>
@@ -145,7 +156,7 @@
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside">
-                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
+                        <div class="cardPic"></div>
                         <li>Total Capstone Records <br>for CpE Department</li> <br>
                         <span style="font-size: 78px;">
                             <?php echo $countCpE ?>
@@ -160,30 +171,30 @@
                 <h4>Popular adviser</h4>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside mb-3">
-                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>
-                        <div style="position: relative; z-index: 1;">
-                            <li>Information Technology <br> Department</li> <br>
-                            <span style="font-size: 17px;">
-                                <?php echo $adviser_IT ?>
-                            </span><br>
-                            <span style="font-size: 15px;">
-                                <?php echo $countITadviser . " Advisee" ?>
-                            </span>
-                        </div>
+                        <div class="cardPic"></div>
+                        <li>Information Technology <br> Department</li> <br>
+                        <span style="font-size: 17px;">
+                            <?php echo $adviser_IT ?>
+                        </span><br>
+                        <span style="font-size: 15px;">
+                            <?php echo $countITadviser . " Advisee" ?>
+                        </span>
+                        <!-- Hover button -->
+                        <a href="#" id="viewDetails1" class="viewDetails">View Details</a>
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside">
-                        <div style="position: absolute; top: 0; right: 0; width: 55%; height: 100%; background-image: url('../img/bg-quad.jpg'); background-size: cover; background-position: center; border-radius: 0 5px 5px 0;"></div>    
-                        <div style="position: relative; z-index: 1;">
-                            <li>Computer Engineering <br> Department</li> <br>
-                            <span style="font-size: 17px;">
-                                <?php echo $adviser_CpE ?>
-                            </span><br>
-                            <span style="font-size: 15px;">
-                                <?php echo $countCpEadviser . " Advisee" ?>
-                            </span>
-                        </div>
+                        <div class="cardPic"></div>    
+                        <li>Computer Engineering <br> Department</li> <br>
+                        <span style="font-size: 17px;">
+                            <?php echo $adviser_CpE ?>
+                        </span><br>
+                        <span style="font-size: 15px;">
+                            <?php echo $countCpEadviser . " Advisee" ?>
+                        </span>
+                        <!-- Hover button -->
+                        <a href="#" id="viewDetails1" class="viewDetails">View Details</a>
                     </ul>
                 </div>
             </div>
