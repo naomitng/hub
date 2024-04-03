@@ -132,7 +132,7 @@
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
-        }
+        }    
     } else {
         try {
             $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' LIMIT :limit OFFSET :offset");
@@ -376,5 +376,5 @@
             </ul>
         </nav>
     <?php endif; ?>
-</div>
+    </div>
 
