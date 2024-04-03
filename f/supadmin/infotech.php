@@ -130,9 +130,10 @@
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $totalStudies = count($studies); // Update total studies count based on search results
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
-        }    
+        }
     } else {
         try {
             $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' LIMIT :limit OFFSET :offset");
