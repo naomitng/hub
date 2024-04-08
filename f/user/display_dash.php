@@ -9,7 +9,6 @@ echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
 // Fetch the study in table studies
 $study = null;
-$study = null;
 if (isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
@@ -29,27 +28,28 @@ if (isset($_GET['id'])) {
     }
 }
 
-// Determine the back link and text based on the referring page
-// $back_link = '';
-// $back_text = '';
 $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-// if (strpos($referrer, 'infotech.php') !== false) {
-//     $back_link = 'infotech.php';
-//     $back_text = 'Back to Information Technology List';
-// } elseif (strpos($referrer, 'comEng.php') !== false) {
-//     $back_link = 'comEng.php';
-//     $back_text = 'Back to Computer Engineering List';
-// } elseif (preg_match('/filter\.php\?year=(20\d{2})/', $referrer, $matches)) {
-//     // Extract the year from the referring page URL
-//     $year = $matches[1];
-//     $back_link = "filter.php?year=$year";
-//     $back_text = "Back to $year List";
-// } else {
-//     // Default back link and text
-//     $year = date('Y'); // Set the default year to the current year
-//     $back_link = "filter.php?year=$year";
-//     $back_text = "Back to $year list";
-// }
+
+if(isset($_POST['sendto'])) {
+    try {
+        $title = $_POST['title'];
+        $email = $_POST['email'];
+        $name = $_POST['name'];
+
+        $stmt = $pdo->prepare("INSERT INTO `pdf request`(`title`, `name`, `email`) VALUES (:title, :name, :email)");
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        
+        // Redirect after successful submission
+        echo '<script>window.location.href = "display_dash.php";</script>';
+        exit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
 ?>
 
 
@@ -72,6 +72,41 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
                 <li>Department: <?php echo $study['dept']; ?></li>
                 <li>Adviser: <?php echo $study['adviser_name']; ?></li>
                 <li class="">Year: <?php echo $study['year']; ?></li>
+                <button type="button" class="btn btn-warning mt-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Request access to this PDF
+                </button>
+                <!-- Request access modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Send a request</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="post" action="">
+                                <div class="modal-body">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" name="title" class="form-control" id="title" placeholder="Title" value="<?php echo $study['title']; ?>">
+                                        <label for="title">Title</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com">
+                                        <label for="email">Email</label>
+                                        <p style="font-size: 14px;" class="text-muted">Enter your institutional email so we can contact you</p>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="text" name="name" class="form-control" id="name" placeholder="Your Name">
+                                        <label for="name">Name</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" name="sendto" class="btn btn-warning">Send</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
                 <hr>
                 <li class="mb-4" style="font-size: 20px;">Abstract</li>
                 <li><?php echo $study['abstract']; ?></li>

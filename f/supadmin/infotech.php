@@ -17,7 +17,7 @@
     $totalStudies = 0;
 
     try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology'");
+        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND verified = 1");
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $totalStudies = count($studies);
@@ -125,9 +125,9 @@
         $searchQuery = constructSearchQuery(strtolower($search));
     
         try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND ($searchQuery) LIMIT :limit OFFSET :offset");
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND verified = 1 AND ($searchQuery) LIMIT :limit OFFSET :offset");
+            $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $totalStudies = count($studies); // Update total studies count based on search results
@@ -136,9 +136,9 @@
         }
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' LIMIT :limit OFFSET :offset");
-            $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Information Technology' AND verified = 1 LIMIT :limit OFFSET :offset");
+            $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -146,6 +146,7 @@
         }
     }
 ?>
+
 
 <!-- Content Area -->
 <div id="content">
@@ -187,7 +188,7 @@
                                     $line_length = 0;
 
                                     foreach ($words as $word) {
-                                        if ($line_length + strlen($word) > 70) {
+                                        if ($line_length + strlen($word) > 50) {
                                             $new_title .= '<br>' . $word . ' ';
                                             $line_length = strlen($word) + 1; 
                                         } else {
@@ -343,7 +344,19 @@
                     <li><?php echo substr($study['abstract'], 0, 300) . "..."; ?></li>
                     <li class="text-muted">Authors: <?php echo $study['authors']; ?></li>
                     <li class="text-muted">Department: <?php echo $study['dept']; ?></li>
-                    <li class="text-muted">Adviser: <?php echo $study['adviser']; ?></li>
+                    <li class="text-muted">Adviser: <?php 
+                        // Fetch the adviser's name from the advisers table
+                        $adviserId = $study['adviser'];
+                        $stmt = $pdo->prepare("SELECT name FROM advisers WHERE id = :adviserId");
+                        $stmt->bindParam(':adviserId', $adviserId);
+                        $stmt->execute();
+                        $adviser = $stmt->fetch(PDO::FETCH_ASSOC);
+                        if ($adviser) {
+                            echo $adviser['name'];
+                        } else {
+                            echo "Unknown"; // Adviser not found in the advisers table
+                        }
+                    ?></li>
                     <li class="text-muted">Published <?php echo $study['year']; ?></li>
                     <hr>
                     <li class="text-muted">Keywords: <?php echo $study['keywords']; ?></li>              

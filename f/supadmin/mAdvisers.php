@@ -111,7 +111,6 @@ try {
 <div id="content">
     <!-- Search bar -->
     <form class="search" method="get">
-        <i class="fa fa-search"></i>
         <input type="text" class="form-control" placeholder="Search" name="search">
         <button class="btn btn-warning" type="submit">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -264,25 +263,27 @@ try {
             <?php endforeach; ?>
        </li>
     </ul>
-    <?php
-    // Check if there are 5 or more entries
-    if (count($advisers) >= 5) {
-        echo '
-            <!-- Pagination -->
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link">Previous</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                    </li>
-                </ul>
-            </nav>
-            ';
-        }   
-    ?>
+    <!-- Pagination -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <?php if ($totalPages > 1): ?>
+            <?php if ($currentPage > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?php echo ($currentPage - 1); ?>">Previous</a>
+                </li>
+            <?php endif; ?>
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php echo ($currentPage == $i) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            <?php if ($currentPage < $totalPages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?php echo ($currentPage + 1); ?>">Next</a>
+                </li>
+            <?php endif; ?>
+        <?php endif; ?>
+    </ul>
+</nav>
+
 </div>

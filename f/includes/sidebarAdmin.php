@@ -41,6 +41,7 @@
                         <li><a href="statistics.php" class="link-dark rounded">See statistics</a></li>
                         <li><a href="mAdvisers.php" class="link-dark rounded">Manage advisers</a></li>
                         <li><a href="archive.php" class="link-dark rounded">Archive</a></li>
+                        <li><a href="pdfrequest.php" class="link-dark rounded">PDF requests</a></li>
                     </ul>
                 </div>
             </li>
