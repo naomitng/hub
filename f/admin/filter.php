@@ -34,6 +34,15 @@
     } else {
         $totalStudies = $pdo->query("SELECT COUNT(*) FROM `studies`" . ($year ? " WHERE year = $year AND verified = 1" : " WHERE verified = 1"))->fetchColumn();
     }
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM `advisers`");
+        $stmt->execute();
+        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    
     // delete 
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
@@ -287,7 +296,14 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="adviser" class="col-form-label" style="font-size: 17px;">Adviser</label>
-                                                <input type="text" name="adviser" class="form-control" id="adviser" value="<?php echo $study['adviser']; ?>">
+                                                <select class="form-select" name="adviser" id="adviser" aria-label="Floating label select example" required>
+                                                    <option value='' disabled>Choose an Adviser</option>
+                                                    <?php foreach ($advisers as $adviser) : ?>
+                                                        <option value="<?php echo $adviser['id']; ?>" <?php if ($adviser['id'] == $study['adviser']) echo 'selected'; ?>>
+                                                            <?php echo $adviser['name']; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="year" class="col-form-label" style="font-size: 17px;">Year</label>

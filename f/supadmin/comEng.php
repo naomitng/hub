@@ -16,9 +16,6 @@
     $studies = [];
     $totalStudies = 0;
 
-    $stmt->execute();
-    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     try {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' AND verified = 1");
         $stmt->execute();
@@ -28,6 +25,15 @@
         echo "Error: " . $e->getMessage();
     }
 
+    // call adviser list
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM `advisers`");
+        $stmt->execute();
+        $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+
     // delete 
     if(isset($_POST['delete'])) {
         $study_id = $_POST['study_id'];
@@ -35,7 +41,7 @@
             $stmt = $pdo->prepare("DELETE FROM `studies` WHERE id = :id");
             $stmt->bindParam(':id', $study_id);
             $stmt->execute();
-            echo '<script>window.location.href = "computerEngineering.php";</script>';
+            echo '<script>window.location.href = "comEng.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -70,7 +76,7 @@
             $stmt_delete->execute();
             
             // Redirect back to the dashboard
-            echo '<script>window.location.href = "computerEngineering.php";</script>';
+            echo '<script>window.location.href = "comEng.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -98,7 +104,7 @@
             $stmt->bindParam(':dept', $dept); 
             $stmt->bindParam(':keywords', $keywords); 
             $stmt->execute();
-            echo '<script>window.location.href = "computerEngineering.php";</script>';
+            echo '<script>window.location.href = "comEng.php";</script>';
             exit();
         } catch (PDOException $e) {
             echo $e->getMessage(); 
@@ -150,6 +156,7 @@
     }
 ?>
 
+
 <!-- Content Area -->
 <div id="content">
 
@@ -175,7 +182,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                 </svg> 
-                <?php echo isset($_GET['search']) ? "Back to Computer Engineering List" : "Back to Dashboard"; ?>
+                <?php echo isset($_GET['search']) ? "Back to Information Technology List" : "Back to Dashboard"; ?>
             </a>
                 
             <?php foreach ($studies as $study): ?>
@@ -322,7 +329,14 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="adviser" class="col-form-label" style="font-size: 17px;">Adviser</label>
-                                                <input type="text" name="adviser" class="form-control" id="adviser" value="<?php echo $study['adviser']; ?>">
+                                                <select class="form-select" name="adviser" id="adviser" aria-label="Floating label select example" required>
+                                                    <option value='' disabled>Choose an Adviser</option>
+                                                    <?php foreach ($advisers as $adviser) : ?>
+                                                        <option value="<?php echo $adviser['id']; ?>" <?php if ($adviser['id'] == $study['adviser']) echo 'selected'; ?>>
+                                                            <?php echo $adviser['name']; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="year" class="col-form-label" style="font-size: 17px;">Year</label>
@@ -330,7 +344,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="keywords" class="col-form-label" style="font-size: 17px;">Keywords</label>
-                                                <input type="text" name="keywords" class="form-control" id="keywords" value="<?php echo $study['keywords']; ?>">
+                                                <input type="text" name="keywords" class="form-control" id="year" value="<?php echo $study['keywords']; ?>">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -392,5 +406,5 @@
             </ul>
         </nav>
     <?php endif; ?>
-</div>
+    </div>
 
