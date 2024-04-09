@@ -206,10 +206,10 @@ echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
                             <?php echo $countITadviser . " Advisee" ?>
                         </span>
                         <!-- Hover button -->
-                        <a href="#" id="viewDetails1" class="viewDetails">View Details</a>
+                        <a href="adviserDetails.php?adviser=<?php echo $adviser_IT; ?>&dept=Information%20Technology" class="viewDetails">View Details</a>
                     </ul>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6">  
                     <ul style="list-style-type: none; height: 200px; position: relative;" class="p-3 rounded ulInside">
                         <div class="cardPic"></div>    
                         <li>Computer Engineering <br> Department</li> <br>
@@ -220,7 +220,7 @@ echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
                             <?php echo $countCpEadviser . " Advisee" ?>
                         </span>
                         <!-- Hover button -->
-                        <a href="#" id="viewDetails1" class="viewDetails">View Details</a>
+                        <a href="adviserDetails.php?adviser=<?php echo $adviser_CpE; ?>&dept=Computer%20Engineering" class="viewDetails">View Details</a>
                     </ul>
                 </div>
             </div>
