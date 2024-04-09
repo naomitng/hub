@@ -133,6 +133,7 @@
     <!-- List of studies -->
     <ul class="list-group mb-5 mt-5">
         <li class="list-group-item p-4">
+            <h3 class="text-muted">Studies from <?php echo isset($_GET['year']) ? $_GET['year'] : ''; ?></h3>
             <!-- number of search results -->
             <?php if (isset($_GET['search'])): ?>
                 <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>

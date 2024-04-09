@@ -102,6 +102,7 @@
     <!-- List of studies -->
     <ul class="list-group mt-5 mb-5">   
         <li class="list-group-item p-4">
+            <h3>Popular studies</h3>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <!-- Previous/back link -->
                 <a href="aDashboard.php" class="text-decoration-none">

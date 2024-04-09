@@ -122,6 +122,7 @@ try {
     <!-- List of advisers -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
+            <h3 class="text-muted">Manage Capstone Advisers</h3>
             <div class="d-flex justify-content-between align-items-center">
                 <!-- Previous/back link -->
                 <a href="../admin/aDashboard.php" class="text-decoration-none">

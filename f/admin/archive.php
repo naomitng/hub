@@ -65,7 +65,6 @@ if(isset($_POST['delete'])) {
 
 <!-- Content Area -->
 <div id="content">
-
     <!-- Search bar -->
     <form class="search" method="get">
         <i class="fa fa-search"></i>
@@ -77,10 +76,10 @@ if(isset($_POST['delete'])) {
         </button>
     </form>
 
-
     <!-- List of studies -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
+            <h3 class="text-muted">Archived studies</h3>
             <div class="mb-2">
                 <?php if(isset($_GET['search'])): ?>
                     <i class="text-muted"><?php echo $totalStudies;?> results found for "<?php echo $_GET['search']; ?>"</i>

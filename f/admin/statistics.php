@@ -42,7 +42,7 @@ foreach ($itCpeData as $dept) {
 <div id="content" class="h-100">
     <ul class="list-group">
         <li class="list-group-item p-4">
-            <h2>Statistical for Research Hub Database
+            <h2 class="text-muted">Statistical report for Research Hub Database
                 <a href="print.php" target="_blank" class="btn btn-warning float-end">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
@@ -50,6 +50,11 @@ foreach ($itCpeData as $dept) {
                     </svg> Download report
                 </a>
             </h2>
+            <a href="aDashboard.php" class="text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg> Back to home
+            </a>
             <ul style="list-style-type: none;" class=" p-3 rounded ulInside mt-3">
                 <li style="font-size: 20px">
                     Total Studies: <?php echo $totalStudies; ?>

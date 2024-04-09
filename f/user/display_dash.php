@@ -43,8 +43,8 @@ if(isset($_POST['sendto'])) {
         $stmt->execute();
         
         // Redirect after successful submission
-        echo '<script>window.location.href = "display_dash.php";</script>';
-        exit();
+        echo '<script>alert("Successfully requested");</script>';
+        echo "<script>window.location.reload();</script>";
     } catch (PDOException $e) {
         echo $e->getMessage();
     }

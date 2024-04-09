@@ -159,6 +159,7 @@
     <!-- List of studies -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
+            <h3 class="text-muted">Studies from Information Technology</h3>
             <?php if (isset($_GET['search'])): ?>
                 <div class="mb-4">
                     <i class="text-muted"><?php echo $totalStudies; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>

@@ -188,6 +188,7 @@ if (isset($_POST['decline'])) {
     <!-- List of admins -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
+            <h3>Account Request Approval</h3>
             <div class="d-flex justify-content-between align-items-center">
                 <!-- Previous/back link -->
                 <a href="aDashboard.php" class="text-decoration-none">

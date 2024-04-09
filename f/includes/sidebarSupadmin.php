@@ -1,7 +1,14 @@
- <!-- Sidebar -->
-    <div class="flex-shrink-0 p-3 dash" id="adminside" style="width: 280px; height: 100%;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+<body>
+     <!-- Sidebar -->
+     <div class="flex-shrink-0 p-3 dash" id="adminside" style="width: 280px; height: 100%;">
         <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-
             <!-- Logo -->
             <a href="aDashboard.php" style=" text-decoration: none;"><img src="../img/logo.png" alt="" style="width: 40px;">
             <span style="font-size: 25px; color: #28282B;">Research Hub</span></a>
