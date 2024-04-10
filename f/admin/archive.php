@@ -177,7 +177,7 @@ if(isset($_POST['delete'])) {
             <ul class="pagination justify-content-center">
                 <?php if ($currentPage > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1 . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>">Previous</a>
                     </li>
                 <?php endif; ?>
                 <?php
@@ -185,12 +185,12 @@ if(isset($_POST['delete'])) {
                     for ($i = 1; $i <= $totalPages; $i++):
                 ?>
                     <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        <a class="page-link" href="?page=<?php echo $i . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>"><?php echo $i; ?></a>
                     </li>
                 <?php endfor; ?>
                 <?php if ($currentPage < $totalPages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1 . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>">Next</a>
                     </li>
                 <?php endif; ?>
             </ul>

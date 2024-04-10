@@ -28,59 +28,55 @@
     $offset = ($currentPage - 1) * $studiesPerPage;
 
     try {
-    if(isset($_GET['search'])) {
-        $keywords = explode(" ", $_GET['search']);
-        $searchTerms = [];
-        $bindings = [];
-
-        // Construct the search query for each keyword
-        foreach ($keywords as $index => $keyword) {
-            $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
-            $bindings[":search{$index}"] = '%' . $keyword . '%';
+        // Fetch studies based on search or all studies
+        if (isset($_GET['search'])) {
+            $searchKeyword = '%' . $_GET['search'] . '%';
+            $searchQuery = "CONCAT((SELECT fname FROM admin WHERE id = `studies`.contributor), ' ', (SELECT lname FROM admin WHERE id = `studies`.contributor)) LIKE :search";
+            
+            // Prepare search query
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} AND `verified` = 1 LIMIT :offset, :limit");
+            $stmt->bindParam(':search', $searchKeyword, PDO::PARAM_STR);
+        } else {
+            // Fetch all studies
+            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 LIMIT :offset, :limit");
         }
-
-        $searchQuery = implode(" AND ", $searchTerms);
-
-        // Construct the final SQL query
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} AND `verified` = 1 LIMIT :offset, :limit");
+        
+        // Bind pagination parameters
+        $studiesPerPage = 10;
+        $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+        $offset = ($currentPage - 1) * $studiesPerPage;
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Bind parameters for each search term
-        foreach ($bindings as $key => $value) {
-            $stmt->bindParam($key, $value, PDO::PARAM_STR);
+    
+        // Execute query to fetch studies
+        $stmt->execute();
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Fetch total number of studies
+        if (isset($_GET['search'])) {
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1 ORDER BY `popularity` DESC");
+            $totalStmt->bindParam(':search', $searchKeyword, PDO::PARAM_STR);
+        } else {
+            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
         }
-
-        // Fetch total number of studies for search results
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1 ORDER BY `popularity` DESC");
-
-        // Bind parameters for totalStmt
-        foreach ($bindings as $key => $value) {
-            $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
-        }
-    } else {
-        // If no search query is provided, fetch all studies
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 LIMIT :offset, :limit");
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Fetch total number of all studies
-        $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
+        $totalStmt->execute();
+        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+    } catch (PDOException $e) {
+        echo $e->getMessage();
     }
-} catch (PDOException $e) {
-    // Handle database errors here
-    echo "Error: " . $e->getMessage();
-}
 
     try {
         // Execute the prepared statement
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-        $totalSearchResults = $stmt->rowCount();
-        
-        // Execute totalStmt to get total number of studies
+    
+        // Execute totalStmt to get total number of search results
         $totalStmt->execute();
-        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $totalSearchResults = $totalStmt->fetchColumn();
+    
+        // Count total number of studies for pagination
+        $totalStudies = $totalSearchResults; // Total studies equals total search results
+    
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
@@ -182,7 +178,7 @@
             <ul class="pagination justify-content-center">
                 <?php if ($currentPage > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>">Previous</a>
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1 . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>">Previous</a>
                     </li>
                 <?php endif; ?>
                 <?php
@@ -190,12 +186,12 @@
                     for ($i = 1; $i <= $totalPages; $i++):
                 ?>
                     <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        <a class="page-link" href="?page=<?php echo $i . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>"><?php echo $i; ?></a>
                     </li>
                 <?php endfor; ?>
                 <?php if ($currentPage < $totalPages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>">Next</a>
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1 . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>">Next</a>
                     </li>
                 <?php endif; ?>
             </ul>
