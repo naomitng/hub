@@ -1,105 +1,74 @@
 <?php
-    session_start();
-    if (!isset($_SESSION['supadmin'])) {
-        // Redirect the user to the sign-in page
-        header('Location: ../admin/aSignIn.php');
-        exit();
+session_start();
+if (!isset($_SESSION['supadmin'])) {
+    // Redirect the user to the sign-in page
+    header('Location: ../admin/aSignIn.php');
+    exit();
+}
+
+$page_title = "Contribution";
+include '../includes/header.php';
+include '../includes/sidebarSupadmin.php';
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+
+$sucMsg = "";
+$errMsg = "";
+
+// Set the number of admins to display per page
+$adminsPerPage = 10;
+
+try {
+    if (isset($_GET['search'])) {
+        $search = '%' . $_GET['search'] . '%';
+        $stmt = $pdo->prepare("SELECT admin.*, COUNT(studies.id) AS study_count 
+                                FROM `admin` 
+                                LEFT JOIN studies ON admin.id = studies.contributor 
+                                WHERE lname LIKE :search OR fname LIKE :search
+                                GROUP BY admin.id 
+                                ORDER BY study_count DESC
+                                LIMIT :offset, :perPage");
+        $stmt->bindParam(':search', $search, PDO::PARAM_STR);
+    } else {
+        $stmt = $pdo->prepare("SELECT admin.*, COUNT(studies.id) AS study_count 
+                                FROM `admin` 
+                                LEFT JOIN studies ON admin.id = studies.contributor 
+                                GROUP BY admin.id 
+                                ORDER BY study_count DESC
+                                LIMIT :offset, :perPage");
     }
 
-    $page_title = "Contribution";
-    include '../includes/header.php';
-    include '../includes/sidebarSupadmin.php';
-    echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 ORDER BY `contributor` DESC");
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); 
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-
-    // Pagination variables
-    $studiesPerPage = 10;
-    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $offset = ($currentPage - 1) * $studiesPerPage;
-
-    try {
-        // Fetch studies based on search or all studies
-        if (isset($_GET['search'])) {
-            $searchKeyword = '%' . $_GET['search'] . '%';
-            $searchQuery = "CONCAT((SELECT fname FROM admin WHERE id = `studies`.contributor), ' ', (SELECT lname FROM admin WHERE id = `studies`.contributor)) LIKE :search";
-            
-            // Prepare search query
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} AND `verified` = 1 LIMIT :offset, :limit");
-            $stmt->bindParam(':search', $searchKeyword, PDO::PARAM_STR);
-        } else {
-            // Fetch all studies
-            $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 LIMIT :offset, :limit");
-        }
-        
-        // Bind pagination parameters
-        $studiesPerPage = 10;
-        $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-        $offset = ($currentPage - 1) * $studiesPerPage;
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+    // Calculate the offset based on the current page
+    $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+    $offset = ($currentPage - 1) * $adminsPerPage;
     
-        // Execute query to fetch studies
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindParam(':perPage', $adminsPerPage, PDO::PARAM_INT);
     
-        // Fetch total number of studies
-        if (isset($_GET['search'])) {
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1 ORDER BY `popularity` DESC");
-            $totalStmt->bindParam(':search', $searchKeyword, PDO::PARAM_STR);
-        } else {
-            $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
-        }
-        $totalStmt->execute();
-        $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-
-    try {
-        // Execute the prepared statement
-        $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
-    
-        // Execute totalStmt to get total number of search results
-        $totalStmt->execute();
-        $totalSearchResults = $totalStmt->fetchColumn();
-    
-        // Count total number of studies for pagination
-        $totalStudies = $totalSearchResults; // Total studies equals total search results
-    
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
+    $stmt->execute();
+    $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errMsg = "Error fetching admins: " . $e->getMessage();
+}
 ?>
 
 <!-- Content Area -->
 <div id="content">
-
     <!-- Search bar -->
-    <form class="search" action="" method="GET">
-        <input type="text" class="form-control" name="search" placeholder="Search for a study" autocomplete="off" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-        <button type="submit" class="btn btn-warning">
+    <form class="search" method="get">
+        <input type="text" class="form-control" placeholder="Search" name="search">
+        <button class="btn btn-warning" type="submit">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
             </svg>
         </button>
     </form>
 
-    <!-- List of studies -->
+    <!-- List of admins -->
     <ul class="list-group mt-5 mb-5">
         <li class="list-group-item p-4">
-            <h3>Admin Contributors</h3>
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Admin Contributions</h3>
+            <div class="d-flex justify-content-between align-items-center">
                 <!-- Previous/back link -->
                 <a href="aDashboard.php" class="text-decoration-none">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -107,94 +76,49 @@
                     </svg> Back to dashboard
                 </a>
             </div>
-            <!-- number of search results -->
-            <?php if (isset($_GET['search'])): ?>
-                <div class="mb-4">
-                    <i class="text-muted"><?php echo $totalSearchResults; ?> results found for "<?php echo htmlspecialchars($_GET['search']); ?>"</i>
-                </div>
-            <?php endif; ?>
-
-            <!-- loop to display studies -->
-            <?php foreach ($studies as $study): ?>
-                <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4">
-                    <!-- Title -->
+            <!-- Admins -->
+            <?php foreach ($admins as $admin): ?>
+                <ul style="list-style-type: none;" class="p-3 rounded ulInside mb-4 mt-3">
+                    <!-- Full Name -->
                     <li class="list-group-item-title d-flex">
                         <h4>
-                            <?php $title = $study['title'];
-                                if (strlen($title) > 50) {
-                                    $words = explode(' ', $title);
-                                    $new_title = '';
-                                    $line_length = 0;
-
-                                    foreach ($words as $word) {
-                                        if ($line_length + strlen($word) > 50) {
-                                            $new_title .= '<br>' . $word . ' ';
-                                            $line_length = strlen($word) + 1; 
-                                        } else {
-                                            $new_title .= $word . ' ';
-                                            $line_length += strlen($word) + 1; 
-                                        }
-                                    }
-                                    echo $new_title;
-                                } else {
-                                    echo $title;
-                                } 
-                            ?>
+                            <a href="aStudies.php?id=<?php echo $admin['id'] ?>">
+                                <?php echo $admin['lname'] . ", " . $admin['fname']; ?>
+                            </a>
                         </h4>
                     </li>
-                
-                    <!-- Information about the study -->
-                    <div class="text-muted">
-                        <li>Department: <?= $study['dept']; ?></li>
-                        <li>Year: <?= $study['year']; ?></li>
-                    </div>
+                    <li class="text-muted">Department: <?php echo $admin['dept']; ?></li>
+                    <li class="text-muted">Email: <?php echo $admin['email']; ?></li>
                     <hr>
                     <li class="text-muted">
-
-                        <span style="font-weight: bold; color: blue;">
-                            <?php
-                                $stmt_contributor = $pdo->prepare("SELECT fname, lname FROM admin WHERE id = :contributor_id");
-                                $stmt_contributor->bindParam(':contributor_id', $study['contributor']);
-                                $stmt_contributor->execute();
-                                $contributor = $stmt_contributor->fetch(PDO::FETCH_ASSOC);
-
-                                if ($contributor) {
-                                    echo 'Uploaded by: ' . $contributor['fname'] . ' ' . $contributor['lname'];
-                                } else {
-                                    echo 'Uploaded by: Not available';
-                                }
-                            ?>
+                        &nbsp;
+                        <span class="float-end" style="font-weight: bold; color: blue;">
+                            Contributions: <?php echo $admin['study_count']; ?>
                         </span>
                     </li>
                 </ul>
             <?php endforeach; ?>
         </li>
     </ul>
-
-
-    <!-- Pagination -->
-    <?php if ($totalStudies > $studiesPerPage): ?>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <?php if ($currentPage > 1): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage - 1 . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>">Previous</a>
-                    </li>
-                <?php endif; ?>
-                <?php
-                    $totalPages = ceil($totalStudies / $studiesPerPage);
-                    for ($i = 1; $i <= $totalPages; $i++):
-                ?>
-                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>"><?php echo $i; ?></a>
-                    </li>
-                <?php endfor; ?>
-                <?php if ($currentPage < $totalPages): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $currentPage + 1 . (isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''); ?>">Next</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    <?php endif; ?>
+    <?php
+        // Check if there are 5 or more entries
+        if (count($admins) >= 5) {
+            echo '
+                <!-- Pagination -->
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link">Previous</a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                ';
+            }   
+    ?>
 </div>

@@ -25,9 +25,9 @@
                 <!-- Departments -->
                 <div class="collapse" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="popularity.php" class="link-dark rounded">Popular studies</a></li>
-                        <li><a href="contributor.php" class="link-dark rounded">Admin contributors</a></li>
-                        <li><a href="statistics.php" class="link-dark rounded">Statistical report</a></li>
+                        <li><a href="popularity.php" class="link-dark rounded">Popular Studies</a></li>
+                        <li><a href="contributor.php" class="link-dark rounded">Admin Contribution</a></li>
+                        <li><a href="statistics.php" class="link-dark rounded">Statistical Report</a></li>
                     </ul>
                 </div>
             </li>
@@ -35,14 +35,14 @@
             <!-- List for the dashboard -->
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                    Manage requests
+                    Manage Requests
                 </button>
 
                 <!-- Under dashboard -->
                 <div class="collapse" id="dashboard-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="aRequests.php" class="link-dark rounded">Account request approval </a></li>
-                        <li><a href="capstone_reqs.php" class="link-dark rounded">Capstone request approval</a></li>
+                        <li><a href="aRequests.php" class="link-dark rounded">Account Request Approval </a></li>
+                        <li><a href="capstone_reqs.php" class="link-dark rounded">Capstone Request Approval</a></li>
                     </ul>
                 </div>
             </li>
@@ -56,7 +56,7 @@
                 <!-- Under account settings -->
                 <div class="collapse" id="account-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="../supadmin/logout.php" class="link-dark rounded">Sign out</a></li>
+                        <li><a href="../supadmin/logout.php" class="link-dark rounded">Sign Out</a></li>
                     </ul>
                 </div>
             </li>

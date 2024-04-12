@@ -38,17 +38,17 @@
                 <div class="collapse" id="dashboard-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="contribute.php" class="link-dark rounded">Contribute</a></li>
-                        <li><a href="statistics.php" class="link-dark rounded">See statistics</a></li>
-                        <li><a href="mAdvisers.php" class="link-dark rounded">Manage advisers</a></li>
+                        <li><a href="statistics.php" class="link-dark rounded">Statistics</a></li>
+                        <li><a href="mAdvisers.php" class="link-dark rounded">Manage Advisers</a></li>
                         <li><a href="archive.php" class="link-dark rounded">Archive</a></li>
-                        <li><a href="pdfrequest.php" class="link-dark rounded">PDF requests</a></li>
+                        <li><a href="pdfrequest.php" class="link-dark rounded">PDF Requests</a></li>
                     </ul>
                 </div>
             </li>
             <!-- List for filter -->
             <li class="">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="false">
-                    Filter searches
+                    Filter Searches
                 </button>
                 <!-- Year -->
                 <div class="collapse" id="filter-collapse">

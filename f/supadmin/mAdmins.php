@@ -90,6 +90,7 @@ try {
                     <li class="list-group-item-title d-flex">
                         <a href="" class=" text-decoration-none text-dark" style="pointer-events: none;"><?php echo $admin['lname'] . ", " . $admin['fname']; ?></a>
                     </li>
+                    <li class="text-muted">Department: <?php echo $admin['dept']; ?></li>
                     <li class="text-muted">Email: <?php echo $admin['email']; ?></li>
                     <li class="text-muted">Account:
                         <?php
