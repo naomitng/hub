@@ -17,7 +17,7 @@
     $year = isset($_GET['year']) ? intval($_GET['year']) : null;
     $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
     // Pagination variables
-    $studiesPerPage = 10; // Change this as needed
+    $studiesPerPage = 10; 
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
     $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year AND verified = 1" : " WHERE verified = 1") . " LIMIT :limit OFFSET :offset");
@@ -28,7 +28,7 @@
     }
     $stmt->execute();
     $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // Count total studies (considering search filter)
+
     if ($searchTerm !== null) {
         $totalStudies = count($filteredStudies);
     } else {
@@ -40,7 +40,7 @@
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
     
     // delete 
@@ -53,7 +53,7 @@
             echo '<script>window.location.href = "../admin/filter.php?='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
     // ARCHIVE 
@@ -84,7 +84,7 @@
             echo '<script>window.location.href = "../admin/filter.php?'.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
     // Search
@@ -122,7 +122,7 @@
             echo '<script>window.location.href = "../admin/filter.php?year='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage(); 
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 ?>

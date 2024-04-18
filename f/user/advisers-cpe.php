@@ -32,7 +32,7 @@ try {
     $stmt->execute();
     $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching advisers: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 ?>
 

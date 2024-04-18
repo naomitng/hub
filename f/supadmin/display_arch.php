@@ -21,7 +21,7 @@
             $stmt->execute([$study_id]);
             $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -52,7 +52,7 @@
         $totalStmt->execute();
         $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
 ?>

@@ -4,10 +4,15 @@ if (!isset($_SESSION['supadmin'])) {
     // Redirect the user to the sign-in page
     header('Location: ../admin/aSignIn.php');
     exit();
+
 }
 
+$page_title = "Super Admin Dashboard";
+include '../includes/header.php';
+
+
 try {
-    $pdo = new PDO("mysql:host=localhost;dbname=hub", "root", "");
+    //$pdo = new PDO("mysql:host=localhost;dbname=hub", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Count advisers
@@ -85,6 +90,7 @@ try {
     }
 } catch(PDOException $e) {
     die("Error: " . $e->getMessage());
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 
 $page_title = "Dashboard";

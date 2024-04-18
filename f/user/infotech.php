@@ -17,7 +17,7 @@ try {
     $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $totalStudies = count($studies);
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 
 // Pagination variables
@@ -47,9 +47,9 @@ if(isset($_GET['search'])) {
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $totalStudies = count($studies); // Update total studies count based on search results
+        $totalStudies = count($studies); 
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 } else {
     try {
@@ -59,7 +59,7 @@ if(isset($_GET['search'])) {
         $stmt->execute();
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 ?>

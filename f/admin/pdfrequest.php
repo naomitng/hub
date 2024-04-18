@@ -19,12 +19,22 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM `pdf request`");
+    $totalRequestsStmt = $pdo->query("SELECT COUNT(*) FROM `pdf request`");
+    $totalRequests = $totalRequestsStmt->fetchColumn();
+
+    $requestsPerPage = 10;
+    $totalPages = ceil($totalRequests / $requestsPerPage);
+
+    $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+    $offset = ($currentPage - 1) * $requestsPerPage;
+
+    $stmt = $pdo->prepare("SELECT * FROM `pdf request` LIMIT $offset, $requestsPerPage");
     $stmt->execute();
     $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "<script>alert(\"Error: " . $e->getMessage() . "\");</script>";
 }
+
 
 if(isset($_POST['sendto'])) {
     try {
@@ -49,10 +59,22 @@ if(isset($_POST['sendto'])) {
         $mail->Subject = 'Requested PDF';
         $mail->Body = "
         
-        <p>Hello " . $_POST['name'] . ",</p>
+        <p>Hello " . $_POST['name'] . ", </p>
 
-        <p>We have received your request regarding the copy of ". $_POST['title'] .". To grant your request, the PDF of your requested study is attatched in this email. </p>
-        
+        <p>We appreciate your interest in our research. We are pleased to provide a copy of ". $_POST['title'] ."  per your request. For your convenience, the PDF is attached to this email.</p>
+
+        <p>Please <strong>BE AWARE<strong> of the following in order to ensure appropriate use of this study:</p>
+
+        <p>Copyright: Research Hub owns the copyright to this document. It can only be used for academic or personal study.</p>
+
+        <p>Citation: In your own work, if you use a quote from or mention the study.</p>
+
+        <p>Distribution: Without our previous written agreement, please do not disseminate this PDF to any third parties.</p>
+
+        <p style='font-style: italic; color: #888;'>Best regards,</p>
+        <p style='font-style: italic; color: #888;'>Research Hub Team</p>
+
+
         ";
 
         $mail->send();
@@ -126,4 +148,26 @@ if(isset($_POST['sendto'])) {
             <?php endforeach; ?>
         </li>
     </ul>
+    <!-- Pagination -->
+    <?php if ($totalPages > 1) : ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center mt-4">
+                <?php if ($currentPage > 1) : ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages) : ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>

@@ -158,7 +158,7 @@ foreach ($contributions as $contribution) {
                 <li>
                     <input type="hidden" name="report_type" value="archive">
                     <h2>Archive report</h2>
-                    <p>This report shows the number of studies <a href="archive.php">archived</a> in the Research Hub database.</p>
+                    <p>This report shows the number of studies archived in the Research Hub database.</p>
                     <!-- place chart here -->
                     <div style="display: flex; justify-content: center;">
                         <canvas id="archiveChart" width="400" height="300"></canvas>

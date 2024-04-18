@@ -18,7 +18,7 @@ $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
 // Pagination variables
-$studiesPerPage = 10; // Change this as needed
+$studiesPerPage = 10; 
 $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($currentPage - 1) * $studiesPerPage;
 

@@ -48,7 +48,7 @@ try {
     $stmt->execute();
     $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching admins: " . $e->getMessage();
+    echo "<script>alert('Error fetching admins: " . $e->getMessage() . "')</script>";
 }
 ?>
 

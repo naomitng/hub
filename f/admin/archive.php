@@ -58,7 +58,7 @@ if(isset($_POST['delete'])) {
         echo '<script>window.location.href = "../admin/archive.php";</script>';
         exit();
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 ?>

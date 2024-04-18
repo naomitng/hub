@@ -16,18 +16,14 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    // Get the year from the url
     $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 
-    // Check if search param is set otherwise null
     $searchTerm = isset($_GET['search']) ? $_GET['search'] : null;
 
-    // Pagination variables
-    $studiesPerPage = 10; // Change this as needed
+    $studiesPerPage = 10; 
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
 
-    // Fetch studies with pagination
     $stmt = $pdo->prepare("SELECT * FROM `studies`" . ($year ? " WHERE year = :year AND verified = 1" : " WHERE verified = 1") . " LIMIT :limit OFFSET :offset");
     $stmt->bindValue(':limit', $studiesPerPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -50,7 +46,7 @@
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
 
@@ -64,7 +60,7 @@
             echo '<script>window.location.href = "../supadmin/filter.php?='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -99,7 +95,7 @@
             echo '<script>window.location.href = "../supadmin/filter.php?'.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -114,7 +110,6 @@
         }
         $studies = $filteredStudies;
         
-        // Count total search results
         $totalSearchResults = count($filteredStudies);
     }
 
@@ -141,7 +136,7 @@
             echo '<script>window.location.href = "../supadmin/filter.php?year='.$year.'";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage(); 
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
     
@@ -243,7 +238,7 @@
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="archiveModalLabel_<?php echo $study['id']; ?>">Archive study</h5>
                                     </div>
-                                    <div class="modal-body" style="font-size: 17px;"> <!-- Set the font size here -->
+                                    <div class="modal-body" style="font-size: 17px;"> 
                                         Are you sure you want to move <span style="color: blue; font-weight: bold;"> <?php echo $study['title']; ?> </span> to archive?
                                     </div>
                                     <div class="modal-footer mr-auto">
@@ -271,7 +266,7 @@
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deleteModalLabel_<?php echo $study['id']; ?>">Confirm deletion</h5>
                                     </div>
-                                    <div class="modal-body" style="font-size: 17px;"> <!-- Set the font size here -->
+                                    <div class="modal-body" style="font-size: 17px;"> 
                                         Are you sure you want to delete <span style="color: blue; font-weight: bold;"> <?php echo $study['title']; ?> </span> from the list?
                                     </div>
                                     <div class="modal-footer mr-auto">

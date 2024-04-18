@@ -20,12 +20,11 @@ if (isset($_GET['id'])) {
         $stmt->execute([$study_id]);
         $study = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($study) {
-            $page_title = isset($_GET['title']) ? $_GET['title'] : ""; // Set the page title to the study title
-            // Set the title directly within the HTML output
+            $page_title = isset($_GET['title']) ? $_GET['title'] : ""; 
             echo "<title>$page_title</title>";
         }
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 

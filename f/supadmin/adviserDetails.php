@@ -24,7 +24,7 @@ if (isset($_GET['adviser'], $_GET['dept'])) {
     $dept = htmlspecialchars($_GET['dept']);
 
     try {
-        $pdo = new PDO("mysql:host=localhost;dbname=hub", "root", "");
+        //$pdo = new PDO("mysql:host=localhost;dbname=hub", "root", "");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Retrieve adviser ID based on adviser name
@@ -52,10 +52,9 @@ if (isset($_GET['adviser'], $_GET['dept'])) {
 
         $totalStudies = $stmt_studies->rowCount();
     } catch(PDOException $e) {
-        die("Error: " . $e->getMessage());
+        die("<script>alert('Error: " . $e->getMessage() . "');</script>");
     }
 } else {
-    // Adviser and/or department not provided, handle accordingly
     $error_message = "Please provide both adviser and department.";
 }
 

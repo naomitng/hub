@@ -20,7 +20,7 @@
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $totalStudies = count($studies);
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // call adviser list
@@ -29,7 +29,7 @@
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // delete 
@@ -42,7 +42,7 @@
             echo '<script>window.location.href = "../admin/infotech.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -77,7 +77,7 @@
             echo '<script>window.location.href = "../admin/infotech.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -105,7 +105,7 @@
             echo '<script>window.location.href = "../admin/infotech.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage(); 
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -137,7 +137,7 @@
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     } else {
         try {
@@ -147,7 +147,7 @@
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 ?>

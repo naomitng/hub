@@ -7,7 +7,6 @@ include 'sidebarUser.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-// Initialize variables
 $studies = [];
 $totalStudies = 0;
 
@@ -40,14 +39,13 @@ try {
     $totalStudiesResult = $stmt->fetch(PDO::FETCH_ASSOC);
     $totalStudies = $totalStudiesResult['total'];
 
-    // Retrieve studies based on search query
     $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE dept = 'Computer Engineering' $searchQuery LIMIT :limit OFFSET :offset");
     $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 ?>
 

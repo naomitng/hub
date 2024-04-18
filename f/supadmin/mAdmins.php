@@ -32,17 +32,13 @@ try {
     $stmt->execute();
     $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching admins: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 
-// Calculate the total number of pages for pagination
 $totalPages = ceil(count($admins) / $adminsPerPage);
-
-// Calculate the offset based on the current page
 $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
 $offset = ($currentPage - 1) * $adminsPerPage;
 
-// Fetch admins for the current page
 try {
     if (isset($_GET['search'])) {
         $search = $_GET['search'];
@@ -56,7 +52,7 @@ try {
     $stmt->execute();
     $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching admins: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 ?>
 
@@ -101,25 +97,26 @@ try {
             <?php endforeach; ?>
         </li>
     </ul>
-    <?php
-        // Check if there are 5 or more entries
-        if (count($admins) >= 5) {
-            echo '
-                <!-- Pagination -->
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link">Previous</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-                ';
-            }   
-    ?>
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>

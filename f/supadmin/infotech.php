@@ -22,7 +22,7 @@
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $totalStudies = count($studies);
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // call adviser list
@@ -31,7 +31,7 @@
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // delete 
@@ -44,7 +44,7 @@
             echo '<script>window.location.href = "infotech.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -79,7 +79,7 @@
             echo '<script>window.location.href = "infotech.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -107,7 +107,7 @@
             echo '<script>window.location.href = "infotech.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage(); 
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -116,7 +116,6 @@
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($currentPage - 1) * $studiesPerPage;
 
-    // Function to construct a search query
     function constructSearchQuery($search)
     {
         $keywords = explode(" ", $search);
@@ -127,7 +126,6 @@
         return implode(" AND ", $conditions);
     }
 
-    // Check if search term is provided
     if(isset($_GET['search'])) {
         $search = trim($_GET['search']);  
         $search = htmlspecialchars($search);            
@@ -139,9 +137,9 @@
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $totalStudies = count($studies); // Update total studies count based on search results
+            $totalStudies = count($studies); 
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     } else {
         try {
@@ -151,7 +149,7 @@
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 ?>

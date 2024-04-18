@@ -1,5 +1,4 @@
 <?php 
-
 session_start();
 if (!isset($_SESSION['supadmin'])) {
     // Redirect the user to the sign-in page
@@ -14,11 +13,23 @@ echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM studies WHERE verified = 0");
+    // Pagination variables
+    $studiesPerPage = 10;
+    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($currentPage - 1) * $studiesPerPage;
+
+    // Retrieve capstone requests with pagination
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM studies WHERE verified = 0");
+    $stmt->execute();
+    $totalStudies = $stmt->fetchColumn();
+
+    $stmt = $pdo->prepare("SELECT * FROM studies WHERE verified = 0 LIMIT :offset, :limit");
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
     $stmt->execute();
     $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "<script>alert('" . $e->getMessage() . "')</script>";
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -33,11 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
 
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('" . $e->getMessage() . "')</script>";
         }
     }
 }
-
 ?>
 
 <!-- Content Area -->
@@ -88,14 +98,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="ml-auto">
                             <!-- Accept -->
                             <button title="Accept" type="button" name="accept" class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#check_<?php echo $study['id']; ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                                    <path d="M13.146 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L6 10.293l6.146-6.147a.5.5 0 0 1 .708 0z"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
                                 </svg>
                             </button>
                             <!-- Decline -->
-                            <button title="Decline" type="button" name="decline" class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#decline_<?php echo $admins['id']; ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M3.146 3.146a.5.5 0 0 1 .708 0L8 7.293l4.146-4.147a.5.5 0 0 1 .708.708L8.707 8l4.147 4.146a.5.5 0 1 1-.708.708L8 8.707l-4.146 4.147a.5.5 0 0 1-.708-.708L7.293 8 3.146 3.854a.5.5 0 0 1 0-.708z"/>
+                            <button title="Decline" type="button" name="decline" class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#decline_<?php echo $study['id']; ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
                                 </svg>
                             </button>
                         </div>
@@ -166,4 +178,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endforeach; ?>
         </li>
     </ul>
+
+    <!-- Pagination -->
+    <?php if ($totalStudies > $studiesPerPage): ?>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center mt-4">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php
+                    $totalPages = ceil($totalStudies / $studiesPerPage);
+                    for ($i = 1; $i <= $totalPages; $i++):
+                ?>
+                    <li class="page-item <?php echo ($i === $currentPage) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>&search=<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>
+ 

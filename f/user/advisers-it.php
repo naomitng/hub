@@ -7,46 +7,39 @@ include '../user/sidebarUser.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-// Set the number of advisers to display per page
 $advisersPerPage = 10;
 
 try {
-    // Check if a search term is provided
     if (isset($_GET['search'])) {
         $search = $_GET['search'];
-        // Fetch advisers from the Information Technology department with the provided search term
         $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE name LIKE :search AND dept = 'Information Technology'");
         $stmt->bindValue(':search', "%$search%");
     } else {
-        // If no search term provided, display all advisers from the Information Technology department
         $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology'");
     }
 
     $stmt->execute();
     $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Calculate the total number of pages required for pagination
     $totalPages = ceil(count($advisers) / $advisersPerPage);
 
-    // Calculate the offset based on the current page
     $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
     $offset = ($currentPage - 1) * $advisersPerPage;
 
-    // Fetch advisers for the current page
     $stmt = $pdo->prepare("SELECT * FROM `advisers` WHERE dept = 'Information Technology' LIMIT :offset, :perPage");
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->bindValue(':perPage', $advisersPerPage, PDO::PARAM_INT);
     $stmt->execute();
     $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching advisers: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 ?>
 
 <!-- Content Area -->
 <div id="content">
     <!-- Search bar -->
-    <form class="search" method="get"> <!-- Change method to get -->
+    <form class="search" method="get">
         <input type="text" class="form-control" placeholder="Search" name="search">
         <button class="btn btn-warning" type="submit">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">

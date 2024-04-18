@@ -11,13 +11,11 @@ include '../includes/header.php';
 include '../includes/sidebarAdmin.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
-// Initialize $totalStudies variable
 $totalStudies = 0;
-// Define offset, studiesPerPage, and currentPage variables
-$offset = 0; // You can change this value according to your requirements
-$studiesPerPage = 10; // You can change this value according to your requirements
-$currentPage = isset($_GET['page']) ? $_GET['page'] : 1; // Default to page 1 if not set
-// Fetch the study in table archive
+$offset = 0; 
+$studiesPerPage = 10; 
+$currentPage = isset($_GET['page']) ? $_GET['page'] : 1; 
+
 if(isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
@@ -25,7 +23,7 @@ if(isset($_GET['id'])) {
         $stmt->execute([$study_id]);
         $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 try {
@@ -55,7 +53,7 @@ try {
     $totalStmt->execute();
     $totalStudies = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 ?>
 

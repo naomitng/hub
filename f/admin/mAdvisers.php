@@ -32,7 +32,7 @@ if (isset($_POST['save'])) {
         $stmt->bindParam(':dept', $dept);
         $stmt->execute();
     } catch (PDOException $e) {
-        echo $errMsg = "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 
@@ -44,7 +44,7 @@ if (isset($_POST['delete'])) {
         $stmt->bindParam(':id', $adviser_id);
         $stmt->execute();
     } catch (PDOException $e) {
-        $errMsg = "Error deleting adviser: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 
@@ -62,6 +62,7 @@ if (isset($_POST['saveChanges'])) {
         $stmt->bindParam(':dept', $dept);
         $stmt->execute();
     } catch (PDOException $e) {
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 
@@ -79,7 +80,7 @@ try {
     $stmt->execute();
     $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching advisers: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 
 // Calculate the total number of pages for pagination
@@ -103,7 +104,7 @@ try {
     $stmt->execute();
     $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $errMsg = "Error fetching advisers: " . $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 ?>
 

@@ -20,7 +20,7 @@ try {
     $stmt->execute();
     $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
 }
 
 $errMsg = '';

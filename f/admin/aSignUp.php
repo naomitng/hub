@@ -52,7 +52,7 @@
                 $stmt->execute($data);
                 $sucMsg = "Your account is successfully created. Check your email address for the activation link.";
             } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
             }
         }
     }

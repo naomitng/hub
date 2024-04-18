@@ -22,7 +22,7 @@
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $totalStudies = count($studies);
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // call adviser list
@@ -44,7 +44,7 @@
             echo '<script>window.location.href = "comEng.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -79,7 +79,7 @@
             echo '<script>window.location.href = "comEng.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -107,7 +107,7 @@
             echo '<script>window.location.href = "comEng.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage(); 
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -141,7 +141,7 @@
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $totalStudies = count($studies); // Update total studies count based on search results
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     } else {
         try {
@@ -151,7 +151,7 @@
             $stmt->execute();
             $studies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 ?>

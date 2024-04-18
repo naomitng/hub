@@ -12,14 +12,14 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
+    //$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
 
     try {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 ORDER BY `popularity` DESC");
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
  
     // Pagination variables
@@ -91,7 +91,7 @@
     
     } catch (PDOException $e) {
         // Handle database errors here
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     try {
@@ -107,7 +107,7 @@
         $totalStudies = $totalSearchResults; // Total studies equals total search results
 
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 ?>
 

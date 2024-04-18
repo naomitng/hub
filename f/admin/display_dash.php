@@ -19,7 +19,7 @@ if (isset($_GET['id'])) {
         $stmt->execute([$study_id]);
         $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 

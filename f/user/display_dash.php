@@ -7,14 +7,13 @@ include 'sidebarUser.php';
 echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
 echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-// Fetch the study in table studies
 $study = null;
 if (isset($_GET['id'])) {
     $study_id = $_GET['id'];
     try {
         $stmt = $pdo->prepare("SELECT s.*, a.name as adviser_name FROM `studies` s JOIN `advisers` a ON s.adviser = a.id WHERE s.id = ?");
         $stmt->execute([$study_id]);
-        $study = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row
+        $study = $stmt->fetch(PDO::FETCH_ASSOC); 
         // Set the page title to the study title if a study is found
         if ($study) {
             $page_title = $study['title'];
@@ -24,7 +23,7 @@ if (isset($_GET['id'])) {
             $increment_stmt->execute([$study_id]);
         }
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 }
 

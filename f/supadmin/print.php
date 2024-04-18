@@ -5,23 +5,18 @@ date_default_timezone_set('Asia/Manila');
 
 include '../includes/header.php';
 
-// Retrieve data and count occurrences
 $stmt = $pdo->query("SELECT COUNT(*) AS total FROM `studies`");
 $totalStudies = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-// Example: Count studies by department
 $stmtDept = $pdo->query("SELECT dept, COUNT(*) AS count FROM `studies` GROUP BY dept");
 $deptData = $stmtDept->fetchAll(PDO::FETCH_ASSOC);
 
-// Example: Count studies by year
 $stmtYear = $pdo->query("SELECT year, COUNT(*) AS count FROM `studies` GROUP BY year");
 $yearData = $stmtYear->fetchAll(PDO::FETCH_ASSOC);
 
-// Count number of studies in the archive table
 $stmtArchive = $pdo->query("SELECT COUNT(*) AS count FROM `archive`");
 $archiveCount = $stmtArchive->fetch(PDO::FETCH_ASSOC)['count'];
 
-// Get number of studies in IT and CpE departments
 $stmtITCpE = $pdo->query("SELECT dept, COUNT(*) AS count FROM `studies` WHERE dept IN ('Information Technology', 'Computer Engineering') GROUP BY dept");
 $itCpeData = $stmtITCpE->fetchAll(PDO::FETCH_ASSOC);
 $itCount = 0;

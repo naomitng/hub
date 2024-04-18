@@ -1,93 +1,95 @@
 <?php
-    session_start();
+session_start();
 
-    if (!isset($_SESSION['supadmin'])) {
-        // Redirect the user to the sign-in page
-        header('Location: ../admin/aSignIn.php');
-        exit();
-    }
+if (!isset($_SESSION['supadmin'])) {
+    // Redirect the user to the sign-in page
+    header('Location: ../admin/aSignIn.php');
+    exit();
+}
 
-    $page_title = "Popularity";
-    include '../includes/header.php';
-    include '../includes/sidebarSupadmin.php';
-    echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
-    echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
+$page_title = "Contributor";
+include '../includes/header.php';
+include '../includes/sidebarSupadmin.php';
+echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $id = $_GET['id'];
+$id = $_GET['id'];
 
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
+//$pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
 
-    try {
-        $stmt = $pdo->prepare("SELECT a.fname AS contributor_fname, a.lname AS contributor_lname, s.* FROM `studies` s INNER JOIN `admin` a ON s.contributor = a.id WHERE s.contributor = :id AND s.verified = 1");
+try {
+    $stmt = $pdo->prepare("SELECT a.fname AS contributor_fname, a.lname AS contributor_lname, s.* FROM `studies` s INNER JOIN `admin` a ON s.contributor = a.id WHERE s.contributor = :id AND s.verified = 1");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute(); 
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
+// Pagination variables
+$studiesPerPage = 10;
+$currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+// Calculate the offset based on the current page
+$offset = ($currentPage - 1) * $studiesPerPage;
+
+$totalSearchResults = 0;
+
+try {
+    if (isset($_GET['search'])) {
+        $searchQuery = '%' . $_GET['search'] . '%';
+
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) AS total_results
+            FROM `studies` s 
+            INNER JOIN `admin` a ON s.contributor = a.id 
+            WHERE s.contributor = :id AND s.verified = 1 AND (s.title LIKE :search OR s.authors LIKE :search)
+        ");
+
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute(); 
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); 
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-
-    // Pagination variables
-    $studiesPerPage = 10;
-    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $offset = ($currentPage - 1) * $studiesPerPage;
-
-    $totalSearchResults = 0;
-
-    try {
-        if (isset($_GET['search'])) {
-            $searchQuery = '%' . $_GET['search'] . '%';
-
-            $stmt = $pdo->prepare("
-                SELECT COUNT(*) AS total_results
-                FROM `studies` s 
-                INNER JOIN `admin` a ON s.contributor = a.id 
-                WHERE s.contributor = :id AND s.verified = 1 AND (s.title LIKE :search OR s.authors LIKE :search)
-            ");
-
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':search', $searchQuery, PDO::PARAM_STR);
-            $stmt->execute();
-            $totalSearchResults = $stmt->fetchColumn();
-
-            $stmt = $pdo->prepare("
-                SELECT a.fname AS contributor_fname, a.lname AS contributor_lname, s.* 
-                FROM `studies` s 
-                INNER JOIN `admin` a ON s.contributor = a.id 
-                WHERE s.contributor = :id AND s.verified = 1 AND (s.title LIKE :search OR s.authors LIKE :search)
-                ORDER BY s.popularity DESC
-                LIMIT :offset, :limit
-            ");
-
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':search', $searchQuery, PDO::PARAM_STR);
-        } else {
-
-            $stmt = $pdo->prepare("
-                SELECT a.fname AS contributor_fname, a.lname AS contributor_lname, s.* 
-                FROM `studies` s 
-                INNER JOIN `admin` a ON s.contributor = a.id 
-                WHERE s.contributor = :id AND s.verified = 1
-                LIMIT :offset, :limit
-            ");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        }
-
-        // Bind offset and limit for pagination
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
-
-        // Execute the prepared statement
+        $stmt->bindParam(':search', $searchQuery, PDO::PARAM_STR);
         $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+        $totalSearchResults = $stmt->fetchColumn();
 
-        // Fetch total number of studies for pagination
-        $totalStudies = count($studies);
-    } catch (PDOException $e) {
-        // Handle database errors here
-        echo "Error: " . $e->getMessage();
+        $stmt = $pdo->prepare("
+            SELECT a.fname AS contributor_fname, a.lname AS contributor_lname, s.* 
+            FROM `studies` s 
+            INNER JOIN `admin` a ON s.contributor = a.id 
+            WHERE s.contributor = :id AND s.verified = 1 AND (s.title LIKE :search OR s.authors LIKE :search)
+            ORDER BY s.popularity DESC
+            LIMIT :offset, :limit
+        ");
+
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':search', $searchQuery, PDO::PARAM_STR);
+    } else {
+
+        $stmt = $pdo->prepare("
+            SELECT a.fname AS contributor_fname, a.lname AS contributor_lname, s.* 
+            FROM `studies` s 
+            INNER JOIN `admin` a ON s.contributor = a.id 
+            WHERE s.contributor = :id AND s.verified = 1
+            LIMIT :offset, :limit
+        ");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     }
 
-    $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    // Bind offset and limit for pagination
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
+
+    // Execute the prepared statement
+    $stmt->execute();
+    $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+
+    // Fetch total number of studies for pagination
+    $totalStudies = count($studies);
+} catch (PDOException $e) {
+    // Handle database errors here
+    echo "Error: " . $e->getMessage();
+}
+
+$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 ?>
 
 <!-- Content Area -->
@@ -107,7 +109,6 @@
     <ul class="list-group mt-5 mb-5">   
         <li class="list-group-item p-4">
             <h3>Uploaded studies by <b><i><?= !empty($studies) ? $studies[0]['contributor_fname'] . ' ' . $studies[0]['contributor_lname'] : 'Unknown Contributor' ?></i></b></h3>
-            <h6>Total contribution: </h6>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <!-- Previous/back link -->
                 <a href="<?=$referrer?>" class="text-decoration-none">
@@ -199,4 +200,3 @@
         </nav>
     <?php endif; ?>
 </div>
-

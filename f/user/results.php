@@ -14,7 +14,7 @@
         $stmt->execute(); // Execute the prepared statement
         $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // delete 
@@ -27,7 +27,7 @@
             echo '<script>window.location.href = "results.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -91,7 +91,7 @@
         
     } catch (PDOException $e) {
         // Handle database errors here
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }    
 
     try {
@@ -107,7 +107,7 @@
         $totalStudies = $totalSearchResults; // Total studies equals total search results
     
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
     
 

@@ -1,7 +1,6 @@
 <?php
     session_start();
     if (!isset($_SESSION['fname'])) {
-        // Redirect the user to the sign-in page
         header('Location: ../admin/aSignIn.php');
         exit();
     }
@@ -12,15 +11,13 @@
     echo "<link rel='stylesheet' type='text/css' href='../css/aDashStyle.css'>";
     echo "<link rel='stylesheet' type='text/css' href='../css/scrollbar.css'>";
 
-    $pdo = new PDO("mysql:host=127.0.0.1; dbname=hub", "root", "");
-
     // display studies
     try {
         $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1");
-        $stmt->execute(); // Execute the prepared statement
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+        $stmt->execute(); 
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); 
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // call adviser list
@@ -29,7 +26,7 @@
         $stmt->execute();
         $advisers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     // delete 
@@ -42,7 +39,7 @@
             echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -50,13 +47,11 @@
     if(isset($_POST['archive'])) {
         $study_id = $_POST['study_id'];
         try {
-            // Get study details from 'studies' table
             $stmt_select = $pdo->prepare("SELECT * FROM `studies` WHERE id = :study_id AND `verified` = 1");
             $stmt_select->bindParam(':study_id', $study_id);
             $stmt_select->execute();
             $study = $stmt_select->fetch(PDO::FETCH_ASSOC);
             
-            // Insert the study into the 'archive' table
             $stmt_insert_archive = $pdo->prepare("INSERT INTO `archive`(`title`, `authors`, `abstract`, `year`, `adviser`, `dept`, `filename`, `keywords`) VALUES (:title, :authors, :abstract, :year, :adviser, :dept, :filename, :keywords)");
             $stmt_insert_archive->bindParam(':title', $study['title']);
             $stmt_insert_archive->bindParam(':authors', $study['authors']);
@@ -68,20 +63,17 @@
             $stmt_insert_archive->bindParam(':keywords', $study['keywords']);
             $stmt_insert_archive->execute();
             
-            // Delete the study from the 'studies' table
             $stmt_delete = $pdo->prepare("DELETE FROM `studies` WHERE id = :study_id AND `verified` = 1");
             $stmt_delete->bindParam(':study_id', $study_id);
             $stmt_delete->execute();
             
-            // Redirect back to the dashboard
             echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
-    
     // EDIT
     if(isset($_POST['saveChanges'])) {
         $study_id = $_POST['study_id'];
@@ -107,7 +99,7 @@
             echo '<script>window.location.href = "../admin/aDashboard.php";</script>';
             exit();
         } catch (PDOException $e) {
-            echo $e->getMessage(); 
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     }
 
@@ -122,7 +114,6 @@
             $searchTerms = [];
             $bindings = [];
 
-            // Construct the search query for each keyword
             foreach ($keywords as $index => $keyword) {
                 $searchTerms[] = "(CONCAT(title, ' ', abstract, ' ', keywords) LIKE :search{$index})";
                 $bindings[":search{$index}"] = '%' . $keyword . '%';
@@ -130,51 +121,41 @@
 
             $searchQuery = implode(" AND ", $searchTerms);
 
-            // Construct the final SQL query
             $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE {$searchQuery} AND `verified` = 1 LIMIT :offset, :limit");
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
 
-            // Bind parameters for each search term
             foreach ($bindings as $key => $value) {
                 $stmt->bindParam($key, $value, PDO::PARAM_STR);
             }
 
-            // Fetch total number of studies for search results
             $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE {$searchQuery} AND `verified` = 1");
 
-            // Bind parameters for totalStmt
             foreach ($bindings as $key => $value) {
                 $totalStmt->bindParam($key, $value, PDO::PARAM_STR);
             }
         } else {
-            // If no search query is provided, fetch all studies
             $stmt = $pdo->prepare("SELECT * FROM `studies` WHERE `verified` = 1 LIMIT :offset, :limit");
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $studiesPerPage, PDO::PARAM_INT);
 
-            // Fetch total number of all studies
             $totalStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM `studies` WHERE `verified` = 1");
         }
     } catch (PDOException $e) {
-        // Handle database errors here
-        echo "Error: " . $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 
     try {
-        // Execute the prepared statement
         $stmt->execute();
-        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+        $studies = $stmt->fetchAll(PDO::FETCH_ASSOC); 
 
-        // Execute totalStmt to get total number of search results
         $totalStmt->execute();
         $totalSearchResults = $totalStmt->fetchColumn();
 
-        // Count total number of studies for pagination
-        $totalStudies = $totalSearchResults; // Total studies equals total search results
+        $totalStudies = $totalSearchResults; 
 
     } catch (PDOException $e) {
-        echo $e->getMessage();
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
 ?>
 
