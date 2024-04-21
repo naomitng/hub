@@ -61,7 +61,7 @@ foreach ($itCpeData as $dept) {
     }
 }
 
-// popular stuidies
+// popular studies
 $stmtPopularity = $pdo->prepare("SELECT title, popularity FROM studies WHERE verified = 1");
 $stmtPopularity->execute();
 $popularity_data = $stmtPopularity->fetchAll(PDO::FETCH_ASSOC);
@@ -205,13 +205,12 @@ foreach ($contributions as $contribution) {
                             var yearlyStudiesChart = new Chart(ctx, {
                                 type: 'line',
                                 data: {
-                                    labels: <?php echo json_encode($yearLabels); ?>,
+                                    labels: ['2020', '2021', '2022', '2023', '2024'],
                                     datasets: [{
                                         label: 'Number of Studies',
-                                        data: <?php echo json_encode($yearlyStudiesData); ?>,
-                                        fill: true,
-                                        backgroundColor: 'rgba(128, 128, 128, 0.2)',
-                                        borderColor: 'rgb(75, 192, 192)',
+                                        data: [<?php echo $yearData[0]['count']; ?>, <?php echo $yearData[1]['count']; ?>, <?php echo $yearData[2]['count']; ?>, <?php echo $yearData[3]['count']; ?>, <?php echo $yearData[4]['count']; ?>],
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
                                         borderWidth: 1
                                     }]
                                 },

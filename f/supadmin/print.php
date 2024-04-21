@@ -29,6 +29,14 @@ foreach ($itCpeData as $dept) {
     }
 }
 
+$stmtPopularity = $pdo->prepare("SELECT title, popularity FROM studies WHERE verified = 1 ORDER BY popularity DESC LIMIT 10");
+$stmtPopularity->execute();
+$popularity_data = $stmtPopularity->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt_contributions = $pdo->prepare("SELECT CONCAT(a.fname, ' ', a.lname) AS full_name, COUNT(*) as contribution_count FROM studies s JOIN admin a ON s.contributor = a.id GROUP BY s.contributor ORDER BY contribution_count DESC");
+$stmt_contributions->execute();
+$contributions = $stmt_contributions->fetchAll(PDO::FETCH_ASSOC);
+
 require_once('../../vendor/tcpdf/tcpdf.php');  
 $pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -75,6 +83,16 @@ foreach ($yearData as $year) {
 
 $content .= '<tr><th colspan="2" align="center" style="font-weight: bold;">Number of Studies in Archive</th></tr>';
 $content .= '<tr><td>Archive Count</td><td align="center">' . $archiveCount . '</td></tr>';
+
+$content .= '<tr><th colspan="2" align="center" style="font-weight: bold;">Top 10 Popular Studies</th></tr>';
+foreach ($popularity_data as $study) {
+    $content .= '<tr><td>' . $study['title'] . '</td><td align="center">' . $study['popularity'] . '</td></tr>';
+}
+
+$content .= '<tr><th colspan="2" align="center" style="font-weight: bold;">Contribution</th></tr>';
+foreach ($contributions as $contribution) {
+    $content .= '<tr><td>' . $contribution['full_name'] . '</td><td align="center">' . $contribution['contribution_count'] . '</td></tr>';
+}
 
 $content .= '</table>';  
 
